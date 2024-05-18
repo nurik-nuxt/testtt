@@ -1,0 +1,30 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --port 3030",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "engines": {
+    "node": "^20.10.0",
+    "npm": "^10.2.3"
+  },
+  "dependencies": {
+    "nuxt": "^3.11.2",
+    "primevue": "^3.52.0",
+    "sass": "^1.77.1",
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.2",
+    "chart.js": "3.3.2",
+    "primeflex": "^3.3.1",
+    "primeicons": "^6.0.1"
+  },
+  "devDependencies": {
+    "nuxt": "^3.10.3",
+    "nuxt-primevue": "^0.3.1"
+  }
+}

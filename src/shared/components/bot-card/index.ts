@@ -1,0 +1,1 @@
+export { default as BotCard } from './ui.vue';

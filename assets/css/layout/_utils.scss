@@ -1,0 +1,106 @@
+/* Utils */
+.clearfix:after {
+    content: " ";
+    display: block;
+    clear: both;
+}
+
+.card {
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    border-radius: $borderRadius;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+.card-form {
+    background: var(--surface-card);
+    margin-bottom: 2rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.card-wrapper {
+    background: #F0F4F9;
+    border: 1px solid var(--surface-border);
+    padding: 16px;
+    box-shadow: var(--card-shadow);
+    border-radius: $borderRadius;
+}
+
+.chanel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 8px;
+    &__item {
+        padding: 16px;
+        display: flex;
+        justify-content: space-between;
+        background: #E2E9F4;
+        border-radius: 4px
+    }
+}
+
+.bot-card {
+    display: flex;
+    flex-direction: column;
+    &__title {
+        margin-bottom: 0;
+    }
+    &__id {
+        color: #95A1B4;
+    }
+    &__channels {
+        margin-top: 12px;
+    }
+    &__channels-list {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 4px;
+    }
+    &__options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+    }
+    &__check {
+        background: var(--surface-card);
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+    &__edit {
+        display: flex;
+        align-items: center;
+    }
+    &__edit-icon {
+        margin-left: 8px;
+        background: var(--surface-card);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    &__activate {
+        display: flex;
+        align-items: center;
+    }
+}
+
+.p-toast {
+    &.p-toast-top-right,
+    &.p-toast-top-left,
+    &.p-toast-top-center {
+        top: 100px;
+    }
+}
