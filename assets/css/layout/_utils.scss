@@ -97,6 +97,20 @@
     }
 }
 
+.notification-wrapper {
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.notification-card {
+    background: #F8FAFC;
+    padding: 16px;
+    box-shadow: var(--card-shadow);
+    border-radius: $borderRadius;
+}
+
 .p-toast {
     &.p-toast-top-right,
     &.p-toast-top-left,

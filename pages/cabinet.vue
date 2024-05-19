@@ -9,6 +9,13 @@ const checked = ref(false);
 const logoUrl = computed(() => {
   return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
+
+const login = () => {
+  return navigateTo({ name: 'index' })
+}
+definePageMeta({
+  layout: 'auth'
+})
 </script>
 
 <template>
@@ -36,7 +43,7 @@ const logoUrl = computed(() => {
               </div>
               <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Забыли пароль?</a>
             </div>
-            <Button label="Войти" class="w-full p-3 text-xl"></Button>
+            <Button label="Войти" class="w-full p-3 text-xl" @click="login"></Button>
           </div>
         </div>
       </div>

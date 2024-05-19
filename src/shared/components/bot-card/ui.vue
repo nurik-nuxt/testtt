@@ -31,7 +31,7 @@ const editBot = () => {
       <div class="bot-card__options">
         <div class="bot-card__edit">
           <span class="bot-card__check">Проверить</span>
-          <span class="bot-card__edit-icon"><i @click="editBot" class="pi pi-pencil" style="cursor: pointer" /></span>
+          <span class="bot-card__edit-icon"><i @click="editBot" class="pi pi-cog" style="cursor: pointer" /></span>
         </div>
         <span class="bot-card__activate">
             Активен

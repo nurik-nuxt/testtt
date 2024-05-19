@@ -166,11 +166,11 @@ const knowledgeBaseSelectedKey = ref(null);
             <TabPanel header="Общие">
               <div class="card-form p-fluid" style="margin-top: 16px">
                 <div class="field">
-                  <label for="name1">Название бота</label>
+                  <label for="name1" style="font-weight: 700">Название бота</label>
                   <InputText id="name1" type="text" />
                 </div>
                 <div class="field">
-                  <label>Инструкции</label>
+                  <label style="font-weight: 700">Инструкции</label>
                   <Textarea placeholder="Инструкция Бота " :autoResize="true" rows="3" cols="30" />
                 </div>
               </div>
@@ -188,22 +188,26 @@ const knowledgeBaseSelectedKey = ref(null);
                 <InputSwitch v-model="extra" style="margin-left: 8px"/>
               </span>
               <div v-if="extra" class="card-form p-fluid" style="margin-top: 12px">
-                <label for="name1">API Secret Key</label>
+                <label for="name1" style="font-weight: 700">API Secret Key</label>
                 <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" placeholder="Выберите один"></Dropdown>
                 <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" type="password" />
-                <label for="name1">Модель</label>
-                <Dropdown style="margin-top: 8px" id="apiKey" v-model="model" :options="models" optionLabel="title" placeholder="Выберите один"></Dropdown>
+                <label for="name1" style="font-weight: 700">Модель</label>
+                <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="model" :options="models" optionLabel="title" placeholder="Выберите один"></Dropdown>
+                <span style="color: #64748b">От выбора модели зависит стоимость токенов и качество ответов. <br> GPT-3.5 – самая быстрая и дешевая текстовая модель, GPT-4 – дороже.</span>
                 <div class="field" style="margin-top: 12px">
-                  <label for="name1">Таймаут объединение сообщений (секунд)</label>
-                  <InputText id="name1" type="number" />
+                  <label for="name1" style="font-weight: 700">Таймаут объединение сообщений (секунд)</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" />
+                  <span style="color: #64748b">Время ожидания, в течение которого все входящие сообщения в чате будут обрабатываться как один запрос. <br> Рекомендуем установить 10-15 сек.</span>
                 </div>
                 <div class="field" style="margin-top: 12px">
-                  <label for="name1">Общий таймаут ожидания ответа (часов)</label>
-                  <InputText id="name1" type="number" />
+                  <label for="name1" style="font-weight: 700">Общий таймаут ожидания ответа (часов)</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" />
+                  <span style="color: #64748b">Время ожидания, в течение которого все входящие сообщения в чате будут обрабатываться как один запрос. <br> Рекомендуем установить 10-15 сек.</span>
                 </div>
                 <div class="field" style="margin-top: 12px">
-                  <label for="name1">Приостанавливать на (минут)</label>
-                  <InputText id="name1" type="number" />
+                  <label for="name1" style="font-weight: 700">Приостанавливать на (минут)</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" />
+                  <span style="color: #64748b">Время на которое бот приостановится в чате, если в чат напишет оператор. <br> Не работает если оператор пишет из amoCRM и Битрикс24.</span>
                 </div>
               </div>
             </TabPanel>
@@ -214,8 +218,17 @@ const knowledgeBaseSelectedKey = ref(null);
                 <Button label="Удалить"/>
               </div>
               <div>
-                <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="knowledgeBaseList" selectionMode="checkbox" class="w-full md:w-30rem">
+                <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="knowledgeBaseList" selectionMode="checkbox" class="w-full">
                   <Column field="label" header="Название" :expander="true"></Column>
+                  <Column field="actions">
+                    <template #body>
+                      <div class="flex flex-row-reverse gap-3 ml-auto">
+                        <i style="cursor: pointer; color: #EE9186;" class="pi pi-trash" />
+                        <i style="cursor: pointer" class="pi pi-file-edit" />
+                        <i style="cursor: pointer; color: #187CF9" class="pi pi-download" />
+                      </div>
+                    </template>
+                  </Column>
                 </TreeTable>
               </div>
             </TabPanel>
@@ -246,19 +259,30 @@ const knowledgeBaseSelectedKey = ref(null);
                   <i style="cursor: pointer" class="pi pi-cog" />
                 </span>
               </div>
-              <div class="mt-4">
-                <h5>Токен</h5>
-                <div class="flex gap-2">
-                  <Button>Показать токен</Button>
-                  <Button severity="danger">Обновить токен</Button>
-                </div>
-              </div>
             </TabPanel>
             <TabPanel header="Уведомления">
-              <p class="m-0">
-                At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui
-                officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-              </p>
+              <div class="notification-wrapper">
+                <div class="notification-card">
+                  <div class="flex flex-column gap-2">
+                    <h5>Telegram</h5>
+                    <span style="color: #0f172a;">Подписавшись на бота по ссылке чтобы получать уведомления в Telegram о событиях из Базы Знаний, в которых включена функция "Уведомление" <a target="_blank" href="https://web.telegram.org/" style="color: #076AE1;">(Ссылка)</a></span>
+                  </div>
+                </div>
+                <div class="notification-card">
+                  <div class="flex flex-column gap-2">
+                    <h5>E-mail</h5>
+                    <span style="color: #0f172a;">Напишите адрес почты, на которую будут приходить уведомления от 7s</span>
+                    <InputText class="mt-3" style="max-width: 500px" placeholder="Email" id="email" type="text" />
+                  </div>
+                </div>
+                <div class="notification-card">
+                  <div class="flex flex-column gap-2">
+                    <h5>Webhook</h5>
+                    <span style="color: #0f172a;">Вы можете оповещать сторонние приложения о событиях, произошедших в 7s, с помощью уведомлений. Для этого укажите URL, на который Вам будет отправлен WebHook.</span>
+                    <InputText class="mt-3" style="max-width: 500px" placeholder="Url" id="site" type="text" />
+                  </div>
+                </div>
+              </div>
             </TabPanel>
           </TabView>
         </div>

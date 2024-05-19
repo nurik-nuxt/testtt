@@ -10,6 +10,13 @@ const name = ref('');
 const logoUrl = computed(() => {
   return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
+
+const signIn = () => {
+  return navigateTo({ name: 'index' })
+}
+definePageMeta({
+  layout: 'auth'
+})
 </script>
 
 <template>
@@ -38,7 +45,7 @@ const logoUrl = computed(() => {
                 <label for="rememberme1">Запомнить меня</label>
               </div>
             </div>
-            <Button label="Зарегистрироваться" class="w-full p-3 text-xl"></Button>
+            <Button label="Зарегистрироваться" class="w-full p-3 text-xl" @click="signIn"></Button>
           </div>
         </div>
       </div>
