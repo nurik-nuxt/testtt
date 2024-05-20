@@ -171,7 +171,7 @@ const knowledgeBaseSelectedKey = ref(null);
                 </div>
                 <div class="field">
                   <label style="font-weight: 700">Инструкции</label>
-                  <Textarea placeholder="Инструкция Бота " :autoResize="true" rows="3" cols="30" />
+                  <Textarea placeholder="Инструкция Бота " :autoResize="true" rows="3" cols="2" />
                 </div>
               </div>
               <span class="bot-card__activate">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { AppMenuItem } from "~/src/shared/components/app-menu-item";
-import {it} from "node:test";
+const { t } = useI18n();
 
 interface MenuItem {
   label: string;
@@ -9,27 +9,27 @@ interface MenuItem {
 }
 const menu = ref<MenuItem[]>([
   {
-    label: 'Чат-боты',
+    label: t('chatbots'),
     icon: 'pi pi-fw pi-android',
     url: 'chatbots'
   },
   {
-    label: 'Тарифы',
+    label: t('tariff'),
     icon: 'pi pi-fw pi-star',
     url: 'tariffs'
   },
   {
-    label: 'Диалоги',
+    label: t('message'),
     icon: 'pi pi-fw pi-envelope',
     url: 'dialogues'
   },
   {
-    label: 'Логи',
+    label: t('logs'),
     icon: 'pi pi-fw pi-prime',
     url: 'logs'
   },
   {
-    label: 'Профиль',
+    label: t('profile'),
     icon: 'pi pi-fw pi-user',
     url: 'cabinet'
   },
@@ -39,7 +39,7 @@ const menu = ref<MenuItem[]>([
     url: 'registration'
   },
   {
-    label: 'Помощь',
+    label: t('help'),
     icon: 'pi pi-fw pi-question-circle',
     url: 'support'
   }

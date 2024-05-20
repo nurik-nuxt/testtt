@@ -1,7 +1,7 @@
 <script setup>
 import { useLayout } from '~/composable';
 
-const { layoutConfig, onMenuToggle } = useLayout();
+const { layoutConfig, onMenuToggle, showLanguageDialog } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -56,6 +56,8 @@ const isOutsideClicked = (event) => {
 
   return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+const languageDialog = ref(false);
 </script>
 
 
@@ -74,7 +76,10 @@ const isOutsideClicked = (event) => {
     </button>
 
     <div class="layout-topbar-menu" :class="topbarMenuClasses">
-<!--      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">-->
+      <button class="p-link layout-topbar-button" @click="showLanguageDialog(true)">
+        <i style="color: #076AE1;" class="pi pi-globe"></i>
+      </button>
+      <!--      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">-->
 <!--        <i class="pi pi-calendar"></i>-->
 <!--        <span>Calendar</span>-->
 <!--      </button>-->

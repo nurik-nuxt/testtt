@@ -23,7 +23,24 @@ export default defineNuxtConfig({
             },
         },
     },
-    modules: ['nuxt-primevue'],
+    modules: ['nuxt-primevue', '@nuxtjs/i18n'],
+    i18n: {
+        strategy: 'no_prefix',
+        defaultLocale: 'ru',
+        locales: [
+            { code: 'ru', iso: 'ru-RU', name: 'Русский' },
+            { code: 'en', iso: 'en-US', name: 'English' },
+            { code: 'kz', iso: 'kz-KZ', name: 'Қазақша' },
+            { code: 'ar', iso: 'ar-AE', name: 'Arabic' },
+            { code: 'de', iso: 'de-DE', name: 'German' },
+            { code: 'es', iso: 'es-ES', name: 'Spanish' },
+            { code: 'fr', iso: 'fr-FR', name: 'French' },
+            { code: 'hi', iso: 'hi-IN', name: 'Hindi',}
+        ],
+    },
+    htmlAttrs: {
+        lang: 'ru',
+    },
     primevue: {
         options: { ripple: true },
         components: {

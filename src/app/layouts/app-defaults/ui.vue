@@ -3,7 +3,7 @@ import AppTopbar from '@/src/widgets/app-topbbar/AppTopbar.vue'
 import { AppSidebar } from '~/src/widgets/app-sidebar';
 import { useLayout } from '~/composable';
 
-const { layoutConfig, layoutState, isSidebarActive } = useLayout();
+const { layoutConfig, layoutState, isSidebarActive, languageDialog } = useLayout();
 
 const outsideClickListener = ref(null);
 
@@ -51,6 +51,23 @@ const isOutsideClicked = (event) => {
 
   return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+
+const { locale, locales, setLocale } = useI18n();
+
+
+watch(
+    () => locale.value,
+    (code) => {
+      setLocale(code);
+      localStorage.setItem('lang',code);
+      useHead({
+        htmlAttrs: {
+          lang: code,
+        },
+      });
+    },
+    { deep: true }
+)
 </script>
 
 <template>
@@ -62,6 +79,10 @@ const isOutsideClicked = (event) => {
     <div class="layout-main-container">
       <div class="layout-main">
         <slot />
+        <Dialog v-model:visible="languageDialog" :style="{ width: '450px' }" header="Выберите язык" :modal="true" class="p-fluid">
+          {{ locale }}
+          <Dropdown v-model="locale" :options="locales" optionLabel="name" option-value="code" class="w-full" />
+        </Dialog>
       </div>
     </div>
   </div>
