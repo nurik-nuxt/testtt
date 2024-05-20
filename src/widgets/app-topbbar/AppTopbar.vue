@@ -79,10 +79,6 @@ const languageDialog = ref(false);
       <button class="p-link layout-topbar-button" @click="showLanguageDialog(true)">
         <i style="color: #076AE1;" class="pi pi-globe"></i>
       </button>
-      <!--      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">-->
-<!--        <i class="pi pi-calendar"></i>-->
-<!--        <span>Calendar</span>-->
-<!--      </button>-->
     </div>
   </div>
 </template>

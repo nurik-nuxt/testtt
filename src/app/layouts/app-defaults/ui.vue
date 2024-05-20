@@ -3,7 +3,7 @@ import AppTopbar from '@/src/widgets/app-topbbar/AppTopbar.vue'
 import { AppSidebar } from '~/src/widgets/app-sidebar';
 import { useLayout } from '~/composable';
 
-const { layoutConfig, layoutState, isSidebarActive, languageDialog } = useLayout();
+const { layoutConfig, layoutState, isSidebarActive, languageDialog, showLanguageDialog } = useLayout();
 
 const outsideClickListener = ref(null);
 
@@ -65,6 +65,7 @@ watch(
           lang: code,
         },
       });
+      showLanguageDialog(false);
     },
     { deep: true }
 )
