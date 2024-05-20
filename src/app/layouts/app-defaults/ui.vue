@@ -80,7 +80,6 @@ watch(
       <div class="layout-main">
         <slot />
         <Dialog v-model:visible="languageDialog" :style="{ width: '450px' }" header="Выберите язык" :modal="true" class="p-fluid">
-          {{ locale }}
           <Dropdown v-model="locale" :options="locales" optionLabel="name" option-value="code" class="w-full" />
         </Dialog>
       </div>

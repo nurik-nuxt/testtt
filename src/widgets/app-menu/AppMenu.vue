@@ -7,43 +7,45 @@ interface MenuItem {
   url: string;
   icon: string;
 }
-const menu = ref<MenuItem[]>([
-  {
-    label: t('chatbots'),
-    icon: 'pi pi-fw pi-android',
-    url: 'chatbots'
-  },
-  {
-    label: t('tariff'),
-    icon: 'pi pi-fw pi-star',
-    url: 'tariffs'
-  },
-  {
-    label: t('message'),
-    icon: 'pi pi-fw pi-envelope',
-    url: 'dialogues'
-  },
-  {
-    label: t('logs'),
-    icon: 'pi pi-fw pi-prime',
-    url: 'logs'
-  },
-  {
-    label: t('profile'),
-    icon: 'pi pi-fw pi-user',
-    url: 'cabinet'
-  },
-  {
-    label: 'Регистрация',
-    icon: 'pi pi-fw pi-user',
-    url: 'registration'
-  },
-  {
-    label: t('help'),
-    icon: 'pi pi-fw pi-question-circle',
-    url: 'support'
-  }
-])
+const menu = computed(() => {
+  return [
+    {
+      label: t('chatbots'),
+      icon: 'pi pi-fw pi-android',
+      url: 'chatbots'
+    },
+    {
+      label: t('tariff'),
+      icon: 'pi pi-fw pi-star',
+      url: 'tariffs'
+    },
+    {
+      label: t('message'),
+      icon: 'pi pi-fw pi-envelope',
+      url: 'dialogues'
+    },
+    {
+      label: t('logs'),
+      icon: 'pi pi-fw pi-prime',
+      url: 'logs'
+    },
+    {
+      label: t('profile'),
+      icon: 'pi pi-fw pi-user',
+      url: 'cabinet'
+    },
+    {
+      label: 'Регистрация',
+      icon: 'pi pi-fw pi-user',
+      url: 'registration'
+    },
+    {
+      label: t('help'),
+      icon: 'pi pi-fw pi-question-circle',
+      url: 'support'
+    }
+  ]
+})
 </script>
 
 <template>
