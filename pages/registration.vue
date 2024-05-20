@@ -52,9 +52,8 @@ const { t } = useI18n();
             <Password id="password1" v-model="password" :placeholder="t('password')" :toggleMask="true" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
 
             <div class="flex align-items-center justify-content-between mb-5 gap-5">
-              <div class="flex align-items-center">
-                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                <label for="rememberme1">{{ $t('rememberMe') }}</label>
+              <div class="flex align-items-center justify-content-center text-center">
+                  <nuxt-link to="/cabinet" class="text-center" style="color: #076AE1; font-weight: 700">{{ $t('login') }}</nuxt-link>
               </div>
             </div>
             <Button :label="t('registerButton')" class="w-full p-3 text-xl mb-3" @click="signIn"></Button>

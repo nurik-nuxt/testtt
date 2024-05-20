@@ -64,7 +64,7 @@ const languageDialog = ref(false);
 <template>
   <div class="layout-topbar">
     <nuxt-link to="/" class="layout-topbar-logo">
-      <span class="layout-topbar-logo-text">7sales.pro</span>
+      <span class="layout-topbar-logo-text">7sales</span>
     </nuxt-link>
 
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

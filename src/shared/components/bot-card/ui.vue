@@ -21,7 +21,7 @@ const editBot = () => {
       <h5 class="bot-card__title">{{ props.title }}</h5>
       <span class="bot-card__id">id: {{ props.id }}</span>
       <div class="bot-card__channels">
-        <span>Каналы</span>
+        <span>{{ $t('channels') }}</span>
         <div class="bot-card__channels-list">
           <i v-if="props.channels.includes('instagram')" style="color: #ec4899" class="pi pi-instagram" />
           <i v-if="props.channels.includes('telegram')" style="color: #3B82F6" class="pi pi-telegram" />
@@ -30,11 +30,10 @@ const editBot = () => {
       </div>
       <div class="bot-card__options">
         <div class="bot-card__edit">
-          <span class="bot-card__check">Проверить</span>
-          <span class="bot-card__edit-icon"><i @click="editBot" class="pi pi-cog" style="cursor: pointer" /></span>
+          <span class="bot-card__check flex item-center">{{ $t('settings') }}<span class="bot-card__edit-icon"><i @click="editBot" class="pi pi-cog" style="cursor: pointer" /></span></span>
         </div>
         <span class="bot-card__activate">
-            Активен
+            {{ $t('onOffButton') }}
             <InputSwitch v-model="switchValue" style="margin-left: 4px"/>
           </span>
       </div>

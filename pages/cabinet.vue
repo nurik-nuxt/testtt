@@ -50,7 +50,10 @@ const { t } = useI18n();
               </div>
               <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">{{ $t('forgotPassword') }}?</a>
             </div>
-            <Button :label="t('login')" class="w-full p-3 text-xl" @click="login"></Button>
+            <Button :label="t('login')" class="w-full p-3 text-xl mb-3" @click="login"></Button>
+            <div class="flex justify-content-center">
+              <nuxt-link to="/registration" style="color: #076AE1; font-weight: 700">{{ $t('registerButton') }}</nuxt-link>
+            </div>
           </div>
         </div>
       </div>

@@ -56,14 +56,16 @@ const bots = ref<BotItem[]>([
 const createBot = () => {
   return navigateTo({ name: 'chatbots-create' })
 }
+const { t } = useI18n();
+
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <h5>Боты</h5>
-        <Button label="Новый бот" @click="createBot"/>
+        <h5>{{ $t('bots') }}</h5>
+        <Button :label="t('newBot')" @click="createBot"/>
         <div class="mt-5 bot-list">
           <bot-card
               v-for="(bot, i) in bots"

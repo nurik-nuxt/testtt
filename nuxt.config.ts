@@ -4,7 +4,7 @@ export default defineNuxtConfig({
     ssr: true,
     app: {
         head: {
-            title: '7sales.pro',
+            title: '7sales',
             link: [
                 {
                     id: 'theme-css',
