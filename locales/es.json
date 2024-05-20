@@ -9,7 +9,12 @@
 "help": "Ayuda",
 "welcomeText": "Bienvenido a 7sales",
 "createAccount": "Cree su cuenta",
-"loginDescription": "Al usar 7sales, acepta nuestros Términos de Servicio y está de acuerdo con nuestra Política de Privacidad",
+"loginDescription": "Al utilizar 7sales, aceptas nuestros ",
+"termsOfService": "Términos de Servicio",
+"privacyPolicy": "Política de Privacidad",
+"and": "y",
+"termsOfServiceUrl": "https://www.7sales.com/es/terms",
+"privacyPolicyUrl": "https://www.7sales.com/es/privacy",
 "name": "Nombre",
 "emailAddress": "Dirección de correo electrónico",
 "phone": "Teléfono",
@@ -174,5 +179,6 @@
 "email": "Correo electrónico",
 "paymentAmount": "Monto de los pagos",
 "lastPaymentDate": "Fecha del último pago",
-"registerButton": "Registrarse"
+"registerButton": "Registrarse",
+"logInToContinue": "Inicia sesión para continuar"
 }

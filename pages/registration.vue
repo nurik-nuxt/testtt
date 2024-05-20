@@ -24,7 +24,7 @@ const { t } = useI18n();
 
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
-    <div class="flex flex-column align-items-center justify-content-center">
+    <div class="flex flex-column align-items-center justify-content-center" style="max-width: 450px;">
       <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
           <div class="flex flex-row-reverse">
@@ -57,7 +57,15 @@ const { t } = useI18n();
                 <label for="rememberme1">{{ $t('rememberMe') }}</label>
               </div>
             </div>
-            <Button :label="t('registerButton')" class="w-full p-3 text-xl" @click="signIn"></Button>
+            <Button :label="t('registerButton')" class="w-full p-3 text-xl mb-3" @click="signIn"></Button>
+            <div>
+              <span class="text-600 text-center font-medium">
+                {{ $t('loginDescription') }}
+                <a href="https://7sales.ai/info" target="_blank">{{ $t('termsOfService') }}</a>
+                {{ $t('and') }}
+                <a href="https://7sales.ai/privacypolicy" target="_blank">{{ $t('privacyPolicy') }}</a>
+                </span>
+            </div>
           </div>
         </div>
       </div>

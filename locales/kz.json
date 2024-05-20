@@ -9,7 +9,12 @@
 "help": "Көмек",
 "welcomeText": "7sales-қа қош келдіңіз",
 "createAccount": "Өз есептік жазбаңызды жасаңыз",
-"loginDescription": "7sales-ты пайдалану арқылы сіз біздің Қызмет көрсету шарттарымызды қабылдайсыз және Құпиялылық саясатымызға келісесіз",
+"loginDescription": "7sales пайдалану арқылы, сіз біздің ",
+"termsOfService": "Қызмет көрсету шарттарын",
+"privacyPolicy": "Құпиялылық саясатымен",
+"and": "және",
+"termsOfServiceUrl": "https://www.7sales.com/kk/terms",
+"privacyPolicyUrl": "https://www.7sales.com/kk/privacy",
 "name": "Аты",
 "emailAddress": "Электрондық пошта мекенжайы",
 "phone": "Телефон",
@@ -174,5 +179,6 @@
 "email": "Электрондық пошта",
 "paymentAmount": "Төлем сомасы",
 "lastPaymentDate": "Соңғы төлем күні",
-"registerButton": "Тіркелу"
+"registerButton": "Тіркелу",
+"logInToContinue": "Жалғастыру үшін кіріңіз"
 }

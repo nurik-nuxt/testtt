@@ -9,7 +9,12 @@
 "help": "مساعدة",
 "welcomeText": "مرحبًا بكم في 7sales",
 "createAccount": "قم بإنشاء حسابك",
-"loginDescription": "باستخدام 7sales، فإنك تقبل شروط الخدمة الخاصة بنا وتوافق على سياسة الخصوصية الخاصة بنا",
+"loginDescription": "باستخدام 7sales، فإنك تقبل ",
+"termsOfService": "شروط الخدمة",
+"privacyPolicy": "سياسة الخصوصية",
+"and": "و",
+"termsOfServiceUrl": "https://www.7sales.com/ar/terms",
+"privacyPolicyUrl": "https://www.7sales.com/ar/privacy",
 "name": "الاسم",
 "emailAddress": "عنوان البريد الإلكتروني",
 "phone": "الهاتف",
@@ -174,5 +179,6 @@
 "email": "البريد الإلكتروني",
 "paymentAmount": "مبلغ المدفوعات",
 "lastPaymentDate": "تاريخ آخر دفعة",
-"registerButton": "التسجيل (At-tasjīl)"
+"registerButton": "التسجيل (At-tasjīl)",
+"logInToContinue": "تسجيل الدخول للمتابعة"
 }

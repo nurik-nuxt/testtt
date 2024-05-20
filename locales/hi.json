@@ -9,7 +9,12 @@
 "help": "सहायता",
 "welcomeText": "7sales में आपका स्वागत है",
 "createAccount": "अपना खाता बनाएँ",
-"loginDescription": "7sales का उपयोग करके, आप हमारी सेवा शर्तों को स्वीकार करते हैं और हमारी गोपनीयता नीति से सहमत होते हैं",
+"loginDescription": "7sales का उपयोग करके, आप हमारी ",
+"termsOfService": "सेवा शर्तों",
+"privacyPolicy": "गोपनीयता नीति",
+"and": "और",
+"termsOfServiceUrl": "https://www.7sales.com/hi/terms",
+"privacyPolicyUrl": "https://www.7sales.com/hi/privacy",
 "name": "नाम",
 "emailAddress": "ईमेल पता",
 "phone": "फोन",
@@ -174,5 +179,6 @@
 "email": "ईमेल",
 "paymentAmount": "भुगतान की राशि",
 "lastPaymentDate": "अंतिम भुगतान की तिथि",
-"registerButton": "पंजीकरण करना (Panjīkaraṇ karnā)"
+"registerButton": "पंजीकरण करना (Panjīkaraṇ karnā)",
+"logInToContinue": "जारी रखने के लिए लॉग इन करें"
 }

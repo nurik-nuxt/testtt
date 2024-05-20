@@ -9,7 +9,12 @@
 "help": "Помощь",
 "welcomeText": "Добро пожаловать в 7sales",
 "createAccount": "Создайте свой аккаунт",
-"loginDescription": "Используя 7sales, вы принимаете наши Условия предоставления услуг и соглашаетесь с Политикой конфиденциальности",
+"loginDescription": "Используя 7sales, вы принимаете наши ",
+"termsOfService": "Условия предоставления услуг",
+"privacyPolicy": "Политику конфиденциальности",
+"and": "и",
+"termsOfServiceUrl": "https://www.7sales.com/ru/terms",
+"privacyPolicyUrl": "https://www.7sales.com/ru/privacy",
 "name": "Имя",
 "emailAddress": "Адрес электронной почты",
 "phone": "Телефон",
@@ -174,5 +179,6 @@
 "email": "Почта",
 "paymentAmount": "Сумма оплат",
 "lastPaymentDate": "Дата последней оплаты",
-"registerButton": "Зарегистрироваться"
+"registerButton": "Зарегистрироваться",
+"logInToContinue": "Войдите, чтобы продолжить"
 }
