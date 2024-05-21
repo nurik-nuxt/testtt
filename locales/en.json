@@ -180,5 +180,16 @@
 "paymentAmount": "Payment amount",
 "lastPaymentDate": "Last payment date",
 "registerButton": "Register",
-"logInToContinue": "Log in to continue"
+"logInToContinue": "Log in to continue",
+"instructions": "Instructions",
+"delete": "Delete",
+"title": "Name",
+"temperature": "Temperature",
+  "creativityLevel": "A number from 0 to 2. The higher the value, the more creative the neural network’s responses will be (we recommend 0.3-0.7)",
+  "maxTokens": "Maximum number of tokens in response",
+  "requestCost": "The more tokens, the greater the 'cost' of the request",
+  "limitingAIbot": "Limiting the AI ​​bot triggering per contact",
+  "onceWhile": "once in a while",
+  "messageHistory": "Message history (context)",
+  "contextMessageHistory": "How many messages to send to the dialogue context. The larger this number, the greater the consumption of tokens (by default it is 10 messages). Maximum - 50."
 }

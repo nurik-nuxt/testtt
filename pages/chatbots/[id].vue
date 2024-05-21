@@ -84,8 +84,22 @@ const models = ref([
     code: 'giminy'
   },
 ])
+
+const limitDays = computed(() => {
+  return [
+    {
+      title: t('perDay'),
+      id: 'perDay'
+    },
+    {
+      title: t('perHour'),
+      id: 'perHour'
+    }
+  ]
+})
 const apiKey = ref(null);
 const model = ref(null);
+const limitDay = ref(null);
 
 const createKnowledgeBase = (id: number) => {
   return navigateTo({ name: 'chatbots-knowledge-id', params: { id: id }})
@@ -154,72 +168,225 @@ const knowledgeBaseList = ref([
   }
 ]);
 const knowledgeBaseSelectedKey = ref(null);
+const { t } = useI18n();
+
+const fullTimeWork = ref<boolean>(false);
+
+const workingZone = ref(null);
+
+const workingZones = ref([
+  {
+    title: 'UTC +14 Christmas Island/Kiribati',
+    id: 'utc14'
+  },
+  {
+    title: 'UTC +5:45 Nepal',
+    id: 'utc5_45'
+  },
+  {
+    title: 'UTC +3:30 Iran',
+    id: 'utc3_30'
+  }
+])
+
+const mondayActive = ref(true);
+const tuesdayActive = ref(true);
+const wednesdayActive = ref(true);
+const thursdayActive = ref(true);
+const fridayActive = ref(true);
+const saturdayActive = ref(true);
+const sundayActive = ref(true);
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <h5>Редактирование "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
+        <h5>{{ $t('edit') }} "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
         <div>
           <TabView>
-            <TabPanel header="Общие">
+            <TabPanel :header="t('general')">
               <div class="card-form p-fluid" style="margin-top: 16px">
                 <div class="field">
-                  <label for="name1" style="font-weight: 700">Название бота</label>
+                  <label for="name1" style="font-weight: 700">{{ $t('botName') }}</label>
                   <InputText id="name1" type="text" />
                 </div>
                 <div class="field">
-                  <label style="font-weight: 700">Инструкции</label>
-                  <Textarea placeholder="Инструкция Бота " :autoResize="true" rows="3" cols="2" />
+                  <label style="font-weight: 700">{{ $t('instructions') }}</label>
+                  <Textarea :placeholder="t('botInstructionPrompt')" :autoResize="true" rows="3" cols="2" />
                 </div>
               </div>
               <span class="bot-card__activate">
-                Приветствовать собеседника при начале разговора
+                {{ $t('welcomeMessageStart') }}
                 <InputSwitch v-model="switchValue" style="margin-left: 8px"/>
               </span>
               <div v-if="switchValue" class="card-form p-fluid">
                 <div class="field" style="margin-top: 12px">
-                  <Textarea placeholder="Введите первое сообзение" :autoResize="true" rows="3" cols="30" />
+                  <Textarea :placeholder="t('enterMessage')" :autoResize="true" rows="3" cols="30" />
                 </div>
               </div>
               <span class="bot-card__activate" style="margin-top: 8px">
-                Дополнительно
+                {{ $t('settings') }}
                 <InputSwitch v-model="extra" style="margin-left: 8px"/>
               </span>
               <div v-if="extra" class="card-form p-fluid" style="margin-top: 12px">
-                <label for="name1" style="font-weight: 700">API Secret Key</label>
-                <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" placeholder="Выберите один"></Dropdown>
+                <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
+                <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
                 <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" type="password" />
-                <label for="name1" style="font-weight: 700">Модель</label>
-                <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="model" :options="models" optionLabel="title" placeholder="Выберите один"></Dropdown>
-                <span style="color: #64748b">От выбора модели зависит стоимость токенов и качество ответов. <br> GPT-3.5 – самая быстрая и дешевая текстовая модель, GPT-4 – дороже.</span>
+                <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>
+                <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="model" :options="models" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                <span style="color: #64748b">{{ $t('modelChoice') }}</span>
+
                 <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">Таймаут объединение сообщений (секунд)</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" />
-                  <span style="color: #64748b">Время ожидания, в течение которого все входящие сообщения в чате будут обрабатываться как один запрос. <br> Рекомендуем установить 10-15 сек.</span>
+                  <label for="name1" style="font-weight: 700">{{ $t('temperature') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
+                </div>
+
+                <div class="field" style="margin-top: 12px">
+                  <label for="name1" style="font-weight: 700">{{ $t('maxTokens') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <span style="color: #64748b">{{ $t('requestCost') }}</span>
+                </div>
+
+
+                <div class="field" style="margin-top: 12px">
+                  <label for="name1" style="font-weight: 700">{{ $t('messageMergeTimeout') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <span style="color: #64748b">{{ $t('creativityLevel') }}</span>
                 </div>
                 <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">Общий таймаут ожидания ответа (часов)</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" />
-                  <span style="color: #64748b">Время ожидания, в течение которого все входящие сообщения в чате будут обрабатываться как один запрос. <br> Рекомендуем установить 10-15 сек.</span>
+                  <label for="name1" style="font-weight: 700">{{ $t('responseTimeout') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1"/>
+                  <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
                 </div>
                 <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">Приостанавливать на (минут)</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" />
-                  <span style="color: #64748b">Время на которое бот приостановится в чате, если в чат напишет оператор. <br> Не работает если оператор пишет из amoCRM и Битрикс24.</span>
+                  <label for="name1" style="font-weight: 700">{{ $t('pauseMinutes') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <span style="color: #64748b">{{ $t('pauseOperator') }}</span>
                 </div>
+
+                <div class="field" style="margin-top: 12px">
+                  <label for="name1" style="font-weight: 700">{{ $t('limitingAIbot') }}</label>
+                  <div class="flex align-items-center gap-2">
+                    <span>{{ $t('maxMessages') }}</span>
+                    <InputText id="name1" type="number" min="1" style="max-width: 150px" />
+                    <span>{{ $t('onceWhile') }}</span>
+                    <InputText id="name1" type="number" min="1" style="max-width: 150px" />
+                    <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="limitDay" :options="limitDays" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                  </div>
+<!--                                    <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />-->
+                  <!--                  <span style="color: #64748b">{{ $t('requestCost') }}</span>-->
+                </div>
+
+                <div class="field" style="margin-top: 12px">
+                  <label for="name1" style="font-weight: 700">{{ $t('contextMessageHistory') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <span style="color: #64748b">{{ $t('requestCost') }}</span>
+                </div>
+
+                <div class="field" style="margin-top: 12px">
+                  <label for="name1" style="font-weight: 700">{{ $t('stopBot') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="text" />
+                </div>
+
+                <div class="field" style="margin-top: 12px">
+                  <label for="name1" style="font-weight: 700">{{ $t('resumeBot') }}</label>
+                  <InputText style="margin-bottom: 8px" id="name1" type="text" />
+                </div>
+
+                <div class="field" style="margin-top: 12px">
+                  <label for="name1" style="font-weight: 700">{{ $t('workingHours') }}</label>
+                  <span class="bot-card__activate" style="margin-top: 8px">
+                    {{ $t('works247') }}
+                    <InputSwitch v-model="fullTimeWork" style="margin-left: 8px"/>
+                  </span>
+                  <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="workingZone" :options="workingZones" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                  <div v-if="fullTimeWork" class="flex flex-column gap-2 mt-3">
+                    <div class="flex align-items-center gap-2">
+                      <span>ПН:</span>
+                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly />
+                      <span>-</span>
+                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly />
+                      <span class="bot-card__activate" >
+                        Работает
+                        <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>
+                      </span>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                      <span>ВТ:</span>
+                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly />
+                      <span>-</span>
+                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly />
+                      <span class="bot-card__activate" >
+                        Работает
+                        <InputSwitch v-model="tuesdayActive" style="margin-left: 8px"/>
+                      </span>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                      <span>СР:</span>
+                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly />
+                      <span>-</span>
+                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly />
+                      <span class="bot-card__activate" >
+                        Работает
+                        <InputSwitch v-model="wednesdayActive" style="margin-left: 8px"/>
+                      </span>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                      <span>ЧТ:</span>
+                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly />
+                      <span>-</span>
+                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly />
+                      <span class="bot-card__activate" >
+                        Работает
+                        <InputSwitch v-model="thursdayActive" style="margin-left: 8px"/>
+                      </span>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                      <span>ПТ:</span>
+                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly />
+                      <span>-</span>
+                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly />
+                      <span class="bot-card__activate" >
+                        Работает
+                        <InputSwitch v-model="fridayActive" style="margin-left: 8px"/>
+                      </span>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                      <span>СБ:</span>
+                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly />
+                      <span>-</span>
+                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly />
+                      <span class="bot-card__activate" >
+                        Работает
+                        <InputSwitch v-model="saturdayActive" style="margin-left: 8px"/>
+                      </span>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                      <span>ВС:</span>
+                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly />
+                      <span>-</span>
+                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly />
+                      <span class="bot-card__activate" >
+                        Работает
+                        <InputSwitch v-model="sundayActive" style="margin-left: 8px"/>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </TabPanel>
-            <TabPanel header="База Знаний">
+            <TabPanel :header="t('knowledgeBase')">
               <div class="flex gap-2 mt-5">
-                <Button label="Создать" @click="createKnowledgeBase(parseInt(<string>route.params.id))"/>
-                <Button label="Загрузить"/>
-                <Button label="Удалить"/>
+                <Button :label="t('createFile')" @click="createKnowledgeBase(parseInt(<string>route.params.id))"/>
+                <Button :label="t('uploadFail')"/>
+                <Button :label="t('delete')"/>
               </div>
               <div>
                 <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="knowledgeBaseList" selectionMode="checkbox" class="w-full">
-                  <Column field="label" header="Название" :expander="true"></Column>
+                  <Column field="label" :header="t('title')" :expander="true"></Column>
                   <Column field="actions">
                     <template #body>
                       <div class="flex flex-row-reverse gap-3 ml-auto">
@@ -232,7 +399,7 @@ const knowledgeBaseSelectedKey = ref(null);
                 </TreeTable>
               </div>
             </TabPanel>
-            <TabPanel header="Каналы">
+            <TabPanel :header="t('channels')">
               <div class="chanel-list">
                 <span class="chanel-list__item">
                   Instagram
@@ -260,25 +427,25 @@ const knowledgeBaseSelectedKey = ref(null);
                 </span>
               </div>
             </TabPanel>
-            <TabPanel header="Уведомления">
+            <TabPanel :header="t('notifications')">
               <div class="notification-wrapper">
                 <div class="notification-card">
                   <div class="flex flex-column gap-2">
-                    <h5>Telegram</h5>
-                    <span style="color: #0f172a;">Подписавшись на бота по ссылке чтобы получать уведомления в Telegram о событиях из Базы Знаний, в которых включена функция "Уведомление" <a target="_blank" href="https://web.telegram.org/" style="color: #076AE1;">(Ссылка)</a></span>
+                    <h5>{{ $t('telegram') }}</h5>
+                    <span style="color: #0f172a;">{{ $t('subscribeBotLink') }}<a target="_blank" href="https://web.telegram.org/" style="color: #076AE1;">({{ $t('link') }})</a></span>
                   </div>
                 </div>
                 <div class="notification-card">
                   <div class="flex flex-column gap-2">
-                    <h5>E-mail</h5>
-                    <span style="color: #0f172a;">Напишите адрес почты, на которую будут приходить уведомления от 7s</span>
-                    <InputText class="mt-3" style="max-width: 500px" placeholder="Email" id="email" type="text" />
+                    <h5>{{ $t('email') }}</h5>
+                    <span style="color: #0f172a;">{{ $t('enterEmailForNotifications') }}</span>
+                    <InputText class="mt-3" style="max-width: 500px" :placeholder="t('email')" id="email" type="text" />
                   </div>
                 </div>
                 <div class="notification-card">
                   <div class="flex flex-column gap-2">
-                    <h5>Webhook</h5>
-                    <span style="color: #0f172a;">Вы можете оповещать сторонние приложения о событиях, произошедших в 7s, с помощью уведомлений. Для этого укажите URL, на который Вам будет отправлен WebHook.</span>
+                    <h5>{{ $t('webhooks') }}</h5>
+                    <span style="color: #0f172a;">{{ $t('webhookUrl') }}</span>
                     <InputText class="mt-3" style="max-width: 500px" placeholder="Url" id="site" type="text" />
                   </div>
                 </div>

@@ -180,5 +180,17 @@
 "paymentAmount": "Zahlungsbetrag",
 "lastPaymentDate": "Datum der letzten Zahlung",
 "registerButton": "Registrarse",
-"logInToContinue": "Melden Sie sich an, um fortzufahren"
+"logInToContinue": "Melden Sie sich an, um fortzufahren",
+"instructions": "Anweisungen",
+"link": "Link",
+"delete": "Löschen",
+"title": "Name",
+  "temperature": "Temperatur",
+  "creativityLevel": "Eine Zahl von 0 bis 2. Je höher der Wert, desto kreativer sind die Antworten des neuronalen Netzwerks (wir empfehlen 0,3–0,7).",
+  "maxTokens": "Maximale Anzahl von Token als Antwort",
+  "requestCost": "Je mehr Token, desto höher sind die „Kosten“ der Anfrage",
+  "limitingAIbot": "Begrenzung der KI-Bot-Auslösung pro Kontakt",
+  "onceWhile": "abundzu",
+  "messageHistory": "Nachrichtenverlauf (Kontext)",
+  "contextMessageHistory": "Wie viele Nachrichten an den Dialogkontext gesendet werden sollen. Je größer diese Zahl ist, desto höher ist der Token-Verbrauch (standardmäßig sind es 10 Nachrichten). Maximal - 50."
 }

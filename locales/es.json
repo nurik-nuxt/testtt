@@ -180,5 +180,17 @@
 "paymentAmount": "Monto de los pagos",
 "lastPaymentDate": "Fecha del último pago",
 "registerButton": "Registrarse",
-"logInToContinue": "Inicia sesión para continuar"
+"logInToContinue": "Inicia sesión para continuar",
+"instructions": "Instrucciones",
+"link": "Enlace",
+"delete": "Borrar",
+"title": "Nombre",
+  "temperature": "Temperatura",
+  "creativityLevel": "Un número del 0 al 2. Cuanto mayor sea el valor, más creativas serán las respuestas de la red neuronal (recomendamos 0,3-0,7)",
+  "maxTokens": "Número máximo de tokens en respuesta",
+  "requestCost": "Cuantos más tokens, mayor será el 'coste' de la solicitud",
+  "limitingAIbot": "Limitar la activación del bot de IA por contacto",
+  "onceWhile": "de vez en cuando",
+  "messageHistory": "Historial de mensajes (contexto)",
+  "contextMessageHistory": "Cuántos mensajes enviar al contexto del diálogo. Cuanto mayor sea este número, mayor será el consumo de tokens (por defecto son 10 mensajes). Máximo - 50."
 }

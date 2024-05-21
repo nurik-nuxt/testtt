@@ -21,12 +21,12 @@ const menu = computed(() => {
     },
     {
       label: t('message'),
-      icon: 'pi pi-fw pi-envelope',
+      icon: 'pi pi-fw pi-comment',
       url: 'dialogues'
     },
     {
       label: t('callAnalytics'),
-      icon: 'pi pi-fw pi-sort-amount-up-alt',
+      icon: 'pi pi-fw pi-chart-pie',
       url: 'analytics'
     },
     {

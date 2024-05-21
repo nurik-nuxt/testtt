@@ -30,7 +30,7 @@ const editBot = () => {
       </div>
       <div class="bot-card__options">
         <div class="bot-card__edit">
-          <span class="bot-card__check flex item-center">{{ $t('settings') }}<span class="bot-card__edit-icon"><i @click="editBot" class="pi pi-cog" style="cursor: pointer" /></span></span>
+          <button @click="editBot" class="bot-card__check flex item-center">{{ $t('settings') }}<span class="bot-card__edit-icon"><i class="pi pi-cog" style="cursor: pointer" /></span></button>
         </div>
         <span class="bot-card__activate">
             {{ $t('onOffButton') }}
