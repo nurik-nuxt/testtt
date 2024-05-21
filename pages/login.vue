@@ -1,17 +1,19 @@
 <script setup>
-import { useLayout, useApi } from '~/composable';
-import { required, helpers, minLength, email } from '@vuelidate/validators';
+import { useLayout } from '~/composable';
+import { useAuthStore } from "~/src/shared/store/auth";
+import { helpers, minLength, required, email } from "@vuelidate/validators";
 import useValidate from "@vuelidate/core";
 import { useToast } from "primevue/usetoast";
 
-
 const toast = useToast();
+
 const { showLanguageDialog } = useLayout();
+const authStore = useAuthStore();
+const password = ref('');
+const checked = ref(false);
 
 const form = reactive({
   email: '',
-  name: '',
-  phone: '',
   password: null
 
 });
@@ -21,17 +23,6 @@ const formRules = computed(() => {
     email: {
       required: helpers.withMessage('Обязательно для заполнения',required),
       email
-    },
-    name: {
-      required: helpers.withMessage('Обязательно для заполнения', required),
-      minLength: helpers.withMessage('Введите корректный имя', minLength(3))
-    },
-    phone: {
-      required: helpers.withMessage('Обязательно для заполнения', required),
-      minLength: helpers.withMessage(
-          'Введите корректный телефон',
-          minLength(18),
-      ),
     },
     password: {
       required: helpers.withMessage('Обязательно для заполнения', required),
@@ -45,28 +36,24 @@ const formRules = computed(() => {
 
 const v$ = useValidate(formRules, form);
 
-
-
-const signIn = async () => {
+const login = async () => {
   const isFormCorrect = await v$.value.$validate();
+
   if (isFormCorrect) {
     try {
-      const response = await useApi('/auth/register', {
-        method: 'POST',
-        body: form
-      })
-      if (response.success && response.id) {
-        return navigateTo({ name: 'login' })
+      const response = await authStore.login(form);
+      console.log(response);
+      if (response?.access_token) {
+        return navigateTo({ name: 'index' })
       }
       if (response?.error) {
+        console.log('error');
         toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.error, life: 5000 })
       }
     } catch (e) {
-      console.log(e);
+      console.log(e)
     }
   }
-  console.log(isFormCorrect);
-  console.log(form);
 }
 definePageMeta({
   layout: 'auth'
@@ -89,26 +76,14 @@ const { t } = useI18n();
           <div class="text-center mb-5">
             <img src="/demo/images/login/logo.png" alt="Image" height="50" class="mb-3" />
             <div class="text-900 text-3xl font-medium mb-3">{{ $t('welcomeText') }}</div>
-            <span class="text-600 font-medium">{{ $t('createAccount') }}</span>
+            <span class="text-600 font-medium">{{ $t('logInToContinue') }}</span>
           </div>
 
           <div>
             <div class="mb-5">
-              <label for="name" class="block text-900 text-xl font-medium mb-2">{{ $t('name') }}</label>
-              <InputText id="name" type="text" :placeholder="t('name')" class="w-full md:w-30rem mb-1" style="padding: 1rem" v-model="form.name" :invalid="v$.$errors.find((el) => el.$property === 'name')?.$message" />
-              <span class="mt-1" style="color: #f87171;">{{ v$.$errors.find((el) => el.$property === 'name')?.$message }}</span>
-            </div>
-
-            <div class="mb-5">
               <label for="email1" class="block text-900 text-xl font-medium mb-2">{{ $t('email') }}</label>
               <InputText id="email1" type="text" :placeholder="t('emailAddress')" class="w-full md:w-30rem mb-1" style="padding: 1rem" v-model="form.email" :invalid="v$.$errors.find((el) => el.$property === 'email')?.$message" />
               <span class="mt-1" style="color: #f87171;">{{ v$.$errors.find((el) => el.$property === 'email')?.$message }}</span>
-            </div>
-
-            <div class="mb-5">
-              <label for="email1" class="block text-900 text-xl font-medium mb-2">{{ $t('phone') }}</label>
-              <InputMask mask="+9 (999) 999-99-99" id="email1" type="tel" :placeholder="t('phone')" class="w-full md:w-30rem mb-1" style="padding: 1rem" v-model="form.phone" :invalid="v$.$errors.find((el) => el.$property === 'phone')?.$message" />
-              <span class="mt-1" style="color: #f87171;">{{ v$.$errors.find((el) => el.$property === 'phone')?.$message }}</span>
             </div>
 
             <div class="mb-3">
@@ -118,18 +93,15 @@ const { t } = useI18n();
             </div>
 
             <div class="flex align-items-center justify-content-between mb-5 gap-5">
-              <div class="flex align-items-center justify-content-center text-center">
-                  <nuxt-link to="/login" class="text-center" style="color: #076AE1; font-weight: 700">{{ $t('login') }}</nuxt-link>
+              <div class="flex align-items-center">
+                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
+                <label for="rememberme1">{{ $t('rememberMe') }}</label>
               </div>
+              <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">{{ $t('forgotPassword') }}?</a>
             </div>
-            <Button :label="t('registerButton')" class="w-full p-3 text-xl mb-3" @click="signIn"></Button>
-            <div>
-              <span class="text-600 text-center font-medium">
-                {{ $t('loginDescription') }}
-                <a href="https://7sales.ai/info" target="_blank">{{ $t('termsOfService') }}</a>
-                {{ $t('and') }}
-                <a href="https://7sales.ai/privacypolicy" target="_blank">{{ $t('privacyPolicy') }}</a>
-                </span>
+            <Button :label="t('login')" class="w-full p-3 text-xl mb-3" @click="login"></Button>
+            <div class="flex justify-content-center">
+              <nuxt-link to="/registration" style="color: #076AE1; font-weight: 700">{{ $t('registerButton') }}</nuxt-link>
             </div>
           </div>
         </div>

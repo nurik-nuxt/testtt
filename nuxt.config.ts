@@ -23,7 +23,7 @@ export default defineNuxtConfig({
             },
         },
     },
-    modules: ['nuxt-primevue', '@nuxtjs/i18n'],
+    modules: ['nuxt-primevue', '@nuxtjs/i18n', '@pinia/nuxt'],
     i18n: {
         strategy: 'no_prefix',
         defaultLocale: 'ru',
@@ -63,4 +63,9 @@ export default defineNuxtConfig({
             scrollToTop: true,
         },
     },
+    runtimeConfig: {
+        public: {
+            apiBaseUrl: process.env.BASE_URL
+        }
+    }
 })
