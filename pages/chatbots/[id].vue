@@ -218,9 +218,12 @@ const temperatureValue = ref(0.3);
 
 <template>
   <div class="grid">
-    <div class="col-12">
-      <div class="card h-full">
-        <h5>{{ $t('edit') }} "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
+    <div class="flex gap-2 w-full gap-4">
+      <div class="card h-full flex flex-column w-full">
+        <div class="flex justify-content-between">
+          <h5>{{ $t('edit') }} "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
+          <Button :label="t('save')"></Button>
+        </div>
         <div>
           <TabView>
             <TabPanel :header="t('general')">
@@ -324,7 +327,6 @@ const temperatureValue = ref(0.3);
                   <label for="name1" style="font-weight: 700">{{ $t('workingHours') }}</label>
                   <span class="bot-card__activate" style="margin-top: 8px">
                     {{ $t('works247') }}
-<!--                    <InputSwitch v-model="fullTimeWork" style="margin-left: 8px"/>-->
                   </span>
                   <span class="bot-card__activate">
                     {{ $t('setWorkingHours') }}
@@ -482,6 +484,23 @@ const temperatureValue = ref(0.3);
             </TabPanel>
           </TabView>
         </div>
+        <div class="mt-auto ml-auto flex gap-4 align-items-center">
+          <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
+          <Button :label="t('save')"></Button>
+        </div>
+      </div>
+      <div class="layout-chat">
+        <div class="card-chat h-full">
+          <div class="flex justify-content-between align-items-center">
+            <div style="font-weight: 700">{{ $t('chatWithBot') }} <br>"{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</div>
+            <i style="cursor: pointer; font-size: 18px" class="pi pi-trash" />
+          </div>
+          <div class="h-full mb-2 mt-2 rounded-xl" style="background: #F9FAFC" />
+          <div class="mt-auto flex justify-content-between align-items-center gap-3">
+            <InputText type="text" id="message" class="w-full" />
+            <i style="cursor: pointer; font-size: 18px" class="pi pi-send" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -499,5 +518,12 @@ const temperatureValue = ref(0.3);
   .bot-list {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
+}
+.layout-chat {
+  width: 300px;
+  min-width: 300px;
+  height: calc(100vh - 9rem);
+  //z-index: 999;
+  overflow-y: auto;
 }
 </style>

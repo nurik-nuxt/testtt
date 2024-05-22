@@ -200,5 +200,7 @@
   "sendButtonPassword": "Send",
   "confirmEmail": "Confirm your Email",
   "error": "Error",
-  "youBotConsultant": "You are a bot consultant for BIODIVAN, a company that produces and sells furniture, including sofas, beds, tables and chairs. Your task is to communicate with clients, advise them, answer questions and request a phone number to contact them on WhatsApp."
+  "youBotConsultant": "You are a bot consultant for BIODIVAN, a company that produces and sells furniture, including sofas, beds, tables and chairs. Your task is to communicate with clients, advise them, answer questions and request a phone number to contact them on WhatsApp.",
+  "chatWithBot": "Chat with bot",
+  "goBack": "Back"
 }

@@ -17,6 +17,20 @@
         margin-bottom: 0;
     }
 }
+.card-chat {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-card);
+    border: 1px solid var(--surface-border);
+    padding: 12px 8px;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    border-radius: $borderRadius;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
 .card-form {
     background: var(--surface-card);
     margin-bottom: 2rem;
