@@ -433,18 +433,6 @@ const temperatureValue = ref(0.3);
             <TabPanel :header="t('channels')">
               <div class="chanel-list">
                 <span class="chanel-list__item">
-                  Instagram
-                  <i style="cursor: pointer" class="pi pi-cog" />
-                </span>
-                <span class="chanel-list__item">
-                  Whatsapp
-                  <i style="cursor: pointer" class="pi pi-cog" />
-                </span>
-                <span class="chanel-list__item">
-                  Telegram
-                  <i style="cursor: pointer" class="pi pi-cog" />
-                </span>
-                <span class="chanel-list__item">
                   amoCRM
                   <i style="cursor: pointer" class="pi pi-cog" />
                 </span>
@@ -453,7 +441,19 @@ const temperatureValue = ref(0.3);
                   <i style="cursor: pointer" class="pi pi-cog" />
                 </span>
                 <span class="chanel-list__item">
-                  Jivo
+                  Telegram
+                  <i style="cursor: pointer" class="pi pi-cog" />
+                </span>
+                <span class="chanel-list__item">
+                  Whatsapp
+                  <i style="cursor: pointer" class="pi pi-cog" />
+                </span>
+                <span class="chanel-list__item">
+                  Avito
+                  <i style="cursor: pointer" class="pi pi-cog" />
+                </span>
+                <span class="chanel-list__item">
+                  {{ $t('onlineChat') }}
                   <i style="cursor: pointer" class="pi pi-cog" />
                 </span>
               </div>
@@ -489,16 +489,18 @@ const temperatureValue = ref(0.3);
           <Button :label="t('save')"></Button>
         </div>
       </div>
-      <div class="layout-chat">
-        <div class="card-chat h-full">
-          <div class="flex justify-content-between align-items-center">
-            <div style="font-weight: 700">{{ $t('chatWithBot') }} <br>"{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</div>
-            <i style="cursor: pointer; font-size: 18px" class="pi pi-trash" />
-          </div>
-          <div class="h-full mb-2 mt-2 rounded-xl" style="background: #F9FAFC" />
-          <div class="mt-auto flex justify-content-between align-items-center gap-3">
-            <InputText type="text" id="message" class="w-full" />
-            <i style="cursor: pointer; font-size: 18px" class="pi pi-send" />
+      <div style="min-width: 300px;">
+        <div class="layout-chat">
+          <div class="card-chat h-full">
+            <div class="flex justify-content-between align-items-center">
+              <div>{{ $t('chatWithBot') }} <br>"{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</div>
+              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-trash" />
+            </div>
+            <div class="h-full mb-2 mt-2 rounded-xl" style="background: #F9FAFC" />
+            <div class="mt-auto flex justify-content-between align-items-center gap-3">
+              <Textarea type="text" id="message" class="w-full" :autoResize="true" rows="1" cols="2" />
+              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" />
+            </div>
           </div>
         </div>
       </div>
@@ -523,7 +525,8 @@ const temperatureValue = ref(0.3);
   width: 300px;
   min-width: 300px;
   height: calc(100vh - 9rem);
-  //z-index: 999;
   overflow-y: auto;
+  position: fixed;
+  right: 2rem;
 }
 </style>
