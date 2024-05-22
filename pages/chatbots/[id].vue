@@ -196,6 +196,24 @@ const thursdayActive = ref(true);
 const fridayActive = ref(true);
 const saturdayActive = ref(true);
 const sundayActive = ref(true);
+
+const mondayTimeStart = ref(null);
+const tuesdayTimeStart = ref(null);
+const wednesdayTimeStart = ref(null);
+const thursdayTimeStart = ref(null);
+const fridayTimeStart = ref(null);
+const saturdayTimeStart = ref(null);
+const sundayTimeStart = ref(null);
+
+const mondayTimeEnd = ref(null);
+const tuesdayTimeEnd = ref(null);
+const wednesdayTimeEnd = ref(null);
+const thursdayTimeEnd = ref(null);
+const fridayTimeEnd = ref(null);
+const saturdayTimeEnd = ref(null);
+const sundayTimeEnd = ref(null);
+const temperatureValue = ref(0.3);
+
 </script>
 
 <template>
@@ -212,8 +230,14 @@ const sundayActive = ref(true);
                   <InputText id="name1" type="text" />
                 </div>
                 <div class="field">
-                  <label style="font-weight: 700">{{ $t('instructions') }}</label>
-                  <Textarea :placeholder="t('botInstructionPrompt')" :autoResize="true" rows="3" cols="2" />
+                  <div class="flex justify-content-between align-items-end">
+                    <div class="flex flex-column">
+                      <label style="font-weight: 700">{{ $t('botInstructionPrompt') }}</label>
+                      <span class="mb-2 mt-2">{{ $t('promptUsageTip') }}</span>
+                    </div>
+                    <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
+                  </div>
+                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="true" rows="3" cols="2" />
                 </div>
               </div>
               <span class="bot-card__activate">
@@ -222,7 +246,7 @@ const sundayActive = ref(true);
               </span>
               <div v-if="switchValue" class="card-form p-fluid">
                 <div class="field" style="margin-top: 12px">
-                  <Textarea :placeholder="t('enterMessage')" :autoResize="true" rows="3" cols="30" />
+                  <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" />
                 </div>
               </div>
               <span class="bot-card__activate" style="margin-top: 8px">
@@ -239,8 +263,9 @@ const sundayActive = ref(true);
 
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('temperature') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
-                  <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
+                  <InputText style="margin-bottom: 8px" id="temperatureValue" type="number" min="1" v-model.number="temperatureValue" :disabled="true" />
+                  <Slider style="margin-bottom: 8px" v-model="temperatureValue" :min="0" :max="2" :step="0.1"/>
+                  <span style="color: #64748b">{{ $t('creativityLevel') }}</span>
                 </div>
 
                 <div class="field" style="margin-top: 12px">
@@ -253,12 +278,12 @@ const sundayActive = ref(true);
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('messageMergeTimeout') }}</label>
                   <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
-                  <span style="color: #64748b">{{ $t('creativityLevel') }}</span>
+                  <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
                 </div>
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('responseTimeout') }}</label>
                   <InputText style="margin-bottom: 8px" id="name1" type="number" min="1"/>
-                  <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
+                  <span style="color: #64748b">{{ $t('conversationHistoryTimeout') }}</span>
                 </div>
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('pauseMinutes') }}</label>
@@ -275,16 +300,16 @@ const sundayActive = ref(true);
                     <InputText id="name1" type="number" min="1" style="max-width: 150px" />
                     <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="limitDay" :options="limitDays" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
                   </div>
-<!--                                    <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />-->
-                  <!--                  <span style="color: #64748b">{{ $t('requestCost') }}</span>-->
                 </div>
 
                 <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('contextMessageHistory') }}</label>
+                  <label for="name1" style="font-weight: 700">{{ $t('maxTokens') }}</label>
                   <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
                   <span style="color: #64748b">{{ $t('requestCost') }}</span>
                 </div>
 
+                <h5>{{ $t('manageBotMessages') }}</h5>
+                <span>{{ $t('operatorControlPhrases') }}</span>
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('stopBot') }}</label>
                   <InputText style="margin-bottom: 8px" id="name1" type="text" />
@@ -299,75 +324,79 @@ const sundayActive = ref(true);
                   <label for="name1" style="font-weight: 700">{{ $t('workingHours') }}</label>
                   <span class="bot-card__activate" style="margin-top: 8px">
                     {{ $t('works247') }}
+<!--                    <InputSwitch v-model="fullTimeWork" style="margin-left: 8px"/>-->
+                  </span>
+                  <span class="bot-card__activate">
+                    {{ $t('setWorkingHours') }}
                     <InputSwitch v-model="fullTimeWork" style="margin-left: 8px"/>
                   </span>
                   <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="workingZone" :options="workingZones" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
                   <div v-if="fullTimeWork" class="flex flex-column gap-2 mt-3">
                     <div class="flex align-items-center gap-2">
-                      <span>ПН:</span>
-                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly />
+                      <span style="width: 25px">ПН:</span>
+                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly v-model="mondayTimeStart" />
                       <span>-</span>
-                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly />
+                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly v-model="mondayTimeEnd" />
                       <span class="bot-card__activate" >
                         Работает
                         <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>
                       </span>
                     </div>
                     <div class="flex align-items-center gap-2">
-                      <span>ВТ:</span>
-                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly />
+                      <span style="width: 25px">ВТ:</span>
+                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly v-model="tuesdayTimeStart" />
                       <span>-</span>
-                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly />
+                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly v-model="tuesdayTimeEnd" />
                       <span class="bot-card__activate" >
                         Работает
                         <InputSwitch v-model="tuesdayActive" style="margin-left: 8px"/>
                       </span>
                     </div>
                     <div class="flex align-items-center gap-2">
-                      <span>СР:</span>
-                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly />
+                      <span style="width: 25px">СР:</span>
+                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly v-model="wednesdayTimeStart"/>
                       <span>-</span>
-                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly />
+                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly v-model="wednesdayTimeEnd" />
                       <span class="bot-card__activate" >
                         Работает
                         <InputSwitch v-model="wednesdayActive" style="margin-left: 8px"/>
                       </span>
                     </div>
                     <div class="flex align-items-center gap-2">
-                      <span>ЧТ:</span>
-                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly />
+                      <span style="width: 25px">ЧТ:</span>
+                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly v-model="thursdayTimeStart" />
                       <span>-</span>
-                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly />
+                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly v-model="thursdayTimeEnd" />
                       <span class="bot-card__activate" >
                         Работает
                         <InputSwitch v-model="thursdayActive" style="margin-left: 8px"/>
                       </span>
                     </div>
                     <div class="flex align-items-center gap-2">
-                      <span>ПТ:</span>
-                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly />
+                      <span style="width: 25px">ПТ:</span>
+                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly v-model="fridayTimeStart" />
                       <span>-</span>
-                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly />
+                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly v-model="fridayTimeEnd" />
                       <span class="bot-card__activate" >
                         Работает
                         <InputSwitch v-model="fridayActive" style="margin-left: 8px"/>
                       </span>
                     </div>
                     <div class="flex align-items-center gap-2">
-                      <span>СБ:</span>
-                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly />
+                      <span style="width: 25px">СБ:</span>
+                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly v-model="saturdayTimeStart" />
                       <span>-</span>
-                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly />
+                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly v-model="saturdayTimeEnd" />
                       <span class="bot-card__activate" >
                         Работает
                         <InputSwitch v-model="saturdayActive" style="margin-left: 8px"/>
                       </span>
                     </div>
                     <div class="flex align-items-center gap-2">
-                      <span>ВС:</span>
-                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly />
+                      <span style="width: 25px">ВС:</span>
+                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly v-model="sundayTimeStart" />
                       <span>-</span>
-                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly />
+                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly v-model="sundayTimeEnd" />
                       <span class="bot-card__activate" >
                         Работает
                         <InputSwitch v-model="sundayActive" style="margin-left: 8px"/>

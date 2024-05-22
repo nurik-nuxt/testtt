@@ -188,7 +188,7 @@
   "creativityLevel": "A number from 0 to 2. The higher the value, the more creative the neural network’s responses will be (we recommend 0.3-0.7)",
   "maxTokens": "Maximum number of tokens in response",
   "requestCost": "The more tokens, the greater the 'cost' of the request",
-  "limitingAIbot": "Limiting the AI ​​bot triggering per contact",
+  "limitingAIbot": "Outgoing message limit per dialogue over a period",
   "onceWhile": "once in a while",
   "messageHistory": "Message history (context)",
   "contextMessageHistory": "How many messages to send to the dialogue context. The larger this number, the greater the consumption of tokens (by default it is 10 messages). Maximum - 50.",
@@ -199,5 +199,6 @@
   "correctEmail": "Value is not a valid email address",
   "sendButtonPassword": "Send",
   "confirmEmail": "Confirm your Email",
-  "error": "Error"
+  "error": "Error",
+  "youBotConsultant": "You are a bot consultant for BIODIVAN, a company that produces and sells furniture, including sofas, beds, tables and chairs. Your task is to communicate with clients, advise them, answer questions and request a phone number to contact them on WhatsApp."
 }

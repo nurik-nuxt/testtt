@@ -200,5 +200,6 @@
   "correctEmail": "Der Wert ist keine gültige E-Mail-Adresse",
   "sendButtonPassword": "Schicken",
   "confirmEmail": "Bestätige deine E-Mail",
-  "error": "Fehler"
+  "error": "Fehler",
+  "youBotConsultant": "Sie sind Bot-Berater für BIODIVAN, ein Unternehmen, das Möbel produziert und verkauft, darunter Sofas, Betten, Tische und Stühle. Ihre Aufgabe besteht darin, mit Kunden zu kommunizieren, sie zu beraten, Fragen zu beantworten und eine Telefonnummer anzufordern, um sie über WhatsApp zu kontaktieren."
 }
