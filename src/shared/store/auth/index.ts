@@ -1,5 +1,5 @@
-import { defineStore } from "pinia";
-import { useApi } from "~/composable";
+import {defineStore} from "pinia";
+import {useApi} from "~/composable";
 import jsCookie from 'js-cookie';
 
 interface User {
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         async login(form: { email: string, password: string }) {
             try {
-                const response = await useApi<AuthItem>('/auth/login', {
+                const response = await useApi('/auth/login', {
                     method: 'POST',
                     body: JSON.stringify(form),
                     headers: {
@@ -46,6 +46,17 @@ export const useAuthStore = defineStore('auth', {
                 return response;
             } catch (e) {
                 console.error(e);
+            }
+        },
+
+        async logout(refresh_token: string) {
+            try {
+                return await useApi('/auth/logout', {
+                    method: 'POST',
+                    body: {refresh_token}
+                })
+            } catch (e) {
+                console.log(e)
             }
         }
     }

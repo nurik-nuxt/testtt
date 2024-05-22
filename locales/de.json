@@ -192,5 +192,13 @@
   "limitingAIbot": "Begrenzung der KI-Bot-Auslösung pro Kontakt",
   "onceWhile": "abundzu",
   "messageHistory": "Nachrichtenverlauf (Kontext)",
-  "contextMessageHistory": "Wie viele Nachrichten an den Dialogkontext gesendet werden sollen. Je größer diese Zahl ist, desto höher ist der Token-Verbrauch (standardmäßig sind es 10 Nachrichten). Maximal - 50."
+  "contextMessageHistory": "Wie viele Nachrichten an den Dialogkontext gesendet werden sollen. Je größer diese Zahl ist, desto höher ist der Token-Verbrauch (standardmäßig sind es 10 Nachrichten). Maximal - 50.",
+  "required": "Erforderlich",
+  "passwordMinLength": "Das Passwort muss mindestens 6 Zeichen enthalten",
+  "requiredName": "Geben Sie einen gültigen Namen ein",
+  "enterPhoneNumberCorrectly": "Geben Sie Ihre Telefonnummer korrekt ein",
+  "correctEmail": "Der Wert ist keine gültige E-Mail-Adresse",
+  "sendButtonPassword": "Schicken",
+  "confirmEmail": "Bestätige deine E-Mail",
+  "error": "Fehler"
 }

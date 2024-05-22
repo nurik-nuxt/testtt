@@ -192,5 +192,13 @@
   "limitingAIbot": "Limiter le déclenchement du bot IA par contact",
   "onceWhile": "de temps à autre",
   "messageHistory": "Historique des messages (contexte)",
-  "contextMessageHistory": "Combien de messages envoyer au contexte de dialogue. Plus ce nombre est grand, plus la consommation de tokens est importante (par défaut elle est de 10 messages). Maximum - 50."
+  "contextMessageHistory": "Combien de messages envoyer au contexte de dialogue. Plus ce nombre est grand, plus la consommation de tokens est importante (par défaut elle est de 10 messages). Maximum - 50.",
+  "required": "Requis",
+  "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères",
+  "requiredName": "Entrez un nom valide",
+  "enterPhoneNumberCorrectly": "Entrez correctement votre numéro de téléphone",
+  "correctEmail": "La valeur n'est pas une adresse e-mail valide",
+  "sendButtonPassword": "Envoyer",
+  "confirmEmail": "Confirme ton email",
+  "error": "Erreur"
 }

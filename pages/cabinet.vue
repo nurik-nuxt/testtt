@@ -1,58 +1,81 @@
-<script setup>
-import { useLayout } from '~/composable';
+<script setup lang="ts">
+import jsCookie from 'js-cookie'
+import { useAuthStore } from "~/src/shared/store/auth";
+const authStore = useAuthStore();
 
-const { layoutConfig, showLanguageDialog } = useLayout();
-const email = ref('');
-const password = ref('');
-const checked = ref(false);
-
-const logoUrl = computed(() => {
-  return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
+const { t } = useI18n();
+const user = computed(() => {
+  const userCookie = jsCookie.get('user')
+  return userCookie ? JSON.parse(userCookie) : null
 });
 
-const login = () => {
-  return navigateTo({ name: 'index' })
-}
-definePageMeta({
-  layout: 'auth'
+const firstLetterOfName = computed(() => {
+  const userCookie = jsCookie.get('user')
+  const user = userCookie ? JSON.parse(userCookie) : null
+  return user && user.name ? user.name.charAt(0) : ''
 })
-const { t } = useI18n();
 
+const oldPassword = ref('')
+const newPassword = ref('')
+const refreshToken = computed(() => {
+  return jsCookie.get('refreshToken')
+})
+const logout = async () => {
+  try {
+    const response = await authStore.logout(<string>refreshToken?.value)
+    console.log(response);
+    if (response?.success) {
+      jsCookie.remove('accessToken');
+      jsCookie.remove('refreshToken');
+      jsCookie.remove('user');
+      return navigateTo({ name: 'login' })
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
 </script>
 
 <template>
-  <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
-    <div class="flex flex-column align-items-center justify-content-center" style="max-width: 450px;">
-      <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-        <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
-          <div class="flex flex-row-reverse">
-            <button class="p-link layout-topbar-button" @click="showLanguageDialog(true)">
-              <i style="color: #076AE1; font-size: 1.5rem" class="pi pi-globe"></i>
-            </button>
+  <div class="grid">
+    <div class="col-12">
+      <div class="card h-full">
+        <div class="avatar-wrapper">
+          <Avatar :label="firstLetterOfName" class="mr-2" size="xlarge" shape="circle" />
+          <div class="profile">
+            <span style="font-weight: 700; font-size: 18px">{{ user?.name }}</span>
+            <span>{{ $t('administrator') }}</span>
+            <Button :label="t('logOut')" class="p-0 text-left"  style="margin-top: auto; color: #076AE1" link @click="logout" />
           </div>
-          <div class="text-center mb-5">
-            <img src="/demo/images/login/logo.png" alt="Image" height="50" class="mb-3" />
-            <div class="text-900 text-3xl font-medium mb-3">{{ $t('welcomeText') }}</div>
-            <span class="text-600 font-medium">{{ $t('logInToContinue') }}</span>
+        </div>
+        <div class="profile-settings">
+          <div>
+            <h5 style="font-weight: 700; font-size: 18px">{{ $t('profileInformation') }}</h5>
+            <div class="flex flex-column" style="margin-top: 12px">
+              <label for="name-user">{{ $t('name') }}</label>
+              <InputText style="margin-top: 8px; max-width: 450px" c id="name-user" type="text" :value="user?.name" :disabled="true" />
+            </div>
+
+            <div class="flex flex-column" style="margin-top: 20px">
+              <label for="name-phone">{{ $t('phone') }}</label>
+              <InputText style="margin-top: 8px; max-width: 450px" c id="name-phone" type="text" :value="user?.phone" :disabled="true" />
+            </div>
           </div>
 
           <div>
-            <label for="email1" class="block text-900 text-xl font-medium mb-2">{{ $t('email') }}</label>
-            <InputText id="email1" type="text" :placeholder="t('emailAddress')" class="w-full md:w-30rem mb-5" style="padding: 1rem" v-model="email" />
-
-            <label for="password1" class="block text-900 font-medium text-xl mb-2">{{ $t('password') }}</label>
-            <Password id="password1" v-model="password" :placeholder="t('password')" :toggleMask="true" class="w-full mb-3" inputClass="w-full" :inputStyle="{ padding: '1rem' }"></Password>
-
-            <div class="flex align-items-center justify-content-between mb-5 gap-5">
-              <div class="flex align-items-center">
-                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                <label for="rememberme1">{{ $t('rememberMe') }}</label>
-              </div>
-              <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">{{ $t('forgotPassword') }}?</a>
+            <h5 style="font-weight: 700; font-size: 18px; margin-bottom: 8px">{{ $t('email') }}</h5>
+            <span>{{ $t('loginEmail') }}</span>
+            <div class="flex flex-column" style="margin-top: 12px">
+              <InputText style="margin-top: 8px; max-width: 450px" c id="email-user" type="text" :value="user?.email" :disabled="true" />
             </div>
-            <Button :label="t('login')" class="w-full p-3 text-xl mb-3" @click="login"></Button>
-            <div class="flex justify-content-center">
-              <nuxt-link to="/registration" style="color: #076AE1; font-weight: 700">{{ $t('registerButton') }}</nuxt-link>
+          </div>
+
+          <div>
+            <h5 style="font-weight: 700; font-size: 18px; margin-bottom: 8px">{{ $t('password') }}</h5>
+            <div class="flex flex-column" style="margin-top: 12px">
+              <Password style="max-width: 450px" id="password1" v-model="oldPassword" :placeholder="t('oldPassword')" :toggleMask="true" class="w-full mb-1" inputClass="w-full"></Password>
+              <Password style="max-width: 450px; margin-top: 12px" id="password1" v-model="newPassword" :placeholder="t('newPassword')" :toggleMask="true" class="w-full mb-1" inputClass="w-full"></Password>
+              <Button style="max-width: 150px; margin-top: 12px"  :label="t('save')" class="text-xl mb-3"></Button>
             </div>
           </div>
         </div>
@@ -60,15 +83,3 @@ const { t } = useI18n();
     </div>
   </div>
 </template>
-
-<style scoped>
-.pi-eye {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-
-.pi-eye-slash {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-</style>

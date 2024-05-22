@@ -17,7 +17,7 @@ export const useApi = async (uri: string, options: FetchOptions = {}, isLoading:
 
     const headers = {
         Accept: 'application/json',
-        Authorization: 'Bearer ' + jsCookie.get('token'),
+        Authorization: 'Bearer ' + jsCookie.get('accessToken'),
     }
 
     try {

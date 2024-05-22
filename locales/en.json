@@ -191,5 +191,13 @@
   "limitingAIbot": "Limiting the AI ​​bot triggering per contact",
   "onceWhile": "once in a while",
   "messageHistory": "Message history (context)",
-  "contextMessageHistory": "How many messages to send to the dialogue context. The larger this number, the greater the consumption of tokens (by default it is 10 messages). Maximum - 50."
+  "contextMessageHistory": "How many messages to send to the dialogue context. The larger this number, the greater the consumption of tokens (by default it is 10 messages). Maximum - 50.",
+  "required": "Required",
+  "passwordMinLength": "The password must contain at least 6 characters",
+  "requiredName": "Enter a valid name",
+  "enterPhoneNumberCorrectly": "Enter your phone number correctly",
+  "correctEmail": "Value is not a valid email address",
+  "sendButtonPassword": "Send",
+  "confirmEmail": "Confirm your Email",
+  "error": "Error"
 }

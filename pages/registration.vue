@@ -6,6 +6,8 @@ import { useToast } from "primevue/usetoast";
 
 
 const toast = useToast();
+const { t } = useI18n();
+
 const { showLanguageDialog } = useLayout();
 
 const form = reactive({
@@ -19,24 +21,24 @@ const form = reactive({
 const formRules = computed(() => {
   return {
     email: {
-      required: helpers.withMessage('Обязательно для заполнения',required),
-      email
+      required: helpers.withMessage(t('required'),required),
+      email: helpers.withMessage(t('correctEmail'), email)
     },
     name: {
-      required: helpers.withMessage('Обязательно для заполнения', required),
-      minLength: helpers.withMessage('Введите корректный имя', minLength(3))
+      required: helpers.withMessage(t('required'), required),
+      minLength: helpers.withMessage(t('requiredName'), minLength(3))
     },
     phone: {
-      required: helpers.withMessage('Обязательно для заполнения', required),
+      required: helpers.withMessage(t('required'), required),
       minLength: helpers.withMessage(
-          'Введите корректный телефон',
+          t('enterPhoneNumberCorrectly'),
           minLength(18),
       ),
     },
     password: {
-      required: helpers.withMessage('Обязательно для заполнения', required),
+      required: helpers.withMessage(t('required'), required),
       minLength: helpers.withMessage(
-          'Введите корректный пароль',
+          t('passwordMinLength'),
           minLength(6),
       ),
     },
@@ -71,8 +73,6 @@ const signIn = async () => {
 definePageMeta({
   layout: 'auth'
 })
-const { t } = useI18n();
-
 </script>
 
 <template>

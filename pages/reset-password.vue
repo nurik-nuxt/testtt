@@ -12,11 +12,9 @@ const { t } = useI18n();
 const { showLanguageDialog } = useLayout();
 const authStore = useAuthStore();
 const password = ref('');
-const checked = ref(false);
 
 const form = reactive({
   email: '',
-  password: null
 
 });
 
@@ -26,35 +24,30 @@ const formRules = computed(() => {
       required: helpers.withMessage(t('required'),required),
       email: helpers.withMessage(t('correctEmail'), email)
     },
-    password: {
-      required: helpers.withMessage(t('required'), required),
-      minLength: helpers.withMessage(
-          t('passwordMinLength'),
-          minLength(6),
-      ),
-    },
   }
 });
 
 const v$ = useValidate(formRules, form);
 
-const login = async () => {
+const resetPassword = async () => {
   const isFormCorrect = await v$.value.$validate();
 
   if (isFormCorrect) {
-    try {
-      const response = await authStore.login(form);
-      console.log(response);
-      if (response?.access_token) {
-        return navigateTo({ name: 'index' })
-      }
-      if (response?.error) {
-        console.log('error');
-        toast.add({ severity: 'error', summary: t('error'), detail: response?.error, life: 5000 })
-      }
-    } catch (e) {
-      console.log(e)
-    }
+    console.log('login')
+    return navigateTo({ name: 'login' })
+    // try {
+    //   const response = await authStore.login(form);
+    //   console.log(response);
+    //   if (response?.access_token) {
+    //     return navigateTo({ name: 'index' })
+    //   }
+    //   if (response?.error) {
+    //     console.log('error');
+    //     toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.error, life: 5000 })
+    //   }
+    // } catch (e) {
+    //   console.log(e)
+    // }
   }
 }
 definePageMeta({
@@ -76,7 +69,7 @@ definePageMeta({
           <div class="text-center mb-5">
             <img src="/demo/images/login/logo.png" alt="Image" height="50" class="mb-3" />
             <div class="text-900 text-3xl font-medium mb-3">{{ $t('welcomeText') }}</div>
-            <span class="text-600 font-medium">{{ $t('logInToContinue') }}</span>
+            <span class="text-600 font-medium">{{ $t('confirmEmail') }}</span>
           </div>
 
           <div>
@@ -86,22 +79,9 @@ definePageMeta({
               <span class="mt-1" style="color: #f87171;">{{ v$.$errors.find((el) => el.$property === 'email')?.$message }}</span>
             </div>
 
-            <div class="mb-3">
-              <label for="password1" class="block text-900 font-medium text-xl mb-2">{{ $t('password') }}</label>
-              <Password id="password1" v-model="form.password" :placeholder="t('password')" :toggleMask="true" class="w-full mb-1" inputClass="w-full" :inputStyle="{ padding: '1rem' }" :invalid="v$.$errors.find((el) => el.$property === 'password')?.$message"></Password>
-              <span class="mt-1" style="color: #f87171;">{{ v$.$errors.find((el) => el.$property === 'password')?.$message }}</span>
-            </div>
-
-            <div class="flex align-items-center justify-content-between mb-5 gap-5">
-              <div class="flex align-items-center">
-                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                <label for="rememberme1">{{ $t('rememberMe') }}</label>
-              </div>
-              <nuxt-link to="/reset-password" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">{{ $t('forgotPassword') }}?</nuxt-link>
-            </div>
-            <Button :label="t('login')" class="w-full p-3 text-xl mb-3" @click="login"></Button>
+            <Button :label="t('sendButtonPassword')" class="w-full p-3 text-xl mb-3" @click="resetPassword"></Button>
             <div class="flex justify-content-center">
-              <nuxt-link to="/registration" style="color: #076AE1; font-weight: 700">{{ $t('registerButton') }}</nuxt-link>
+              <nuxt-link to="/login" style="color: #076AE1; font-weight: 700">{{ $t('login') }}</nuxt-link>
             </div>
           </div>
         </div>
