@@ -87,7 +87,7 @@ const totalPrice = ref(50)
                         </li>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>Telegram {{ $t('freePlan') }}</span>
+                          <span>{{ $t('onlineChat') }} {{ $t('freePlan') }}</span>
                         </li>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
@@ -129,7 +129,7 @@ const totalPrice = ref(50)
                         </li>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>Telegram {{ $t('freePlan') }}</span>
+                          <span>{{ $t('onlineChat') }} {{ $t('freePlan') }}</span>
                         </li>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
