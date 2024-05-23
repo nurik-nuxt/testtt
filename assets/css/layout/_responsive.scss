@@ -12,7 +12,8 @@
         &.layout-overlay {
             .layout-main-container {
                 margin-left: 0;
-                padding-left: 2rem;
+                padding: 7rem 1rem 2rem 1rem;
+                //padding-left: 2rem;
             }
 
             .layout-sidebar {
@@ -63,7 +64,9 @@
     .layout-wrapper {
         .layout-main-container {
             margin-left: 0;
-            padding-left: 2rem;
+            //padding-left: 2rem;
+            //padding: 2rem 1rem;
+            padding: 7rem 1rem 2rem 1rem;
         }
 
         .layout-sidebar {

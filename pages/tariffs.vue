@@ -1,7 +1,197 @@
 <script setup lang="ts">
 console.log('Tariffs');
+const { t } = useI18n();
+
+const myTariff = ref(49);
+const maxRequest = ref(2000);
+const usedRequest = ref(1399);
+const tariffValidUntil = ref('19.05.2025');
+const channelValidUntil = ref('19.05.2025');
+const autoRenewal = ref(true)
+
+const channelCount = ref(2)
+
+const totalPrice = ref(50)
+
 </script>
 
 <template>
-  <div>Tariffs</div>
+  <div class="grid">
+    <div class="col-12">
+      <div class="card h-full">
+        <h5>{{ $t('myPlan') }}</h5>
+        <div class="flex flex-column gap-8">
+          <div class="flex md:flex-row flex-column align-items-center gap-5">
+            <div class="tariff-card">
+              <div class="flex gap-2 align-items-center">
+                <span>{{ $t('currentPlan') }}:</span>
+                <span class="font-bold">{{ $t('premiumPlan')}} {{ myTariff }}$</span>
+              </div>
+              <div class="flex gap-2 align-items-center">
+                <span>{{ $t('used') }}:</span>
+                <span class="font-bold">{{ usedRequest }} {{ $t('of') }} {{ maxRequest }}</span>
+              </div>
+              <div class="flex gap-2 align-items-center">
+                <span>{{ $t('validUntil') }}:</span>
+                <span class="font-bold">{{ tariffValidUntil }}</span>
+              </div>
+              <div class="flex gap-2 align-items-center">
+                <span>{{ $t('autoRenewal') }}:</span>
+                <span class="flex align-items-center font-bold">
+                  {{ $t('switch') }}
+                  <InputSwitch v-model="autoRenewal" style="margin-left: 8px"/></span>
+              </div>
+            </div>
+            <div class="tariff-card">
+              <div class="flex gap-2 align-items-center">
+                <span>{{ $t('connectedChannels') }}:</span>
+                <span class="font-bold">{{ channelCount }}</span>
+              </div>
+              <div class="flex gap-2 align-items-center">
+                <span>{{ $t('validUntil') }}:</span>
+                <span class="font-bold">{{ channelValidUntil }}</span>
+              </div>
+              <div class="flex gap-2 align-items-center">
+                <span>{{ $t('totalPerMonth') }}:</span>
+                <span class="font-bold">{{ totalPrice }} $</span>
+              </div>
+            </div>
+          </div>
+          <BlockViewer header="Pricing" free>
+            <div>
+              <h5>{{ $t('activatePlan') }}</h5>
+
+              <div class="grid">
+                <div class="col-12 lg:col-4">
+                  <div class="p-3 h-full">
+                    <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
+                      <div class="text-900 font-medium text-xl mb-2">{{ $t('basicPlan') }}</div>
+                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                      <div class="flex align-items-center">
+                        <span class="font-bold text-2xl text-900">$19</span>
+                        <span class="ml-2 font-medium text-600">{{ $t('perMonth') }}</span>
+                      </div>
+                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                      <ul class="list-none p-0 m-0 flex-grow-1">
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('uniqueClients') }} 500</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>Telegram {{ $t('freePlan') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('anyChannel') }} $29</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('crmIntegrations') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('supportTarif247') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-minus-circle mr-2" style="color: #C1C1C1"></i>
+                          <span>{{ $t('callAnalytics') }}</span>
+                        </li>
+                      </ul>
+                      <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto" />
+                      <Button :label="t('buyPlan')" class="p-3 w-full mt-auto"></Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 lg:col-4">
+                  <div class="p-3 h-full">
+                    <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
+                      <div class="text-900 font-medium text-xl mb-2">{{ $t('premiumPlan') }}</div>
+                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                      <div class="flex align-items-center">
+                        <span class="font-bold text-2xl text-900">$49</span>
+                        <span class="ml-2 font-medium text-600">{{ $t('perMonth') }}</span>
+                      </div>
+                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                      <ul class="list-none p-0 m-0 flex-grow-1">
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('uniqueClients') }} 2000</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>Telegram {{ $t('freePlan') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('anyChannel') }} $25</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('crmIntegrations') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('supportTarif247') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('callAnalytics') }}</span>
+                        </li>
+                      </ul>
+                      <hr class="mb-3 mx-0 border-top-1 border-none surface-border" />
+                      <Button :label="t('buyPlan')" class="p-3 w-full"></Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 lg:col-4">
+                  <div class="p-3 h-full">
+                    <div class="shadow-2 p-3 flex flex-column surface-card" style="border-radius: 6px">
+                      <div class="text-900 font-medium text-xl mb-2">{{ $t('proPlan') }}</div>
+                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                      <div class="flex align-items-center">
+                        <span class="font-bold text-2xl text-900">$159</span>
+                        <span class="ml-2 font-medium text-600">{{ $t('perMonth') }}</span>
+                      </div>
+                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                      <ul class="list-none p-0 m-0 flex-grow-1">
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('uniqueClients') }} {{ $t('unlimitedPlan') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>Telegram {{ $t('freePlan') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('anyChannel') }} $20</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('crmIntegrations') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('supportTarif247') }}</span>
+                        </li>
+                        <li class="flex align-items-center mb-3">
+                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                          <span>{{ $t('callAnalytics') }}</span>
+                        </li>
+                      </ul>
+                      <hr class="mb-3 mx-0 border-top-1 border-none surface-border" />
+                      <Button :label="t('buyPlan')" class="p-3 w-full"></Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </BlockViewer>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
