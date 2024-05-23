@@ -203,5 +203,7 @@
   "error": "Fehler",
   "youBotConsultant": "Sie sind Bot-Berater für BIODIVAN, ein Unternehmen, das Möbel produziert und verkauft, darunter Sofas, Betten, Tische und Stühle. Ihre Aufgabe besteht darin, mit Kunden zu kommunizieren, sie zu beraten, Fragen zu beantworten und eine Telefonnummer anzufordern, um sie über WhatsApp zu kontaktieren.",
   "chatWithBot": "Chatten Sie mit einem Bot",
-  "goBack": "zurück"
+  "goBack": "zurück",
+  "addChannelToTariff": "Einen Kanal zu meinem Tarif hinzufügen",
+  "textAddChannelToTariff": "Der Kanal wird bis zum Ablauf des aktuellen Tarifs bezahlt"
 }

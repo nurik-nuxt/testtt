@@ -203,5 +203,7 @@
   "error": "Erreur",
   "youBotConsultant": "Vous êtes consultant bot pour BIODIVAN, une entreprise qui produit et vend des meubles, notamment des canapés, des lits, des tables et des chaises. Votre tâche consiste à communiquer avec les clients, à les conseiller, à répondre aux questions et à demander un numéro de téléphone pour les contacter sur WhatsApp.",
   "chatWithBot": "Discutez avec un bot",
-  "goBack": "Dos"
+  "goBack": "Dos",
+  "addChannelToTariff": "Ajouter une chaîne à mon tarif",
+  "textAddChannelToTariff": "La chaîne sera payante jusqu'à l'expiration du tarif en vigueur"
 }

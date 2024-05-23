@@ -56,6 +56,14 @@ const totalPrice = ref(50)
                 <span class="font-bold">{{ totalPrice }} $</span>
               </div>
             </div>
+            <div class="card tariff">
+              <span class="font-bold">{{ $t('addChannelToTariff') }}</span>
+              <span>{{ $t('textAddChannelToTariff') }}</span>
+              <div class="flex gap-2 align-items-center">
+                <InputText id="channel-count" style="width: 50px" type="number" min="1" v-model="channelCount" />
+                <Button :label="t('buyPlan')" style="width: 150px" class="mt-auto"></Button>
+              </div>
+            </div>
           </div>
           <BlockViewer header="Pricing" free>
             <div>

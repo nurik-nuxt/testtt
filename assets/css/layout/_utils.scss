@@ -173,3 +173,12 @@
     width: 100%;
     background: #F0F4F9;
 }
+.tariff {
+    height: 128px;
+    max-width: 330px;
+    width: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
