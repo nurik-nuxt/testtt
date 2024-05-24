@@ -205,5 +205,6 @@
   "chatWithBot": "Чат с ботом",
   "goBack": "Назад",
   "addChannelToTariff": "Добавить канал к моему тарифу",
-  "textAddChannelToTariff": "Канал будет оплачен до окончания действия текущего тарифа"
+  "textAddChannelToTariff": "Канал будет оплачен до окончания действия текущего тарифа",
+  "addChannel": "Добавить канал"
 }

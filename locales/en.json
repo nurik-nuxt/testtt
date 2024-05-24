@@ -204,5 +204,6 @@
   "chatWithBot": "Chat with bot",
   "goBack": "Back",
   "addChannelToTariff": "Add a channel to my tariff",
-  "textAddChannelToTariff": "The channel will be paid until the current tariff expires"
+  "textAddChannelToTariff": "The channel will be paid until the current tariff expires",
+  "addChannel": "Add channel"
 }

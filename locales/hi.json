@@ -205,5 +205,6 @@
   "chatWithBot": "एक बॉट के साथ चैट करें",
   "goBack": "पीछे",
   "addChannelToTariff": "मेरे टैरिफ में एक चैनल जोड़ें",
-  "textAddChannelToTariff": "वर्तमान टैरिफ समाप्त होने तक चैनल को भुगतान किया जाएगा"
+  "textAddChannelToTariff": "वर्तमान टैरिफ समाप्त होने तक चैनल को भुगतान किया जाएगा",
+  "addChannel": "चैनल जोड़ें"
 }

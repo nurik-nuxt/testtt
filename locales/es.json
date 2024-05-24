@@ -205,5 +205,6 @@
   "chatWithBot": "Chatea con un robot",
   "goBack": "Atrás",
   "addChannelToTariff": "Añadir un canal a mi tarifa",
-  "textAddChannelToTariff": "El canal será de pago hasta que expire la tarifa actual."
+  "textAddChannelToTariff": "El canal será de pago hasta que expire la tarifa actual.",
+  "addChannel": "Agregar canal"
 }

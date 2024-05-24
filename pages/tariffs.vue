@@ -1,5 +1,4 @@
 <script setup lang="ts">
-console.log('Tariffs');
 const { t } = useI18n();
 
 const myTariff = ref(49);
@@ -12,6 +11,14 @@ const autoRenewal = ref(true)
 const channelCount = ref(2)
 
 const totalPrice = ref(50)
+
+const basicPlanChannelCount = ref(1);
+const premiumPlanChannelCount = ref(2);
+const proPlanChannelCount = ref(3);
+
+const basicPlanChannelPrice = ref(19);
+const premiumPlanChannelPrice = ref(49);
+const proPlanChannelPrice = ref(159);
 
 </script>
 
@@ -74,9 +81,13 @@ const totalPrice = ref(50)
                   <div class="p-3 h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
                       <div class="text-900 font-medium text-xl mb-2">{{ $t('basicPlan') }}</div>
+                      <div class="flex gap-2 align-items-center">
+                        <span>{{ $t('addChannel') }}</span>
+                        <InputText id="premium-channel-count" style="width: 50px" type="number" min="1" v-model="basicPlanChannelCount" />
+                      </div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <div class="flex align-items-center">
-                        <span class="font-bold text-2xl text-900">$19</span>
+                        <span class="font-bold text-2xl text-900">${{ basicPlanChannelPrice }}</span>
                         <span class="ml-2 font-medium text-600">{{ $t('perMonth') }}</span>
                       </div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
@@ -106,6 +117,7 @@ const totalPrice = ref(50)
                           <span>{{ $t('callAnalytics') }}</span>
                         </li>
                       </ul>
+                      <span class="mb-2 font-bold text-2xl">{{ $t('total') }}: {{ basicPlanChannelCount * basicPlanChannelPrice }}$ {{ $t('perMonth') }}</span>
                       <hr class="mb-3 mx-0 border-top-1 border-none surface-border mt-auto" />
                       <Button :label="t('buyPlan')" class="p-3 w-full mt-auto"></Button>
                     </div>
@@ -116,9 +128,13 @@ const totalPrice = ref(50)
                   <div class="p-3 h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card" style="border-radius: 6px">
                       <div class="text-900 font-medium text-xl mb-2">{{ $t('premiumPlan') }}</div>
+                      <div class="flex gap-2 align-items-center">
+                        <span>{{ $t('addChannel') }}</span>
+                        <InputText id="premium-channel-count" style="width: 50px" type="number" min="1" v-model="premiumPlanChannelCount" />
+                      </div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <div class="flex align-items-center">
-                        <span class="font-bold text-2xl text-900">$49</span>
+                        <span class="font-bold text-2xl text-900">${{ premiumPlanChannelPrice }}</span>
                         <span class="ml-2 font-medium text-600">{{ $t('perMonth') }}</span>
                       </div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
@@ -148,6 +164,7 @@ const totalPrice = ref(50)
                           <span>{{ $t('callAnalytics') }}</span>
                         </li>
                       </ul>
+                      <span class="mb-2 font-bold text-2xl">{{ $t('total') }}: {{ premiumPlanChannelCount * premiumPlanChannelPrice }}$ {{ $t('perMonth') }}</span>
                       <hr class="mb-3 mx-0 border-top-1 border-none surface-border" />
                       <Button :label="t('buyPlan')" class="p-3 w-full"></Button>
                     </div>
@@ -158,9 +175,13 @@ const totalPrice = ref(50)
                   <div class="p-3 h-full">
                     <div class="shadow-2 p-3 flex flex-column surface-card" style="border-radius: 6px">
                       <div class="text-900 font-medium text-xl mb-2">{{ $t('proPlan') }}</div>
+                      <div class="flex gap-2 align-items-center">
+                        <span>{{ $t('addChannel') }}</span>
+                        <InputText id="premium-channel-count" style="width: 50px" type="number" min="1" v-model="proPlanChannelCount" />
+                      </div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <div class="flex align-items-center">
-                        <span class="font-bold text-2xl text-900">$159</span>
+                        <span class="font-bold text-2xl text-900">${{ proPlanChannelPrice }}</span>
                         <span class="ml-2 font-medium text-600">{{ $t('perMonth') }}</span>
                       </div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
@@ -171,7 +192,7 @@ const totalPrice = ref(50)
                         </li>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>Telegram {{ $t('freePlan') }}</span>
+                          <span>{{ $t('onlineChat') }} {{ $t('freePlan') }}</span>
                         </li>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
@@ -190,6 +211,7 @@ const totalPrice = ref(50)
                           <span>{{ $t('callAnalytics') }}</span>
                         </li>
                       </ul>
+                      <span class="mb-2 font-bold text-2xl">{{ $t('total') }}: {{ proPlanChannelCount * proPlanChannelPrice }}$ {{ $t('perMonth') }}</span>
                       <hr class="mb-3 mx-0 border-top-1 border-none surface-border" />
                       <Button :label="t('buyPlan')" class="p-3 w-full"></Button>
                     </div>

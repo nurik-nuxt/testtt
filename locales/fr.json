@@ -205,5 +205,6 @@
   "chatWithBot": "Discutez avec un bot",
   "goBack": "Dos",
   "addChannelToTariff": "Ajouter une chaîne à mon tarif",
-  "textAddChannelToTariff": "La chaîne sera payante jusqu'à l'expiration du tarif en vigueur"
+  "textAddChannelToTariff": "La chaîne sera payante jusqu'à l'expiration du tarif en vigueur",
+  "addChannel": "Ajouter une chaîne"
 }

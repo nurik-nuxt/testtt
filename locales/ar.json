@@ -205,5 +205,6 @@
   "chatWithBot": "الدردشة مع بوت",
   "goBack": "خلف",
   "addChannelToTariff": "إضافة قناة إلى التعريفة الخاصة بي",
-  "textAddChannelToTariff": "سيتم الدفع للقناة حتى انتهاء التعريفة الحالية"
+  "textAddChannelToTariff": "سيتم الدفع للقناة حتى انتهاء التعريفة الحالية",
+  "addChannel": "أضف قناة"
 }

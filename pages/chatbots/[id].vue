@@ -110,60 +110,80 @@ const knowledgeBaseList = ref([
     key: 'knowledgeBase1',
     data: {
       label: 'База Знаний 1',
+      notification: true,
+      active: true
     }
   },
   {
     key: 'knowledgeBase2',
     data: {
       label: 'База Знаний 2',
+      notification: false,
+      active: true
     }
   },
   {
     key: 'knowledgeBase3',
     data: {
       label: 'База Знаний 3',
+      notification: false,
+      active: true
     }
   },
   {
     key: 'knowledgeBase4',
     data: {
       label: 'База Знаний 4',
+      notification: true,
+      active: true
     }
   },
   {
     key: 'knowledgeBase5',
     data: {
       label: 'База Знаний 5',
+      notification: true,
+      active: true
     }
   },
   {
     key: 'knowledgeBase6',
     data: {
       label: 'База Знаний 6',
+      notification: true,
+      active: true
     }
   },
   {
     key: 'knowledgeBase7',
     data: {
       label: 'База Знаний 7',
+      notification: true,
+      active: true
     }
   },
   {
     key: 'knowledgeBase8',
     data: {
       label: 'База Знаний 8',
+      notification: false,
+      active: true
     }
   },
   {
     key: 'knowledgeBase0',
     data: {
       label: 'База Знаний 9',
+      notification: true,
+      active: true
     }
   },
   {
     key: 'knowledgeBase10',
     data: {
       label: 'База Знаний 10',
+      notification: false,
+      active: true
     }
   }
 ]);
@@ -213,6 +233,9 @@ const fridayTimeEnd = ref(null);
 const saturdayTimeEnd = ref(null);
 const sundayTimeEnd = ref(null);
 const temperatureValue = ref(0.3);
+
+const active = ref(true)
+const filters = ref({});
 
 </script>
 
@@ -409,15 +432,47 @@ const temperatureValue = ref(0.3);
 
               </div>
             </TabPanel>
+
             <TabPanel :header="t('knowledgeBase')">
-              <div class="flex gap-2 mt-5">
+              <div class="flex gap-2 mt-5" style="margin-left: 1rem">
                 <Button :label="t('createFile')" @click="createKnowledgeBase(parseInt(<string>route.params.id))"/>
                 <Button :label="t('uploadFail')"/>
-                <Button :label="t('delete')"/>
+                <Button :label="t('delete')" :disabled="!knowledgeBaseSelectedKey" />
               </div>
               <div>
                 <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="knowledgeBaseList" selectionMode="checkbox" class="w-full">
-                  <Column field="label" :header="t('title')" :expander="true"></Column>
+                  <template #header>
+                    <div class="text-left">
+                      <InputText v-model="filters['global']" :placeholder="t('searchBase')" />
+                    </div>
+                  </template>
+                  <Column field="label" :header="t('title')" :expander="true" style="width: 40%"></Column>
+                  <Column field="notification" :header="t('notifications')" class="ml-auto">
+                    <template #body="slotProps">
+                      <div>
+                        <i v-if="slotProps?.node?.data?.notification" class="pi pi-check-circle"></i>
+                        <i v-else class="pi pi-circle"></i>
+                      </div>
+                    </template>
+                  </Column>
+                  <Column field="notification" :header="t('stopBotButton')">
+                    <template #body="slotProps">
+                      <div>
+                        <i v-if="!slotProps?.node?.data?.notification" class="pi pi-check-circle"></i>
+                        <i v-else class="pi pi-circle"></i>
+                      </div>
+                    </template>
+                  </Column>
+                  <Column field="notification" :header="t('onOffButton')">
+                    <template #body="slotProps">
+                      <div>
+                        <InputSwitch v-model="active" style="margin-left: 8px"/>
+                        <!--                        <i v-if="!slotProps?.node?.data?.notification" class="pi pi-check-circle"></i>-->
+<!--                        <i v-else class="pi pi-circle"></i>-->
+                      </div>
+                    </template>
+                  </Column>
+
                   <Column field="actions">
                     <template #body>
                       <div class="flex flex-row-reverse gap-3 ml-auto">
@@ -430,6 +485,8 @@ const temperatureValue = ref(0.3);
                 </TreeTable>
               </div>
             </TabPanel>
+
+
             <TabPanel :header="t('channels')">
               <div class="chanel-list">
                 <span class="chanel-list__item">
@@ -528,5 +585,8 @@ const temperatureValue = ref(0.3);
   overflow-y: auto;
   position: fixed;
   right: 2rem;
+}
+:deep(.p-treetable .p-treetable-toggler) {
+  display: none;
 }
 </style>

@@ -205,5 +205,6 @@
   "chatWithBot": "Ботпен сөйлесу",
   "goBack": "Артқа",
   "addChannelToTariff": "Менің тарифіме арна қосыңыз",
-  "textAddChannelToTariff": "Арна ағымдағы тарифтің мерзімі біткенше төленеді"
+  "textAddChannelToTariff": "Арна ағымдағы тарифтің мерзімі біткенше төленеді",
+  "addChannel": "Арна қосу"
 }
