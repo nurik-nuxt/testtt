@@ -197,7 +197,7 @@
   "passwordMinLength": "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل",
   "requiredName": "أدخل اسمًا صالحًا",
   "enterPhoneNumberCorrectly": "أدخل رقم هاتفك بشكل صحيح",
-  "correctEmail": "القيمة ليست عنوان بريد إلكتروني صالحًا",
+  "correctEmail": "عنوان البريد الإلكتروني غير صالح",
   "sendButtonPassword": "يرسل",
   "confirmEmail": "قم بتأكيد بريدك الإلكتروني",
   "error": "خطأ",

@@ -197,7 +197,7 @@
   "passwordMinLength": "पासवर्ड में कम से कम 6 अक्षर होने चाहिए",
   "requiredName": "एक वैध नाम दर्ज करें",
   "enterPhoneNumberCorrectly": "अपना फ़ोन नंबर सही दर्ज करें",
-  "correctEmail": "मान मान्य ईमेल पता नहीं है",
+  "correctEmail": "अमान्य ईमेल पता",
   "sendButtonPassword": "भेजना",
   "confirmEmail": "आपके ईमेल की पुष्टि करें",
   "error": "गलती",

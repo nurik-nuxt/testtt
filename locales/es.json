@@ -197,7 +197,7 @@
   "passwordMinLength": "La contraseña debe contener al menos 6 caracteres.",
   "requiredName": "Introduzca un nombre válido",
   "enterPhoneNumberCorrectly": "Introduce tu número de teléfono correctamente",
-  "correctEmail": "El valor no es una dirección de correo electrónico válida.",
+  "correctEmail": "Dirección de correo electrónico no válida",
   "sendButtonPassword": "Enviar",
   "confirmEmail": "Confirme su email",
   "error": "Error",

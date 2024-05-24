@@ -197,7 +197,7 @@
   "passwordMinLength": "Das Passwort muss mindestens 6 Zeichen enthalten",
   "requiredName": "Geben Sie einen gültigen Namen ein",
   "enterPhoneNumberCorrectly": "Geben Sie Ihre Telefonnummer korrekt ein",
-  "correctEmail": "Der Wert ist keine gültige E-Mail-Adresse",
+  "correctEmail": "Ungültige E-Mail-Adresse",
   "sendButtonPassword": "Schicken",
   "confirmEmail": "Bestätige deine E-Mail",
   "error": "Fehler",

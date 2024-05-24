@@ -515,6 +515,8 @@ const filters = ref({});
                 </span>
               </div>
             </TabPanel>
+
+
             <TabPanel :header="t('notifications')">
               <div class="notification-wrapper">
                 <div class="notification-card">
@@ -531,10 +533,19 @@ const filters = ref({});
                   </div>
                 </div>
                 <div class="notification-card">
-                  <div class="flex flex-column gap-2">
-                    <h5>{{ $t('webhooks') }}</h5>
-                    <span style="color: #0f172a;">{{ $t('webhookUrl') }}</span>
-                    <InputText class="mt-3" style="max-width: 500px" placeholder="Url" id="site" type="text" />
+                  <div class="flex align-items-end">
+                    <div class="flex flex-column gap-2 w-3/4">
+                      <h5>{{ $t('webhooks') }}</h5>
+                      <span style="color: #0f172a;">{{ $t('webhookUrl') }}</span>
+                      <InputText class="mt-3" style="max-width: 500px" placeholder="Url" id="site" type="text" />
+                    </div>
+                    <div class="json-snippet">
+                      <span class="font-bold">json</span>
+                      <span class="ml-2 font-bold">fghj</span>
+                      <span class="ml-4 font-bold">"ghjkl;'"</span>
+                      <span class="ml-2 font-bold">"hjbnmpokl"</span>
+                      <span class="font-bold">end</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -588,5 +599,15 @@ const filters = ref({});
 }
 :deep(.p-treetable .p-treetable-toggler) {
   display: none;
+}
+.json-snippet {
+  background-color: #D6F0FF;
+  border-radius: 4px;
+  padding: 8px;
+  height: 100px;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>

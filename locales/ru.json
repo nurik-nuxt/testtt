@@ -197,7 +197,7 @@
   "passwordMinLength": "Пароль должен содержать не менее 6 символов",
   "requiredName": "Введите корректный имя",
   "enterPhoneNumberCorrectly": "Введите телефон корректно",
-  "correctEmail": "Начение не является допустимым адресом электронной почты",
+  "correctEmail": "Некорректный адрес электронной почты",
   "sendButtonPassword": "Отправить",
   "confirmEmail": "Подтвердите свой Email",
   "error": "Ошибка",
