@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+const { t } = useI18n();
+
 interface BotItem {
   title: string;
   id: number;
@@ -108,40 +110,47 @@ const statusId = ref<string>('')
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <h5>Создать база знаний для "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
+        <h5>{{ $t('editKnowledgeBaseFile') }} "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
         <div class="card-form p-fluid" style="margin-top: 16px">
-          <div class="field">
-            <label for="name1">Название</label>
-            <InputText id="name1" type="text" />
+          <div class="flex gap-3">
+            <div class="field w-full">
+              <label for="name1">{{ $t('nameWithin7s') }}</label>
+              <InputText id="name1" type="text" />
+            </div>
+            <div class="field w-full">
+              <label for="name1">{{ $t('nameForSearchOpenAI') }}</label>
+              <InputText id="name1" type="text" />
+            </div>
           </div>
+
         </div>
 
         <div class="flex items-center gap-8 mb-5">
           <span class="bot-card__activate">
-            Использовать
+            {{ $t('useBase') }}
             <InputSwitch v-model="usedValue" style="margin-left: 24px"/>
           </span>
           <span class="bot-card__activate">
-            Прерывать диалог
+            {{ $t('endDialogue') }}
             <InputSwitch v-model="interruptDialogue" style="margin-left: 24px"/>
           </span>
           <span class="bot-card__activate">
-            Уведомления в Telegram
+            {{ $t('sendNotification') }}
             <InputSwitch v-model="telegramNotification" style="margin-left: 24px"/>
           </span>
         </div>
         <div>
           <TabView>
-            <TabPanel header="Содержимое файла">
-              <Textarea class="mt-4 w-full" :autoResize="true" rows="5" cols="30" />
+            <TabPanel :header="t('fileContent')">
+              <Textarea class="mt-4 w-full" :autoResize="true" rows="5" cols="30" :placeholder="t('botResponseInstructions')" />
             </TabPanel>
-            <TabPanel header="Доотправка сообщений">
+            <TabPanel :header="t('clientReminders')">
               <Button label="Новое сообщение" class="mt-4"/>
             </TabPanel>
-            <TabPanel header="Изображения">
+            <TabPanel :header="t('sendFileInMessage')">
               <Button label="Прикрепить изображение" class="mt-4"/>
             </TabPanel>
-            <TabPanel header="Статус в AmoCRM">
+            <TabPanel :header="t('crmSystemManagement')">
               <div class="mt-4 flex justify-content-between gap-4">
                 <div class="flex flex-column w-full gap-2">
                   <label for="funnel">Выберите воронку:</label>
