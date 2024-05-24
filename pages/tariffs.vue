@@ -215,7 +215,7 @@ const proPlanChannelPrice = ref(20);
                           <span>{{ $t('callAnalytics') }}</span>
                         </li>
                       </ul>
-                      <span class="mb-2 font-bold text-2xl">{{ $t('total') }}: {{ proPlanChannelCount * proPlanChannelPrice + premiumPlanPrice }}$ {{ $t('perMonth') }}</span>
+                      <span class="mb-2 font-bold text-2xl">{{ $t('total') }}: {{ proPlanChannelCount * proPlanChannelPrice + proPlanPrice }}$ {{ $t('perMonth') }}</span>
                       <hr class="mb-3 mx-0 border-top-1 border-none surface-border" />
                       <Button :label="t('buyPlan')" class="p-3 w-full"></Button>
                     </div>
