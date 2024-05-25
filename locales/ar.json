@@ -227,5 +227,8 @@
   "copyBotToken": "انسخ رمز البوت والصقه هنا",
   "connected": "متصل",
   "disconnected": "عاجز ",
-  "disable": "إبطال"
+  "disable": "إبطال",
+  "downloadFile": "تحميل",
+  "deleteFile": "يمسح",
+  "enterFieldValue": "أدخل قيمة الحقل"
 }

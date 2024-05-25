@@ -227,5 +227,8 @@
   "copyBotToken": "Скопируйте токен бота и вставьте его сюда",
   "connected": "Подключен",
   "disconnected": "Отключен",
-  "disable": "Отключить"
+  "disable": "Отключить",
+  "downloadFile": "Скачать",
+  "deleteFile": "Удалить",
+  "enterFieldValue": "Укажите значение поля"
 }

@@ -226,5 +226,8 @@
   "copyBotToken": "Copy the bot token and paste it here",
   "connected": "Connected",
   "disconnected": "Disabled",
-  "disable": "Disable"
+  "disable": "Disable",
+  "downloadFile": "Download",
+  "deleteFile": "Delete",
+  "enterFieldValue": "Enter the field value"
 }

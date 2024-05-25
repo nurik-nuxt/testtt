@@ -227,5 +227,8 @@
   "copyBotToken": "बॉट टोकन को कॉपी करें और यहां पेस्ट करें",
   "connected": "जुड़े हुए",
   "disconnected": "अक्षम",
-  "disable": "अक्षम करना"
+  "disable": "अक्षम करना",
+  "downloadFile": "डाउनलोड करना",
+  "deleteFile": "मिटाना",
+  "enterFieldValue": "फ़ील्ड मान दर्ज करें"
 }

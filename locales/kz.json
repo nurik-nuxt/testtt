@@ -226,5 +226,8 @@
   "openTelegramApp": "Telegram қолданбасын ашыңыз, бот жасау үшін @BotFather пайдаланыңыз немесе бар ботты ашыңыз.",
   "copyBotToken": "Бот белгісін көшіріп, осы жерге қойыңыз",
   "connected": "Қосылды",
-  "disable": "Өшіру"
+  "disable": "Өшіру",
+  "downloadFile": "Жүктеп алу",
+  "deleteFile": "Жою",
+  "enterFieldValue": "Өріс мәнін енгізіңіз"
 }

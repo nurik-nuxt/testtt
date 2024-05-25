@@ -148,17 +148,44 @@ const statusId = ref<string>('')
               <Button label="Новое сообщение" class="mt-4"/>
             </TabPanel>
             <TabPanel :header="t('sendFileInMessage')">
-              <Button label="Прикрепить изображение" class="mt-4"/>
+<!--              <Button label="Прикрепить изображение" class="mt-4"/>-->
+              <div class="mt-4 flex flex-column gap-4">
+                <span>{{ $t('fileSendingRestrictions') }}</span>
+                <div class="flex gap-3 align-items-center">
+                  <Button :label="t('attachFile')" icon="pi pi-plus"></Button>
+                  <Button :label="t('downloadFile')" icon="pi pi-upload"></Button>
+                  <Button :label="t('deleteFile')" icon="pi pi-times"></Button>
+                  <span>{{ $t('maxFileSize5MB') }}</span>
+                </div>
+              </div>
             </TabPanel>
             <TabPanel :header="t('crmSystemManagement')">
+              <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
               <div class="mt-4 flex justify-content-between gap-4">
                 <div class="flex flex-column w-full gap-2">
-                  <label for="funnel">Выберите воронку:</label>
-                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" placeholder="Выберите один"></Dropdown>
+                  <label for="funnel">{{ $t('choosePipeline') }}:</label>
+                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" :placeholder="t('chooseField')"></Dropdown>
                 </div>
                 <div class="flex flex-column w-full gap-2">
-                  <label for="statusId">Изменить статус на:</label>
-                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" placeholder="Выберите один"></Dropdown>
+                  <label for="statusId">{{ $t('changeStatus') }}:</label>
+                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" :placeholder="t('chooseField')"></Dropdown>
+                </div>
+              </div>
+              <div class="flex flex-column mt-3">
+                <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">{{ $t('writeDealNote') }}</label>
+                <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" />
+              </div>
+              <div class="flex flex-column mt-3">
+                <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>
+                <div class="flex align-items-center gap-4">
+                  <div class="flex flex-column gap-2 w-full">
+                    <label for="chooseField">{{ $t('chooseField') }}</label>
+                    <InputText id="chooseField" type="text" />
+                  </div>
+                  <div class="flex flex-column gap-2 w-full">
+                    <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
+                    <InputText id="enterFieldValue" type="text" />
+                  </div>
                 </div>
               </div>
             </TabPanel>
@@ -175,6 +202,10 @@ const statusId = ref<string>('')
               </div>
             </TabPanel>
           </TabView>
+          <div class="mt-4 flex gap-4 justify-content-end align-items-center">
+            <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
+            <Button :label="t('save')"></Button>
+          </div>
         </div>
       </div>
     </div>
