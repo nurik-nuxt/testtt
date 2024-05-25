@@ -237,6 +237,80 @@ const temperatureValue = ref(0.3);
 const active = ref(true)
 const filters = ref({});
 
+const activeChannel = ref<string | null>(null);
+
+const amoChannelStep = ref<number | null>(null)
+// const whatsappChannelStep = ref<number | null>(null)
+
+const chooseChannel = (channel: string) => {
+  activeChannel.value = channel;
+  amoChannelStep.value = 1;
+}
+
+const channelStatus = ref('');
+
+const funnelsInAmoCRM = ref([
+  {
+    id: 1,
+    title: 'Воронка AMO 1'
+  },
+  {
+    id: 2,
+    title: 'Воронка AMO 2'
+  },
+  {
+    id: 3,
+    title: 'Воронка AMO 3'
+  },
+  {
+    id: 4,
+    title: 'Воронка AMO 4'
+  },
+  {
+    id: 5,
+    title: 'Воронка AMO 5'
+  }
+])
+
+const funnelInAmoCRM = ref(null);
+
+const amoStatuses = ref([
+  {
+    id: 1,
+    title: 'Неразобранное',
+    active: true
+  },
+  {
+    id: 2,
+    title: 'GPT',
+    active: true
+  },
+  {
+    id: 3,
+    title: 'Отправил ссылку',
+    active: true
+  },
+  {
+    id: 4,
+    title: 'Телефон',
+    active: true
+  },
+  {
+    id: 5,
+    title: 'Заполнил анкету',
+    active: true
+  },
+  {
+    id: 6,
+    title: 'Оплатил мини курс',
+    active: true
+  },
+  {
+    id: 7,
+    title: 'Созвон + КП',
+    active: true
+  }
+])
 </script>
 
 <template>
@@ -488,10 +562,148 @@ const filters = ref({});
 
 
             <TabPanel :header="t('channels')">
-              <div class="chanel-list">
+
+              <div v-if="activeChannel === 'amoCrm'">
+                <h5 class="mt-4">AmoCRM</h5>
+                <Button v-if="amoChannelStep === 1" @click="amoChannelStep = 2" :label="t('connectAmoCRM')"></Button>
+                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
+                  <div class="flex flex-column gap-4">
+                    <Button :label="t('disableAmoCRM')" severity="danger"></Button>
+                    <div class="flex gap-3 align-items-center">
+                      <div>{{ $t('channelStatus') }}</div>
+                      <div class="flex flex-wrap gap-3">
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
+                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
+                        </div>
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
+                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex flex-column">
+                      <span>{{ $t('funnelInAmoCRM') }}</span>
+                      <Dropdown style="margin-top: 8px" id="funnelsInAmoCRM" v-model="funnelInAmoCRM" :options="funnelsInAmoCRM" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                    </div>
+                    <div class="flex flex-column gap-2">
+                      <span>{{ $t('stageAmo') }}</span>
+                      <div class="flex align-items-center justify-content-between" v-for="(amoStatus, index) in amoStatuses" :key="index">
+                        <span>{{ amoStatus.title }}</span>
+                        <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex flex-column gap-4">
+                    <h5>{{ $t('instructionsConnectAmoCRM') }}</h5>
+                    <span>{{ $t('instructionText') }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else-if="activeChannel === 'whatsapp'">
+                <h5 class="mt-4">WhatsApp</h5>
+                <Button v-if="amoChannelStep === 1" @click="amoChannelStep = 2" :label="t('toPlug')"></Button>
+                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
+                  <div class="flex flex-column gap-4">
+                    <i style="cursor: pointer; font-size: 20rem" class="pi pi-qrcode" />
+                    <span>{{ $t('textToPlugWA') }}</span>
+                    <div class="flex align-items-center gap-3">
+                      <div>{{ $t('status') }}:</div>
+                      <div>{{ $t('connected')}}</div>
+                      <Button :label="t('disable')" severity="danger"></Button>
+                    </div>
+                    <div class="flex gap-3 align-items-center">
+                      <div>{{ $t('channelStatus') }}</div>
+                      <div class="flex flex-wrap gap-3">
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
+                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
+                        </div>
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
+                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else-if="activeChannel === 'avito'">
+                <h5 class="mt-4">{{ $t('avitoConnection') }}</h5>
+                <div v-if="amoChannelStep === 1">
+                  <div class="flex flex-column gap-2">
+                    <span>1.{{ $t('connectAnyTariff') }}</span>
+                    <span class="mb-3">2.{{ $t('copyDataPage') }} <a target="_blank" href="https://www.avito.ru/professionals/api" style="color: #076AE1;">({{ $t('link') }})</a></span>
+                    <label for="name1" style="font-weight: 700">{{ $t('enterData') }}</label>
+                    <InputText id="name1" type="text" placeholder="Client_ID" />
+                    <InputText id="name1" type="text" placeholder="Client_Secret" />
+                    <Button :label="t('toPlug')" @click="amoChannelStep = 2"></Button>
+                  </div>
+                </div>
+                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
+                  <div class="flex flex-column gap-4">
+                    <div class="flex align-items-center gap-3">
+                      <div>{{ $t('status') }}:</div>
+                      <div>{{ $t('connected')}}</div>
+                      <Button :label="t('disable')" severity="danger"></Button>
+                    </div>
+                    <div class="flex gap-3 align-items-center">
+                      <div>{{ $t('channelStatus') }}</div>
+                      <div class="flex flex-wrap gap-3">
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
+                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
+                        </div>
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
+                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else-if="activeChannel === 'telegram'">
+                <h5 class="mt-4">{{ $t('connectingTelegramBot') }}</h5>
+                <div v-if="amoChannelStep === 1">
+                  <div class="flex flex-column gap-2">
+                    <span>1.{{ $t('openTelegramApp') }}</span>
+                    <span class="mb-3">2.{{ $t('copyBotToken') }}</span>
+                    <InputText id="name1" type="text" placeholder="tokken:telegrambota" />
+                    <Button :label="t('toPlug')" @click="amoChannelStep = 2"></Button>
+                  </div>
+                </div>
+                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
+                  <div class="flex flex-column gap-4">
+                    <div class="flex align-items-center gap-3">
+                      <div>{{ $t('status') }}:</div>
+                      <div>{{ $t('connected')}}</div>
+                      <Button :label="t('disable')" severity="danger"></Button>
+                    </div>
+                    <div class="flex gap-3 align-items-center">
+                      <div>{{ $t('channelStatus') }}</div>
+                      <div class="flex flex-wrap gap-3">
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
+                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
+                        </div>
+                        <div class="flex align-items-center">
+                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
+                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="chanel-list">
                 <span class="chanel-list__item">
                   amoCRM
-                  <i style="cursor: pointer" class="pi pi-cog" />
+                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('amoCrm')" />
                 </span>
                 <span class="chanel-list__item">
                   Bitrix24
@@ -499,15 +711,15 @@ const filters = ref({});
                 </span>
                 <span class="chanel-list__item">
                   Telegram
-                  <i style="cursor: pointer" class="pi pi-cog" />
+                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('telegram')" />
                 </span>
                 <span class="chanel-list__item">
                   Whatsapp
-                  <i style="cursor: pointer" class="pi pi-cog" />
+                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('whatsapp')" />
                 </span>
                 <span class="chanel-list__item">
                   Avito
-                  <i style="cursor: pointer" class="pi pi-cog" />
+                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('avito')" />
                 </span>
                 <span class="chanel-list__item">
                   {{ $t('onlineChat') }}
@@ -557,6 +769,8 @@ const filters = ref({});
           <Button :label="t('save')"></Button>
         </div>
       </div>
+
+
       <div style="min-width: 300px;">
         <div class="layout-chat">
           <div class="card-chat h-full">
