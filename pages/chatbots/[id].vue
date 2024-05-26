@@ -402,12 +402,6 @@ const amoStatuses = ref([
                   </div>
                 </div>
 
-<!--                <div class="field" style="margin-top: 12px">-->
-<!--                  <label for="name1" style="font-weight: 700">{{ $t('maxTokens') }}</label>-->
-<!--                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />-->
-<!--                  <span style="color: #64748b">{{ $t('requestCost') }}</span>-->
-<!--                </div>-->
-
                 <h5>{{ $t('manageBotMessages') }}</h5>
                 <span>{{ $t('operatorControlPhrases') }}</span>
                 <div class="field" style="margin-top: 12px">

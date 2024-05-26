@@ -230,5 +230,8 @@
   "disable": "إبطال",
   "downloadFile": "تحميل",
   "deleteFile": "يمسح",
-  "enterFieldValue": "أدخل قيمة الحقل"
+  "enterFieldValue": "أدخل قيمة الحقل",
+  "newMessage": "رسالة جديدة",
+  "perMinutes": "دقائق",
+  "sendMyMessage": "أرسل رسالتك"
 }

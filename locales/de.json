@@ -230,5 +230,8 @@
   "disable": "Deaktivieren",
   "downloadFile": "Herunterladen",
   "deleteFile": "Löschen",
-  "enterFieldValue": "Geben Sie den Feldwert ein"
+  "enterFieldValue": "Geben Sie den Feldwert ein",
+  "newMessage": "Eine neue Nachricht",
+  "perMinutes": "Protokoll",
+  "sendMyMessage": "Senden Sie Ihre Nachricht"
 }

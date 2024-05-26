@@ -229,5 +229,8 @@
   "disable": "Disable",
   "downloadFile": "Download",
   "deleteFile": "Delete",
-  "enterFieldValue": "Enter the field value"
+  "enterFieldValue": "Enter the field value",
+  "newMessage": "A new message",
+  "perMinutes": "minutes",
+  "sendMyMessage": "Send your message"
 }

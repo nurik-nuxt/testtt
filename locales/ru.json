@@ -230,5 +230,8 @@
   "disable": "Отключить",
   "downloadFile": "Скачать",
   "deleteFile": "Удалить",
-  "enterFieldValue": "Укажите значение поля"
+  "enterFieldValue": "Укажите значение поля",
+  "newMessage": "Новое сообщение",
+  "perMinutes": "минут",
+  "sendMyMessage": "Отправить свое сообщение"
 }

@@ -229,5 +229,8 @@
   "disable": "Өшіру",
   "downloadFile": "Жүктеп алу",
   "deleteFile": "Жою",
-  "enterFieldValue": "Өріс мәнін енгізіңіз"
+  "enterFieldValue": "Өріс мәнін енгізіңіз",
+  "newMessage": "Жаңа хабарлама",
+  "perMinutes": "минут",
+  "sendMyMessage": "Өз хабарламаңызды жіберіңіз"
 }

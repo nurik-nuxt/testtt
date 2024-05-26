@@ -104,6 +104,59 @@ const statuses = ref([
 ]);
 
 const statusId = ref<string>('')
+
+const isClientRemindersNewMessage = ref(false);
+
+const timeList = ref([
+  {
+    id: 'perMinutes',
+    title: t('perMinutes')
+  },
+  {
+    id: 'perHour',
+    title: t('perHour')
+  },
+  {
+    id: 'perDay',
+    title: t('perDay')
+  }
+]);
+const timeItem = ref(null);
+
+const selectedMessageTypes = ref([
+  {
+    id: 'sendMyMessage',
+    title: t('sendMyMessage')
+  },
+  {
+    id: 'generateUsingAI',
+    title: t('generateUsingAI')
+  }
+])
+
+const selectedMessage = ref(null);
+const messages = ref<{ id: number }[]>([]);
+
+const addMessage = () => {
+  messages.value.push({ id: messages.value.length + 1})
+}
+
+const messageTypes = ref([
+  {
+    id: 'sendMyMessage',
+    title: t('sendMyMessage')
+  },
+  {
+    id: 'generateUsingAI',
+    title: t('generateUsingAI')
+  }
+])
+const messageType = ref(null);
+
+const deleteMessage = (id: number) => {
+  messages.value = messages.value.filter(message => message.id !== id);
+}
+
 </script>
 
 <template>
@@ -145,10 +198,27 @@ const statusId = ref<string>('')
               <Textarea class="mt-4 w-full" :autoResize="true" rows="5" cols="30" :placeholder="t('botResponseInstructions')" />
             </TabPanel>
             <TabPanel :header="t('clientReminders')">
-              <Button label="Новое сообщение" class="mt-4"/>
+              <div v-if="messages?.length">
+                <div v-for="(message, i) in messages" :key="i" class="mt-4 flex align-items-center gap-8">
+                  <div class="flex flex-column" style="width: 700px">
+                    <div>
+                      <div class="text-xl">{{ message.id }}. {{ $t('clientMessage')}}</div>
+                    </div>
+                    <div class="flex align-items-center gap-3 ml-4 mt-4">
+                      <span>{{ $t('clientNoResponseTime') }}</span>
+                      <InputText id="name1" type="number" min="1" style="max-width: 70px" />
+                      <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="timeItem" :options="timeList" optionLabel="title"></Dropdown>
+                    </div>
+                    <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="messageType" :options="messageTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                    <InputText class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" />
+                    <Textarea class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" />
+                  </div>
+                  <i class="pi pi-trash" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>
+                </div>
+              </div>
+              <Button :label="t('addMessage')" class="mt-4" @click="addMessage"/>
             </TabPanel>
             <TabPanel :header="t('sendFileInMessage')">
-<!--              <Button label="Прикрепить изображение" class="mt-4"/>-->
               <div class="mt-4 flex flex-column gap-4">
                 <span>{{ $t('fileSendingRestrictions') }}</span>
                 <div class="flex gap-3 align-items-center">

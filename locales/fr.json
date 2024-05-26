@@ -230,5 +230,8 @@
   "disable": "Désactiver",
   "downloadFile": "Télécharger",
   "deleteFile": "Supprimer",
-  "enterFieldValue": "Entrez la valeur du champ"
+  "enterFieldValue": "Entrez la valeur du champ",
+  "newMessage": "Un nouveau message",
+  "perMinutes": "minutes",
+  "sendMyMessage": "Envoyer votre message"
 }

@@ -230,5 +230,8 @@
   "disable": "अक्षम करना",
   "downloadFile": "डाउनलोड करना",
   "deleteFile": "मिटाना",
-  "enterFieldValue": "फ़ील्ड मान दर्ज करें"
+  "enterFieldValue": "फ़ील्ड मान दर्ज करें",
+  "newMessage": "एक नया संदेश",
+  "perMinutes": "मिनट",
+  "sendMyMessage": "अपना संदेश भेजें"
 }
