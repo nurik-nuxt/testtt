@@ -212,8 +212,8 @@ const deleteMessage = (id: number) => {
                     <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="messageType" :options="messageTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
                     <InputText class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" />
                     <Textarea class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" />
+                    <i class="pi pi-trash ml-auto mt-3" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>
                   </div>
-                  <i class="pi pi-trash" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>
                 </div>
               </div>
               <Button :label="t('addMessage')" class="mt-4" @click="addMessage"/>
