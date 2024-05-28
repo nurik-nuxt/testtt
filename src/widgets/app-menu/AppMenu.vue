@@ -56,6 +56,16 @@ const menu = computed(() => {
     },
   ]
 })
+const op = ref();
+const members = ref([
+  { name: 'Amy Elsner', image: 'amyelsner.png', email: 'amy@email.com', role: 'Owner' },
+  { name: 'Bernardo Dominic', image: 'bernardodominic.png', email: 'bernardo@email.com', role: 'Editor' },
+  { name: 'Ioni Bowcher', image: 'ionibowcher.png', email: 'ioni@email.com', role: 'Viewer' }
+]);
+
+const toggle = (event) => {
+  op.value.toggle(event);
+}
 </script>
 
 <template>
@@ -64,9 +74,64 @@ const menu = computed(() => {
       <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
     </template>
     <div style="margin-top: auto;">
-      <template v-for="(item, i) in menu.slice(5,8)" :key="i">
+      <template v-for="(item, i) in menu.slice(5,7)" :key="i">
         <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
       </template>
+      <span class="help-btn" @click="toggle">
+        <i class="pi pi-fw pi-question-circle" style="margin-right: 0.5rem;"></i>
+        {{ $t('help')}}
+      </span>
+      <OverlayPanel ref="op">
+        <div class="flex flex-column gap-2 w-25rem">
+          <div>
+            <span class="font-medium text-900 block mb-2">{{ $t('yourId') }}</span>
+            <InputGroup class="mb-2">
+              <InputText value="473485384" readonly class="w-25rem"></InputText>
+              <InputGroupAddon>
+                <i class="pi pi-copy"></i>
+              </InputGroupAddon>
+            </InputGroup>
+            <span>{{ $t('contactingSupport') }}</span>
+            <Divider />
+          </div>
+          <div class="flex flex-column gap-2">
+            <div class="font-bold">{{ $t('connectWithUs') }}</div>
+            <span class="flex align-items-center gap-1">
+              <i class="pi pi-fw pi-question"></i>
+              {{ $t('supportOperatorChat') }}
+            </span>
+            <span class="flex align-items-center gap-1">
+              <i class="pi pi-fw pi-clone"></i>
+              {{ $t('partnerSupportChat') }}
+            </span>
+          </div>
+          <Divider />
+          <div class="flex flex-column gap-2">
+            <div class="font-bold">{{ $t('usefulMaterials') }}</div>
+            <span class="flex align-items-center gap-1">
+              <i class="pi pi-fw pi-database"></i>
+              {{ $t('knowledgeBase') }}
+            </span>
+            <span class="flex align-items-center gap-1">
+              <i class="pi pi-fw pi-telegram"></i>
+              {{ $t('telegramChannelNews') }}
+            </span>
+            <span class="flex align-items-center gap-1">
+              <i class="pi pi-fw pi-id-card"></i>
+              {{ $t('becomePartner') }}
+            </span>
+          </div>
+        </div>
+      </OverlayPanel>
     </div>
   </ul>
 </template>
+
+<style scoped>
+.help-btn {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+</style>

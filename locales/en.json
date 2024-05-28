@@ -232,5 +232,7 @@
   "enterFieldValue": "Enter the field value",
   "newMessage": "A new message",
   "perMinutes": "minutes",
-  "sendMyMessage": "Send your message"
+  "sendMyMessage": "Send your message",
+  "connectWithUs": "Connect with us",
+  "telegramChannelNews": "Telegram channel. News."
 }

@@ -233,5 +233,7 @@
   "enterFieldValue": "Ingrese el valor del campo",
   "newMessage": "un nuevo mensaje",
   "perMinutes": "minutos",
-  "sendMyMessage": "Enviar tu mensaje"
+  "sendMyMessage": "Enviar tu mensaje",
+  "connectWithUs": "Conéctate con nosotros",
+  "telegramChannelNews": "Canal de telegramas. Noticias."
 }

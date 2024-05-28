@@ -233,5 +233,7 @@
   "enterFieldValue": "Geben Sie den Feldwert ein",
   "newMessage": "Eine neue Nachricht",
   "perMinutes": "Protokoll",
-  "sendMyMessage": "Senden Sie Ihre Nachricht"
+  "sendMyMessage": "Senden Sie Ihre Nachricht",
+  "connectWithUs": "Geben Sie diese bei der Kontaktaufnahme mit dem Support an",
+  "telegramChannelNews": "Telegram-Kanal. Nachricht."
 }

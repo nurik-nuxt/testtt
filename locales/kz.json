@@ -232,5 +232,7 @@
   "enterFieldValue": "Өріс мәнін енгізіңіз",
   "newMessage": "Жаңа хабарлама",
   "perMinutes": "минут",
-  "sendMyMessage": "Өз хабарламаңызды жіберіңіз"
+  "sendMyMessage": "Өз хабарламаңызды жіберіңіз",
+  "connectWithUs": "Бізбен байланысыңыз",
+  "telegramChannelNews": "Телеграм каналы. Жаңалықтар."
 }

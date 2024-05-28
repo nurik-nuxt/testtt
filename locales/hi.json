@@ -233,5 +233,7 @@
   "enterFieldValue": "फ़ील्ड मान दर्ज करें",
   "newMessage": "एक नया संदेश",
   "perMinutes": "मिनट",
-  "sendMyMessage": "अपना संदेश भेजें"
+  "sendMyMessage": "अपना संदेश भेजें",
+  "connectWithUs": "हमारे साथ जुड़ें",
+  "telegramChannelNews": "टेलीग्राम चैनल. समाचार।"
 }

@@ -233,5 +233,7 @@
   "enterFieldValue": "أدخل قيمة الحقل",
   "newMessage": "رسالة جديدة",
   "perMinutes": "دقائق",
-  "sendMyMessage": "أرسل رسالتك"
+  "sendMyMessage": "أرسل رسالتك",
+  "connectWithUs": "اتصل بنا",
+  "telegramChannelNews": "قناة التليجرام . أخبار."
 }

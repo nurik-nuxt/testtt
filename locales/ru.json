@@ -233,5 +233,7 @@
   "enterFieldValue": "Укажите значение поля",
   "newMessage": "Новое сообщение",
   "perMinutes": "минут",
-  "sendMyMessage": "Отправить свое сообщение"
+  "sendMyMessage": "Отправить свое сообщение",
+  "connectWithUs": "Связаться с нами",
+  "telegramChannelNews": "Telegram канал. Новости."
 }
