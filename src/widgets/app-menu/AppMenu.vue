@@ -81,7 +81,7 @@ const toggle = (event) => {
         <i class="pi pi-fw pi-question-circle" style="margin-right: 0.5rem;"></i>
         {{ $t('help')}}
       </span>
-      <OverlayPanel ref="op">
+      <OverlayPanel ref="op" style="background: #CDDFFF;">
         <div class="flex flex-column gap-2 w-25rem">
           <div>
             <span class="font-medium text-900 block mb-2">{{ $t('yourId') }}</span>
@@ -97,11 +97,11 @@ const toggle = (event) => {
           <div class="flex flex-column gap-2">
             <div class="font-bold">{{ $t('connectWithUs') }}</div>
             <span class="flex align-items-center gap-1">
-              <i class="pi pi-fw pi-question"></i>
+              <i class="pi pi-fw pi-question-circle"></i>
               {{ $t('supportOperatorChat') }}
             </span>
             <span class="flex align-items-center gap-1">
-              <i class="pi pi-fw pi-clone"></i>
+              <i class="pi pi-fw pi-users"></i>
               {{ $t('partnerSupportChat') }}
             </span>
           </div>
@@ -117,7 +117,7 @@ const toggle = (event) => {
               {{ $t('telegramChannelNews') }}
             </span>
             <span class="flex align-items-center gap-1">
-              <i class="pi pi-fw pi-id-card"></i>
+              <i class="pi pi-fw pi-user-plus"></i>
               {{ $t('becomePartner') }}
             </span>
           </div>
@@ -133,5 +133,8 @@ const toggle = (event) => {
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+:deep(.p-divider.p-divider-horizontal:before) {
+  border-top: 1px solid black;
 }
 </style>
