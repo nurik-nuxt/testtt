@@ -29,8 +29,6 @@ const items = ref([
                 <InputIcon class="pi pi-search" style="font-size: 16px" />
               </IconField>
               <SplitButton icon="pi pi-check" menuButtonIcon="pi pi-sliders-h" :model="items" />
-
-<!--              <i style="cursor: pointer; font-size: 22px; color: #1E63CE" class="pi pi-sliders-h" />-->
             </div>
             <span>
               {{ $t('dialogsFound') }}: 1
@@ -65,7 +63,7 @@ const items = ref([
             </div>
             <div class="chat-message">
               <IconField class="w-full" iconPosition="left">
-                <InputIcon style="cursor: pointer; font-size: 18px;" class="pi pi-file" />
+                <InputIcon style="cursor: pointer; font-size: 18px;" class="pi pi-paperclip" />
                 <Textarea type="text" id="message" class="w-full" :placeholder="t('enterMessage')" :autoResize="true" rows="2" cols="2" />
               </IconField>
               <i style="cursor: pointer; font-size: 18px;" class="pi pi-send" />
