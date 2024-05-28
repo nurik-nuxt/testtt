@@ -64,7 +64,10 @@ const items = ref([
               chat-content
             </div>
             <div class="chat-message">
-              <Textarea type="text" id="message" class="w-full" :placeholder="t('enterMessage')" :autoResize="true" rows="1" cols="2" />
+              <IconField class="w-full" iconPosition="left">
+                <InputIcon style="cursor: pointer; font-size: 18px;" class="pi pi-file" />
+                <Textarea type="text" id="message" class="w-full" :placeholder="t('enterMessage')" :autoResize="true" rows="2" cols="2" />
+              </IconField>
               <i style="cursor: pointer; font-size: 18px;" class="pi pi-send" />
             </div>
           </div>
@@ -117,5 +120,9 @@ const items = ref([
 :deep(.p-splitbutton-menubutton) {
   border-radius: 6px;
   font-size: 18px;
+}
+
+:deep(.p-icon-field > .p-input-icon) {
+  top: 35%;
 }
 </style>
