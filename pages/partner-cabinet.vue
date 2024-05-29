@@ -72,7 +72,9 @@ const paymentData = ref([
         <Divider/>
         <div class="flex flex-column gap-3">
           <span>{{ $t('15Sale') }}</span>
-          <Button :label="t('invoiceTheClientForCrm')" severity="secondary" raised style="max-width: 390px;" />
+          <div class="flex align-items-center gap-3">
+            <Button :label="t('invoiceTheClientForCrm')" severity="secondary" raised style="max-width: 390px;" />
+          </div>
         </div>
         <Divider/>
         <div>
@@ -107,7 +109,10 @@ const paymentData = ref([
               <span class="font-bold">370 $</span>
             </div>
           </div>
-          <div class="flex align-items-center gap-3"></div>
+          <div class="flex align-items-center gap-3 mt-3">
+            <InputText type="text" :placeholder="t('enterAmount')"/>
+            <Button :label="t('withdraw')" />
+          </div>
         </div>
         <Divider/>
         <div>
