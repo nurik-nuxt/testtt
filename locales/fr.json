@@ -235,5 +235,8 @@
   "perMinutes": "minutes",
   "sendMyMessage": "Envoyer votre message",
   "connectWithUs": "Connecte-toi avec nous",
-  "telegramChannelNews": "Chaîne de télégramme. Nouvelles."
+  "telegramChannelNews": "Chaîne de télégramme. Nouvelles.",
+  "idClient": "identité du client",
+  "apply": "Appliquer",
+  "hiddenSettings": "Paramètres masqués"
 }

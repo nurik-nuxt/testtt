@@ -234,5 +234,8 @@
   "perMinutes": "минут",
   "sendMyMessage": "Өз хабарламаңызды жіберіңіз",
   "connectWithUs": "Бізбен байланысыңыз",
-  "telegramChannelNews": "Телеграм каналы. Жаңалықтар."
+  "telegramChannelNews": "Телеграм каналы. Жаңалықтар.",
+  "idClient": "Клиент идентификаторы",
+  "apply": "Қолдану",
+  "hiddenSettings": "Жасырын параметрлер"
 }

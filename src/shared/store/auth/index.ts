@@ -25,6 +25,20 @@ export const useAuthStore = defineStore('auth', {
         refresh_token: undefined
     }),
 
+    getters: {
+        userData(state){
+            if (process.client && jsCookie.get('accessToken')) {
+                const userCookie = jsCookie.get('user')
+                return userCookie ? JSON.parse(userCookie) : null
+            } else {
+                return null;
+            }
+        },
+        isAdmin(){
+            return this.userData?.role === 'admin'
+        }
+    },
+
     actions: {
         async login(form: { email: string, password: string }) {
             try {

@@ -1,11 +1,15 @@
 <script setup>
 import { useLayout } from '~/composable';
+import { useAuthStore } from "~/src/shared/store/auth";
+
 
 const { layoutConfig, onMenuToggle, showLanguageDialog } = useLayout();
+const authStore = useAuthStore();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
+const { t } = useI18n();
 
 onMounted(() => {
   bindOutsideClickListener();
@@ -63,11 +67,16 @@ const languageDialog = ref(false);
 
 <template>
   <div class="layout-topbar">
-    <nuxt-link to="/" class="layout-topbar-logo">
+    <nuxt-link v-if="!authStore.isAdmin" to="/" class="layout-topbar-logo">
       <span class="layout-topbar-logo-text">7sales</span>
     </nuxt-link>
+    <div v-else class="flex align-items-center gap-4">
+      <span>{{ $t('idClient') }}:</span>
+      <InputText type="text" value="467897" />
+      <Button :label="t('apply')"/>
+    </div>
 
-    <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
+    <button v-if="!authStore.isAdmin" class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
       <i class="pi pi-bars"></i>
     </button>
 

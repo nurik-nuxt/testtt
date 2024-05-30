@@ -235,5 +235,8 @@
   "perMinutes": "دقائق",
   "sendMyMessage": "أرسل رسالتك",
   "connectWithUs": "اتصل بنا",
-  "telegramChannelNews": "قناة التليجرام . أخبار."
+  "telegramChannelNews": "قناة التليجرام . أخبار.",
+  "idClient": "معرف العميل",
+  "apply": "يتقدم",
+  "hiddenSettings": "الإعدادات المخفية"
 }

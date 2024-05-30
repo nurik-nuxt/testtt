@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { AppMenuItem } from "~/src/shared/components/app-menu-item";
+import { useAuthStore } from "~/src/shared/store/auth";
+
+const authStore = useAuthStore();
 const { t } = useI18n();
 
 interface MenuItem {
@@ -56,12 +59,51 @@ const menu = computed(() => {
     },
   ]
 })
+const menuSupport = computed(() => {
+  return [
+    {
+      label: t('chatbots'),
+      icon: 'pi pi-fw pi-android',
+      url: 'supports/chatbots'
+    },
+    {
+      label: t('tariff'),
+      icon: 'pi pi-fw pi-star',
+      url: 'supports/tariffs'
+    },
+    {
+      label: t('message'),
+      icon: 'pi pi-fw pi-comment',
+      url: 'supports/dialogues'
+    },
+    {
+      label: t('callAnalytics'),
+      icon: 'pi pi-fw pi-chart-pie',
+      url: 'supports/analytics'
+    },
+    {
+      label: t('logs'),
+      icon: 'pi pi-fw pi-prime',
+      url: 'supports/logs'
+    },
+    {
+      label: t('partnerAccount'),
+      icon: 'pi pi-fw pi-id-card',
+      url: 'supports/partner-cabinet'
+    },
+    {
+      label: t('profile'),
+      icon: 'pi pi-fw pi-user',
+      url: 'supports/cabinet'
+    },
+    {
+      label: t('hiddenSettings'),
+      icon: 'pi pi-fw pi-cog',
+      url: 'supports/settings'
+    },
+  ]
+})
 const op = ref();
-const members = ref([
-  { name: 'Amy Elsner', image: 'amyelsner.png', email: 'amy@email.com', role: 'Owner' },
-  { name: 'Bernardo Dominic', image: 'bernardodominic.png', email: 'bernardo@email.com', role: 'Editor' },
-  { name: 'Ioni Bowcher', image: 'ionibowcher.png', email: 'ioni@email.com', role: 'Viewer' }
-]);
 
 const toggle = (event) => {
   op.value.toggle(event);
@@ -70,60 +112,67 @@ const toggle = (event) => {
 
 <template>
   <ul class="layout-menu">
-    <template v-for="(item, i) in menu.slice(0,5)" :key="i">
-      <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
-    </template>
-    <div style="margin-top: auto;">
-      <template v-for="(item, i) in menu.slice(5,7)" :key="i">
+    <template v-if="authStore.isAdmin">
+      <template v-for="(item, i) in menuSupport" :key="i">
         <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
       </template>
-      <span class="help-btn" @click="toggle">
+    </template>
+    <template v-else>
+      <template v-for="(item, i) in menu.slice(0,5)" :key="i">
+        <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
+      </template>
+      <div style="margin-top: auto;">
+        <template v-for="(item, i) in menu.slice(5,7)" :key="i">
+          <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
+        </template>
+        <span class="help-btn" @click="toggle">
         <i class="pi pi-fw pi-question-circle" style="margin-right: 0.5rem;"></i>
         {{ $t('help')}}
       </span>
-      <OverlayPanel ref="op" style="background: #CDDFFF;">
-        <div class="flex flex-column gap-2 w-25rem">
-          <div>
-            <span class="font-medium text-900 block mb-2">{{ $t('yourId') }}</span>
-            <InputGroup class="mb-2">
-              <InputText value="473485384" readonly class="w-25rem"></InputText>
-              <InputGroupAddon>
-                <i class="pi pi-copy"></i>
-              </InputGroupAddon>
-            </InputGroup>
-            <span>{{ $t('contactingSupport') }}</span>
-            <Divider />
-          </div>
-          <div class="flex flex-column gap-2">
-            <div class="font-bold">{{ $t('connectWithUs') }}</div>
-            <span class="flex align-items-center gap-1">
+        <OverlayPanel ref="op" style="background: #CDDFFF;">
+          <div class="flex flex-column gap-2 w-25rem">
+            <div>
+              <span class="font-medium text-900 block mb-2">{{ $t('yourId') }}</span>
+              <InputGroup class="mb-2">
+                <InputText value="473485384" readonly class="w-25rem"></InputText>
+                <InputGroupAddon>
+                  <i class="pi pi-copy"></i>
+                </InputGroupAddon>
+              </InputGroup>
+              <span>{{ $t('contactingSupport') }}</span>
+              <Divider />
+            </div>
+            <div class="flex flex-column gap-2">
+              <div class="font-bold">{{ $t('connectWithUs') }}</div>
+              <span class="flex align-items-center gap-1">
               <i class="pi pi-fw pi-question-circle"></i>
               {{ $t('supportOperatorChat') }}
             </span>
-            <span class="flex align-items-center gap-1">
+              <span class="flex align-items-center gap-1">
               <i class="pi pi-fw pi-users"></i>
               {{ $t('partnerSupportChat') }}
             </span>
-          </div>
-          <Divider />
-          <div class="flex flex-column gap-2">
-            <div class="font-bold">{{ $t('usefulMaterials') }}</div>
-            <span class="flex align-items-center gap-1">
+            </div>
+            <Divider />
+            <div class="flex flex-column gap-2">
+              <div class="font-bold">{{ $t('usefulMaterials') }}</div>
+              <span class="flex align-items-center gap-1">
               <i class="pi pi-fw pi-database"></i>
               {{ $t('knowledgeBase') }}
             </span>
-            <span class="flex align-items-center gap-1">
+              <span class="flex align-items-center gap-1">
               <i class="pi pi-fw pi-telegram"></i>
               {{ $t('telegramChannelNews') }}
             </span>
-            <span class="flex align-items-center gap-1">
+              <span class="flex align-items-center gap-1">
               <i class="pi pi-fw pi-user-plus"></i>
               {{ $t('becomePartner') }}
             </span>
+            </div>
           </div>
-        </div>
-      </OverlayPanel>
-    </div>
+        </OverlayPanel>
+      </div>
+    </template>
   </ul>
 </template>
 

@@ -235,5 +235,8 @@
   "perMinutes": "मिनट",
   "sendMyMessage": "अपना संदेश भेजें",
   "connectWithUs": "हमारे साथ जुड़ें",
-  "telegramChannelNews": "टेलीग्राम चैनल. समाचार।"
+  "telegramChannelNews": "टेलीग्राम चैनल. समाचार।",
+  "idClient": "ग्राहक ID",
+  "apply": "आवेदन करना",
+  "hiddenSettings": "छुपी हुई सेटिंग्स"
 }

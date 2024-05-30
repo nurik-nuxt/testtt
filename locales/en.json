@@ -234,5 +234,8 @@
   "perMinutes": "minutes",
   "sendMyMessage": "Send your message",
   "connectWithUs": "Connect with us",
-  "telegramChannelNews": "Telegram channel. News."
+  "telegramChannelNews": "Telegram channel. News.",
+  "idClient": "Client ID",
+  "apply": "Apply",
+  "hiddenSettings": "Hidden settings"
 }

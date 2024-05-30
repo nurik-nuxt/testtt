@@ -235,5 +235,8 @@
   "perMinutes": "Protokoll",
   "sendMyMessage": "Senden Sie Ihre Nachricht",
   "connectWithUs": "Geben Sie diese bei der Kontaktaufnahme mit dem Support an",
-  "telegramChannelNews": "Telegram-Kanal. Nachricht."
+  "telegramChannelNews": "Telegram-Kanal. Nachricht.",
+  "idClient": "Kunden ID",
+  "apply": "Anwenden",
+  "hiddenSettings": "Versteckte Einstellungen"
 }
