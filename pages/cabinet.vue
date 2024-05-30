@@ -23,7 +23,6 @@ const refreshToken = computed(() => {
 const logout = async () => {
   try {
     const response = await authStore.logout(<string>refreshToken?.value)
-    console.log(response);
     if (response?.success) {
       jsCookie.remove('accessToken');
       jsCookie.remove('refreshToken');

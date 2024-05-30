@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { AppMenuItem } from "~/src/shared/components/app-menu-item";
 import { useAuthStore } from "~/src/shared/store/auth";
+import jsCookie from "js-cookie";
 
 const authStore = useAuthStore();
 const { t } = useI18n();
@@ -108,6 +109,24 @@ const op = ref();
 const toggle = (event) => {
   op.value.toggle(event);
 }
+
+const refreshToken = computed(() => {
+  return jsCookie.get('refreshToken')
+})
+const logout = async () => {
+  try {
+    const response = await authStore.logout(<string>refreshToken?.value)
+    if (response?.success) {
+      jsCookie.remove('accessToken');
+      jsCookie.remove('refreshToken');
+      jsCookie.remove('user');
+      return navigateTo({ name: 'login' })
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 </script>
 
 <template>
@@ -116,6 +135,10 @@ const toggle = (event) => {
       <template v-for="(item, i) in menuSupport" :key="i">
         <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
       </template>
+      <div class="logout mt-auto flex flex-column gap-1">
+        <span>Support: {{ authStore?.userData?.email}}</span>
+        <Button class="p-0 text-left"  style="margin-top: auto; color: #076AE1" :label="t('logOut')" link @click="logout"/>
+      </div>
     </template>
     <template v-else>
       <template v-for="(item, i) in menu.slice(0,5)" :key="i">
@@ -185,5 +208,8 @@ const toggle = (event) => {
 }
 :deep(.p-divider.p-divider-horizontal:before) {
   border-top: 1px solid black;
+}
+.logout {
+  padding: 0.75rem 1rem;
 }
 </style>
