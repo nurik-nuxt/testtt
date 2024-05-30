@@ -56,7 +56,7 @@ const paymentData = ref([
         </div>
         <span>{{ $t('onceClick') }}</span>
         <Divider/>
-        <div class="flex w-full flex-column md:flex-row align-items-center gap-3 mt-4">
+        <div class="flex w-full flex-column md:flex-row gap-3 mt-4">
           <div class="flex flex-column">
             <h5>{{ $t('promoter') }}:</h5>
             <span>{{ $t('15Promo') }}</span>
@@ -136,6 +136,7 @@ const paymentData = ref([
   padding: 1rem;
   background: #f1f5f9;
   height: 100px;
+  width: 150px;
   display: flex;
   flex-direction: column;
   gap: 4px;
