@@ -112,7 +112,7 @@ const toggle = (event) => {
 
 <template>
   <ul class="layout-menu">
-    <template v-if="authStore.isAdmin">
+    <template v-if="authStore.isSupport">
       <template v-for="(item, i) in menuSupport" :key="i">
         <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
       </template>

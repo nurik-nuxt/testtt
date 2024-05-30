@@ -67,7 +67,7 @@ const languageDialog = ref(false);
 
 <template>
   <div class="layout-topbar">
-    <nuxt-link v-if="!authStore.isAdmin" to="/" class="layout-topbar-logo">
+    <nuxt-link v-if="!authStore.isSupport" to="/" class="layout-topbar-logo">
       <span class="layout-topbar-logo-text">7sales</span>
     </nuxt-link>
     <div v-else class="flex align-items-center gap-4">
@@ -76,7 +76,7 @@ const languageDialog = ref(false);
       <Button :label="t('apply')"/>
     </div>
 
-    <button v-if="!authStore.isAdmin" class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
+    <button v-if="!authStore.isSupport" class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
       <i class="pi pi-bars"></i>
     </button>
 
