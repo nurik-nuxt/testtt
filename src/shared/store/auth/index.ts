@@ -36,6 +36,9 @@ export const useAuthStore = defineStore('auth', {
         },
         isSupport(){
             return this.userData?.role === 'support'
+        },
+        isAdmin() {
+            return this.userData?.role === 'admin'
         }
     },
 

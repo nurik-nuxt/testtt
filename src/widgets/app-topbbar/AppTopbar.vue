@@ -70,6 +70,9 @@ const languageDialog = ref(false);
     <nuxt-link v-if="!authStore.isSupport" to="/" class="layout-topbar-logo">
       <span class="layout-topbar-logo-text">7sales</span>
     </nuxt-link>
+    <nuxt-link v-else-if="!authStore.isAdmin" to="/" class="layout-topbar-logo">
+      <span class="layout-topbar-logo-text">Admin</span>
+    </nuxt-link>
     <div v-else class="flex align-items-center gap-4">
       <span>{{ $t('idClient') }}:</span>
       <InputText type="text" value="467897" />

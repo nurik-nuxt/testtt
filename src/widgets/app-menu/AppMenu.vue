@@ -104,6 +104,35 @@ const menuSupport = computed(() => {
     },
   ]
 })
+const menuAdmin = computed(() => {
+  return [
+    {
+      label: 'Дашборд 7s',
+      icon: 'pi pi-fw pi-home',
+      url: 'admin/dashboard'
+    },
+    {
+      label: 'Скрытые промты',
+      icon: 'pi pi-fw pi-star',
+      url: 'admin/products'
+    },
+    {
+      label: 'База знаний',
+      icon: 'pi pi-fw pi-database',
+      url: 'admin/knowledge'
+    },
+    {
+      label: 'Логи',
+      icon: 'pi pi-fw pi-prime',
+      url: 'admin/logs'
+    },
+    {
+      label: 'Настройки ...',
+      icon: 'pi pi-fw pi-cog',
+      url: 'admin/settings'
+    },
+  ]
+})
 const op = ref();
 
 const toggle = (event) => {
@@ -133,6 +162,15 @@ const logout = async () => {
   <ul class="layout-menu">
     <template v-if="authStore.isSupport">
       <template v-for="(item, i) in menuSupport" :key="i">
+        <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
+      </template>
+      <div class="logout mt-auto flex flex-column gap-1">
+        <span>Support: {{ authStore?.userData?.email}}</span>
+        <Button class="p-0 text-left"  style="margin-top: auto; color: #076AE1" :label="t('logOut')" link @click="logout"/>
+      </div>
+    </template>
+    <template v-else-if="authStore.isAdmin">
+      <template v-for="(item, i) in menuAdmin" :key="i">
         <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
       </template>
       <div class="logout mt-auto flex flex-column gap-1">
