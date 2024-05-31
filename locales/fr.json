@@ -238,5 +238,13 @@
   "telegramChannelNews": "Chaîne de télégramme. Nouvelles.",
   "idClient": "identité du client",
   "apply": "Appliquer",
-  "hiddenSettings": "Paramètres masqués"
+  "hiddenSettings": "Paramètres masqués",
+  "transcriptionCalls": "Transcription des appels avec analyse vocale.",
+  "analyzeEmployees": "Analysez les appels de vos collaborateurs, vérifiez s'ils répondent à vos exigences et à vos scripts.",
+  "connectCRMsystem": "Connectez votre système CRM",
+  "conversationAnalysis": "Options d'analyse de conversation (script)",
+  "templates": "Modèles",
+  "writeScript": "Écrivez un script que le manager doit utiliser pour communiquer. Décrivez les principaux points auxquels vous devez prêter attention ou choisissez l'un des modèles prêts à l'emploi.",
+  "selectCallSource": "Sélectionnez une source d'appel",
+  "addScript": "Ajouter un script"
 }

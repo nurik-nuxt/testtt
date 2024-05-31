@@ -238,5 +238,13 @@
   "telegramChannelNews": "Telegram-Kanal. Nachricht.",
   "idClient": "Kunden ID",
   "apply": "Anwenden",
-  "hiddenSettings": "Versteckte Einstellungen"
+  "hiddenSettings": "Versteckte Einstellungen",
+  "transcriptionCalls": "Transkription von Anrufen mit Sprachanalyse.",
+  "analyzeEmployees": "Analysieren Sie die Anrufe Ihrer Mitarbeiter und prüfen Sie, ob diese Ihren Anforderungen und Skripten entsprechen.",
+  "connectCRMsystem": "Verbinden Sie Ihr CRM-System",
+  "conversationAnalysis": "Konversationsanalyseoptionen (Skript)",
+  "templates": "Vorlagen",
+  "writeScript": "Schreiben Sie ein Skript, das der Manager zur Kommunikation verwenden soll. Beschreiben Sie die wichtigsten Punkte, auf die Sie achten müssen, oder wählen Sie eine der vorgefertigten Vorlagen.",
+  "selectCallSource": "Wählen Sie eine Anrufquelle aus",
+  "addScript": "Skript hinzufügen"
 }

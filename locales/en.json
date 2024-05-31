@@ -237,5 +237,13 @@
   "telegramChannelNews": "Telegram channel. News.",
   "idClient": "Client ID",
   "apply": "Apply",
-  "hiddenSettings": "Hidden settings"
+  "hiddenSettings": "Hidden settings",
+  "transcriptionCalls": "Transcription of calls with speech analytics.",
+  "analyzeEmployees": "Analyze your employees' calls, check whether they meet your requirements and scripts.",
+  "connectCRMsystem": "Connect your CRM system",
+  "conversationAnalysis": "Conversation Analysis Options (Script)",
+  "templates": "Templates",
+  "writeScript": "Write a Script that the manager should use to communicate. Describe the main points you need to pay attention to or choose one of the ready-made templates.",
+  "selectCallSource": "Select a call source",
+  "addScript": "Add Script"
 }

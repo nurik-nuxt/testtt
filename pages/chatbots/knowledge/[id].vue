@@ -134,7 +134,6 @@ const selectedMessageTypes = ref([
   }
 ])
 
-const selectedMessage = ref(null);
 const messages = ref<{ id: number }[]>([]);
 
 const addMessage = () => {
