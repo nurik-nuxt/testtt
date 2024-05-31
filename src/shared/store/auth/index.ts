@@ -27,6 +27,9 @@ export const useAuthStore = defineStore('auth', {
 
     getters: {
         userData(state){
+            if (this.access_token && this.user?._id) {
+                return state.user
+            }
             if (process.client && jsCookie.get('accessToken')) {
                 const userCookie = jsCookie.get('user')
                 return userCookie ? JSON.parse(userCookie) : null
@@ -59,6 +62,9 @@ export const useAuthStore = defineStore('auth', {
                 jsCookie.set('accessToken', response.access_token ?? '', { path: '/', expires: accessTokenExpiryHours });
                 jsCookie.set('refreshToken', response.refresh_token ?? '', { path: '/', expires: refreshTokenExpiryDays });
                 jsCookie.set('user', JSON.stringify(response.user), { path: '/', expires: refreshTokenExpiryDays });
+                this.user = response.user
+                this.access_token = response.access_token;
+                this.refresh_token = response.refresh_token;
 
                 return response;
             } catch (e) {
