@@ -169,7 +169,7 @@ const logout = async () => {
         <Button class="p-0 text-left"  style="margin-top: auto; color: #076AE1" :label="t('logOut')" link @click="logout"/>
       </div>
     </template>
-    <template v-else-if="authStore.isAdmin"ç>
+    <template v-else-if="authStore.isAdmin">
       <template v-for="(item, i) in menuAdmin" :key="i">
         <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
       </template>
