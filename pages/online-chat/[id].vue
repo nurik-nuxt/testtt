@@ -32,12 +32,12 @@ const scriptContent = ref(`<script src="https://cdn.pulse.is/livechat/loader.js"
               <div class="mb-3 font-bold">{{ $t('location') }}</div>
               <div class="flex align-items-center gap-3">
                 <div class="flex align-items-center">
-                  <RadioButton v-model="location" inputId="onRight" name="onRight" value="onRight" />
-                  <label for="ingredient1" class="ml-2">{{ $t('onRight') }}</label>
-                </div>
-                <div class="flex align-items-center">
                   <RadioButton v-model="location" inputId="onLeft" name="onLeft" value="onLeft" />
                   <label for="ingredient2" class="ml-2">{{ $t('onLeft') }}</label>
+                </div>
+                <div class="flex align-items-center">
+                  <RadioButton v-model="location" inputId="onRight" name="onRight" value="onRight" />
+                  <label for="ingredient1" class="ml-2">{{ $t('onRight') }}</label>
                 </div>
               </div>
               <div class="mt-3 mb-3 font-bold">{{ $t('widgetTitle') }}</div>
@@ -48,12 +48,16 @@ const scriptContent = ref(`<script src="https://cdn.pulse.is/livechat/loader.js"
             </div>
             <div v-else-if="settingChatModalStep === 2" class="flex flex-column p-4 h-full" style="width: 40%">
               <div class="font-bold mb-2">{{ $t('installationCode') }}</div>
-              <Textarea class="mb-3" :autoResize="true" rows="3" cols="2" readonly :value="scriptContent"/>
+              <IconField iconPosition="right" class="mb-3">
+                <InputIcon class="pi pi-copy cursor-pointer"> </InputIcon>
+                <Textarea class="mb-3 w-full" :autoResize="true" rows="3" cols="2" readonly :value="scriptContent"/>
+              </IconField>
               <span>{{ $t('addCodeBeforeBody') }}</span>
               <div class="font-bold mb-2 mt-3">{{ $t('integrationStatus') }}</div>
               <InputText type="text" placeholder="https://7sales.pro/"/>
-              <div class="flex justify-content-end mt-auto">
+              <div class="flex flex-column gap-2 mt-3" style="width: 70%">
                 <Button :label="t('checkInstallation')"/>
+                <Button :label="t('skipInstallation')" link />
               </div>
             </div>
             <div class="chat-demo">
@@ -144,5 +148,8 @@ const scriptContent = ref(`<script src="https://cdn.pulse.is/livechat/loader.js"
 }
 .on-left-chat {
   align-items: flex-start !important;
+}
+:deep(.p-icon-field > .p-input-icon) {
+  top: 20%;
 }
 </style>

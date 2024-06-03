@@ -262,5 +262,6 @@
   "installationCode": "Сайттың орнату коды",
   "addCodeBeforeBody": "Бұл кодты жабу </body> тегіне дейін сайт кодына қосыңыз",
   "integrationStatus": "Интеграция күйі",
-  "checkInstallation": "Орнатуды тексеріңіз"
+  "checkInstallation": "Орнатуды тексеріңіз",
+  "skipInstallation": "Орнатуды өткізіп жіберіңіз"
 }

@@ -263,5 +263,6 @@
   "installationCode": "साइट के लिए इंस्टॉलेशन कोड",
   "addCodeBeforeBody": "इस कोड को क्लोजिंग </body> टैग से पहले अपने साइट कोड में जोड़ें",
   "integrationStatus": "एकीकरण स्थिति",
-  "checkInstallation": "स्थापना की जाँच करें"
+  "checkInstallation": "स्थापना की जाँच करें",
+  "skipInstallation": "स्थापना छोड़ें"
 }

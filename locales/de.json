@@ -263,5 +263,6 @@
   "installationCode": "Installationscode für die Site",
   "addCodeBeforeBody": "Fügen Sie diesen Code Ihrem Site-Code vor dem schließenden </body>-Tag hinzu",
   "integrationStatus": "Integrationsstatus",
-  "checkInstallation": "Installation prüfen"
+  "checkInstallation": "Installation prüfen",
+  "skipInstallation": "Installation überspringen"
 }

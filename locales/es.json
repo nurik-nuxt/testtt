@@ -263,5 +263,6 @@
   "installationCode": "Código de instalación para el sitio.",
   "addCodeBeforeBody": "Agregue este código al código de su sitio antes de la etiqueta </body> de cierre",
   "integrationStatus": "Estado de integración",
-  "checkInstallation": "Comprobar instalación"
+  "checkInstallation": "Comprobar instalación",
+  "skipInstallation": "Saltar instalación"
 }

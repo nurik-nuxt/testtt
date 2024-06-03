@@ -263,5 +263,6 @@
   "installationCode": "Код установки для сайта",
   "addCodeBeforeBody": "Добавьте этот код в код вашего сайта перед закрывающим тегом </body>",
   "integrationStatus": "Статус интеграции",
-  "checkInstallation": "Проверить установку"
+  "checkInstallation": "Проверить установку",
+  "skipInstallation": "Пропустить установку"
 }
