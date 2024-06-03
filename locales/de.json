@@ -246,5 +246,22 @@
   "templates": "Vorlagen",
   "writeScript": "Schreiben Sie ein Skript, das der Manager zur Kommunikation verwenden soll. Beschreiben Sie die wichtigsten Punkte, auf die Sie achten müssen, oder wählen Sie eine der vorgefertigten Vorlagen.",
   "selectCallSource": "Wählen Sie eine Anrufquelle aus",
-  "addScript": "Skript hinzufügen"
+  "addScript": "Skript hinzufügen",
+  "addChatWidget": "Fügen Sie Ihrer Website ein Online-Chat-Widget hinzu",
+  "communicateWithVisitors": "Kommunizieren Sie mit Website-Besuchern über das Online-Chat-Widget, unmittelbar nachdem Sie den Code zur Website hinzugefügt haben",
+  "siteURL": "Seiten-URL",
+  "continue": "Weitermachen",
+  "customizeWidget": "Passen Sie das Widget an",
+  "location": "Standort",
+  "onRight": "Rechts",
+  "onLeft": "Links",
+  "widgetTitle": "Widget-Titel",
+  "writeToUs": "Schreib uns",
+  "helloQuestion": "Hallo! Ich habe eine Frage.",
+  "goodAfternoon": "Guten Tag! Wir sind jederzeit bereit, Ihre Fragen zu beantworten",
+  "freeOnlineChat": "Kostenloser Online-Chat",
+  "installationCode": "Installationscode für die Site",
+  "addCodeBeforeBody": "Fügen Sie diesen Code Ihrem Site-Code vor dem schließenden </body>-Tag hinzu",
+  "integrationStatus": "Integrationsstatus",
+  "checkInstallation": "Installation prüfen"
 }

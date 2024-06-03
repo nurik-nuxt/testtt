@@ -246,5 +246,22 @@
   "templates": "Modèles",
   "writeScript": "Écrivez un script que le manager doit utiliser pour communiquer. Décrivez les principaux points auxquels vous devez prêter attention ou choisissez l'un des modèles prêts à l'emploi.",
   "selectCallSource": "Sélectionnez une source d'appel",
-  "addScript": "Ajouter un script"
+  "addScript": "Ajouter un script",
+  "addChatWidget": "Ajoutez un widget de chat en ligne à votre site Web",
+  "communicateWithVisitors": "Communiquez avec les visiteurs du site à l'aide du widget de chat en ligne immédiatement après avoir ajouté le code au site",
+  "siteURL": "URL du site",
+  "continue": "Continuer",
+  "customizeWidget": "Personnaliser le widget",
+  "location": "Emplacement",
+  "onRight": "Sur la droite",
+  "onLeft": "Gauche",
+  "widgetTitle": "Titre du Widget",
+  "writeToUs": "Écrivez-nous",
+  "helloQuestion": "Bonjour! J'ai une question.",
+  "goodAfternoon": "Bon après-midi Nous sommes toujours prêts à répondre à vos questions",
+  "freeOnlineChat": "Chat en ligne gratuit",
+  "installationCode": "Code d'installation du site",
+  "addCodeBeforeBody": "Ajoutez ce code au code de votre site avant la balise de fermeture </body>",
+  "integrationStatus": "Statut d'intégration",
+  "checkInstallation": "Vérifier l'installation"
 }

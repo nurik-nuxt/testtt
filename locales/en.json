@@ -245,5 +245,22 @@
   "templates": "Templates",
   "writeScript": "Write a Script that the manager should use to communicate. Describe the main points you need to pay attention to or choose one of the ready-made templates.",
   "selectCallSource": "Select a call source",
-  "addScript": "Add Script"
+  "addScript": "Add Script",
+  "addChatWidget": "Add an online chat widget to your website",
+  "communicateWithVisitors": "Communicate with site visitors using the online chat widget immediately after adding the code to the site",
+  "siteURL": "Site URL",
+  "continue": "Continue",
+  "customizeWidget": "Customize the widget",
+  "location": "Location",
+  "onRight": "On right",
+  "onLeft": "Left",
+  "widgetTitle": "Widget title",
+  "writeToUs": "Write to us",
+  "helloQuestion": "Hello! I have a question.",
+  "goodAfternoon": "Good afternoon We are always ready to answer your questions",
+  "freeOnlineChat": "Free online chat",
+  "installationCode": "Installation code for the site",
+  "addCodeBeforeBody": "Add this code to your site code before the closing </body> tag",
+  "integrationStatus": "Integration status",
+  "checkInstallation": "Check installation"
 }

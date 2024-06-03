@@ -246,5 +246,22 @@
   "templates": "Plantillas",
   "writeScript": "Escriba un guión que el gerente debería utilizar para comunicarse. Describe los puntos principales a los que debes prestar atención o elige una de las plantillas ya preparadas.",
   "selectCallSource": "Seleccione una fuente de llamada",
-  "addScript": "Agregar guión"
+  "addScript": "Agregar guión",
+  "addChatWidget": "Agregue un widget de chat en línea a su sitio web",
+  "communicateWithVisitors": "Comuníquese con los visitantes del sitio utilizando el widget de chat en línea inmediatamente después de agregar el código al sitio.",
+  "siteURL": "Sitio URL",
+  "continue": "Continuar",
+  "customizeWidget": "Personaliza el widget",
+  "location": "Ubicación",
+  "onRight": "A la derecha",
+  "onLeft": "Izquierda",
+  "widgetTitle": "Título del widget",
+  "writeToUs": "Escríbenos",
+  "helloQuestion": "¡Hola! Tengo una pregunta.",
+  "goodAfternoon": "Buenas tardes Siempre estamos listos para responder a sus preguntas.",
+  "freeOnlineChat": "Chat en línea gratis",
+  "installationCode": "Código de instalación para el sitio.",
+  "addCodeBeforeBody": "Agregue este código al código de su sitio antes de la etiqueta </body> de cierre",
+  "integrationStatus": "Estado de integración",
+  "checkInstallation": "Comprobar instalación"
 }

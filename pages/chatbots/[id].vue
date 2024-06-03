@@ -240,7 +240,6 @@ const filters = ref({});
 const activeChannel = ref<string | null>(null);
 
 const amoChannelStep = ref<number | null>(null)
-// const whatsappChannelStep = ref<number | null>(null)
 
 const chooseChannel = (channel: string) => {
   activeChannel.value = channel;
@@ -311,6 +310,10 @@ const amoStatuses = ref([
     active: true
   }
 ])
+
+const createOnlineChat = () => {
+  return navigateTo(`/online-chat/${route.params.id}`)
+}
 </script>
 
 <template>
@@ -535,8 +538,6 @@ const amoStatuses = ref([
                     <template #body="slotProps">
                       <div>
                         <InputSwitch v-model="active" style="margin-left: 8px"/>
-                        <!--                        <i v-if="!slotProps?.node?.data?.notification" class="pi pi-check-circle"></i>-->
-<!--                        <i v-else class="pi pi-circle"></i>-->
                       </div>
                     </template>
                   </Column>
@@ -717,7 +718,7 @@ const amoStatuses = ref([
                 </span>
                 <span class="chanel-list__item">
                   {{ $t('onlineChat') }}
-                  <i style="cursor: pointer" class="pi pi-cog" />
+                  <i style="cursor: pointer" class="pi pi-cog" @click="createOnlineChat" />
                 </span>
               </div>
             </TabPanel>
