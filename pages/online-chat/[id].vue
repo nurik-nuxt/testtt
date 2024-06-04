@@ -85,7 +85,7 @@ const scriptContent = ref(`<script src="https://cdn.pulse.is/livechat/loader.js"
                 </div>
                 <div class="chat-footer">
                   <div style="color: rgba(0,0,0,.35)">{{ $t('sendMessage') }}</div>
-                  <div class="flex justify-content-end mt-4" style="color: rgba(0,0,0,.35); font-size: 10px">{{ $t('freeOnlineChat') }}<a target="_blank" href="https://7sales.pro/" style="color: #076AE1; margin-left: 2px">7sales</a></div>
+                  <div class="flex justify-content-end mt-4" style="color: rgba(0,0,0,.35); font-size: 10px">{{ $t('freeOnlineChat') }}<a target="_blank" href="https://7sales.ai/" style="color: #076AE1; margin-left: 2px">7sales</a></div>
                 </div>
               </div>
             </div>
