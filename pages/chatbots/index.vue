@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useBotStore } from "~/src/shared/store/bot";
 import { BotCard } from "~/src/shared/components/bot-card";
 
 interface BotItem {
@@ -8,56 +9,23 @@ interface BotItem {
   isActive: boolean
 }
 
-const bots = ref<BotItem[]>([
-  {
-    title: 'Bot 1',
-    id: 123454,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 1',
-    id: 123454,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 2',
-    id: 3434,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 3',
-    id: 6556,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 4',
-    id: 12334545454,
-    channels: ['whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 5',
-    id: 656534,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 6',
-    id: 34345,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  }
-])
+const botStore = useBotStore();
 
-const createBot = () => {
-  return navigateTo({ name: 'chatbots-create' })
+const createBot = async () => {
+  await botStore.createBot().then(async (res) => {
+    console.log(res)
+    await botStore.getBotList()
+  });
 }
 const { t } = useI18n();
 
+onMounted(() => {
+  botStore.getBotList()
+});
+
+const bots = computed(() => {
+  return botStore.getBots
+})
 </script>
 
 <template>
@@ -70,8 +38,9 @@ const { t } = useI18n();
           <bot-card
               v-for="(bot, i) in bots"
               :key="i"
-              :title="bot.title"
-              :id="bot.id"
+              :name="bot.name"
+              :id="i"
+              :bot-id="bot._id"
               :channels="bot.channels"
               :is-active="bot.isActive"
           />

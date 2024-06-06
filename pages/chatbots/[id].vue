@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useBotStore } from "~/src/shared/store/bot";
+import { queryGetModelList } from "~/src/shared/repository/dictionaries";
 
 interface BotItem {
   title: string;
@@ -7,53 +9,17 @@ interface BotItem {
   isActive: boolean
 }
 
+const botStore = useBotStore();
 const route = useRoute();
-const bots = ref<BotItem[]>([
-  {
-    title: 'Bot 1',
-    id: 123454,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 1',
-    id: 123454,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 2',
-    id: 3434,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 3',
-    id: 6556,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 4',
-    id: 12334545454,
-    channels: ['whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 5',
-    id: 656534,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 6',
-    id: 34345,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  }
-])
 const switchValue = ref<boolean>(false);
 const extra = ref<boolean>(false);
+
+// const { data: catalogsList, suspense: suspenseCatalogsList } =
+//     queryCatalogList();
+
+const { data: models, suspense: suspenseModels } = queryGetModelList();
+
+await suspenseModels();
 
 const apiKeyTypes = ref([
   {
@@ -66,34 +32,34 @@ const apiKeyTypes = ref([
   }
 ]);
 
-const models = ref([
-  {
-    title: 'ChatGPT 3.5 turbo 16k',
-    code: 'chat_gpt_16k'
-  },
-  {
-    title: 'ChatGPT 3.5 turbo 0125',
-    code: 'chat_gpt_0125'
-  },
-  {
-    title: 'ChatGPT 4 turbo',
-    code: 'chat_gpt_4'
-  },
-  {
-    title: 'Giminy',
-    code: 'giminy'
-  },
-])
+// const models = ref([
+//   {
+//     title: 'ChatGPT 3.5 turbo 16k',
+//     code: 'chat_gpt_16k'
+//   },
+//   {
+//     title: 'ChatGPT 3.5 turbo 0125',
+//     code: 'chat_gpt_0125'
+//   },
+//   {
+//     title: 'ChatGPT 4 turbo',
+//     code: 'chat_gpt_4'
+//   },
+//   {
+//     title: 'Giminy',
+//     code: 'giminy'
+//   },
+// ])
 
 const limitDays = computed(() => {
   return [
     {
       title: t('perDay'),
-      id: 'perDay'
+      id: 'day'
     },
     {
       title: t('perHour'),
-      id: 'perHour'
+      id: 'hour'
     }
   ]
 })
@@ -314,6 +280,24 @@ const amoStatuses = ref([
 const createOnlineChat = () => {
   return navigateTo(`/online-chat/${route.params.id}`)
 }
+
+const currentBot = ref({})
+onMounted(() => {
+   botStore.getBot(<string>route.params.id).then((res) => {
+    currentBot.value = res;
+  })
+})
+
+const bot = computed(() => {
+  return botStore.getCurrentBot
+})
+
+const confirmBotMainSettings = async () => {
+  await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
+    console.log(res);
+    return navigateTo('/chatbots')
+  })
+}
 </script>
 
 <template>
@@ -321,17 +305,21 @@ const createOnlineChat = () => {
     <div class="flex gap-2 w-full gap-4">
       <div class="card h-full flex flex-column w-full">
         <div class="flex justify-content-between">
-          <h5>{{ $t('edit') }} "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
+          <h5>{{ $t('edit') }} "{{ bot?.name }}"</h5>
           <Button :label="t('save')"></Button>
         </div>
         <div>
           <TabView>
             <TabPanel :header="t('general')">
               <div class="card-form p-fluid" style="margin-top: 16px">
+
+                <!--Bot name-->
                 <div class="field">
                   <label for="name1" style="font-weight: 700">{{ $t('botName') }}</label>
-                  <InputText id="name1" type="text" />
+                  <InputText id="botName" type="text" v-model="currentBot.name" />
                 </div>
+
+                <!--Bot instructions-->
                 <div class="field">
                   <div class="flex justify-content-between align-items-end">
                     <div class="flex flex-column">
@@ -340,14 +328,17 @@ const createOnlineChat = () => {
                     </div>
                     <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
                   </div>
-                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="true" rows="3" cols="2" />
+                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="true" rows="3" cols="2" v-model="currentBot.instructions"/>
                 </div>
               </div>
+
+              <!--Bot helloOnFirst-->
               <span class="bot-card__activate">
                 {{ $t('welcomeMessageStart') }}
-                <InputSwitch v-model="switchValue" style="margin-left: 8px"/>
+                <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px"/>
               </span>
-              <div v-if="switchValue" class="card-form p-fluid">
+
+              <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
                 <div class="field" style="margin-top: 12px">
                   <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" />
                 </div>
@@ -357,64 +348,77 @@ const createOnlineChat = () => {
                 <InputSwitch v-model="extra" style="margin-left: 8px"/>
               </span>
               <div v-if="extra" class="card-form p-fluid" style="margin-top: 12px">
+
+                <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
                 <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
-                <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" type="password" />
+                <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" type="password" v-model="currentBot.apiKey" />
+
+                <!--Bot model-->
                 <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>
-                <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="model" :options="models" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="currentBot.model" :options="models" optionLabel="name" option-value="name" :placeholder="t('chooseOption')"></Dropdown>
                 <span style="color: #64748b">{{ $t('modelChoice') }}</span>
 
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('temperature') }}</label>
-                  <InputText style="margin-bottom: 8px" id="temperatureValue" type="number" min="1" v-model.number="temperatureValue" :disabled="true" />
-                  <Slider style="margin-bottom: 8px" v-model="temperatureValue" :min="0" :max="2" :step="0.1"/>
+                  <InputText style="margin-bottom: 8px" id="temperatureValue" type="number" min="1" v-model.number="currentBot.temperature" :disabled="true" />
+                  <Slider style="margin-bottom: 8px" v-model="currentBot.temperature" :min="0" :max="2" :step="0.1"/>
                   <span style="color: #64748b">{{ $t('creativityLevel') }}</span>
                 </div>
 
+                <!--Bot maxTokens-->
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('maxTokens') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.maxTokens" />
                   <span style="color: #64748b">{{ $t('requestCost') }}</span>
                 </div>
 
-
+                <!--Bot joinTimeout-->
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('messageMergeTimeout') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.smallTimeout"/>
                   <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
                 </div>
+
+                <!--Bot bigTimeout-->
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('responseTimeout') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1"/>
+                  <InputText style="margin-bottom: 8px" id="bigTimeout" type="number" min="1" v-model="currentBot.bigTimeout"/>
                   <span style="color: #64748b">{{ $t('conversationHistoryTimeout') }}</span>
                 </div>
+
+                <!--Bot operatorStopTime-->
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('pauseMinutes') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" />
+                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.operatorStopTime" />
                   <span style="color: #64748b">{{ $t('pauseOperator') }}</span>
                 </div>
 
+                <!--Bot messageLimit-->
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('limitingAIbot') }}</label>
                   <div class="flex align-items-center gap-2">
                     <span>{{ $t('maxMessages') }}</span>
-                    <InputText id="name1" type="number" min="1" style="max-width: 150px" />
+                    <InputText id="message-limit-qty" type="number" min="1" style="max-width: 150px" v-model="currentBot.messageLimit.qty"/>
                     <span>{{ $t('onceWhile') }}</span>
-                    <InputText id="name1" type="number" min="1" style="max-width: 150px" />
-                    <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="limitDay" :options="limitDays" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                    <InputText id="message-limit-period" type="number" min="1" style="max-width: 150px" v-model="currentBot.messageLimit.period"/>
+                    <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="message-limit-granularity" v-model="currentBot.messageLimit.granularity" :options="limitDays" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
                   </div>
                 </div>
 
                 <h5>{{ $t('manageBotMessages') }}</h5>
                 <span>{{ $t('operatorControlPhrases') }}</span>
+
+                <!--Bot stopBot-->
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('stopBot') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="text" />
+                  <InputText style="margin-bottom: 8px" id="stopBot" type="text" v-model="currentBot.controlSignals.stopBot" />
                 </div>
 
+                <!--Bot stopBot-->
                 <div class="field" style="margin-top: 12px">
                   <label for="name1" style="font-weight: 700">{{ $t('resumeBot') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="text" />
+                  <InputText style="margin-bottom: 8px" id="resumeBot" type="text" v-model="currentBot.controlSignals.continueBot" />
                 </div>
 
                 <div class="field" style="margin-top: 12px">
@@ -501,6 +505,10 @@ const createOnlineChat = () => {
                   </div>
                 </div>
 
+              </div>
+              <div class="mt-4 flex gap-4 align-items-center justify-content-end">
+                <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
+                <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
               </div>
             </TabPanel>
 
@@ -759,10 +767,6 @@ const createOnlineChat = () => {
             </TabPanel>
           </TabView>
         </div>
-        <div class="mt-auto ml-auto flex gap-4 align-items-center">
-          <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-          <Button :label="t('save')"></Button>
-        </div>
       </div>
 
 
@@ -770,7 +774,7 @@ const createOnlineChat = () => {
         <div class="layout-chat">
           <div class="card-chat h-full">
             <div class="flex justify-content-between align-items-center">
-              <div>{{ $t('chatWithBot') }} <br>"{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</div>
+              <div>{{ $t('chatWithBot') }} <br>"{{ bot?.name }}"</div>
               <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-trash" />
             </div>
             <div class="h-full mb-2 mt-2 rounded-xl" style="background: #F9FAFC" />
