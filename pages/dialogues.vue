@@ -1,4 +1,36 @@
 <script setup lang="ts">
+import { socket } from "~/socket";
+
+const isConnected = ref(false);
+const transport = ref("N/A");
+
+if (socket.connected) {
+  onConnect();
+}
+
+function onConnect() {
+  isConnected.value = true;
+  transport.value = socket.io.engine.transport.name;
+
+  socket.io.engine.on("upgrade", (rawTransport) => {
+    transport.value = rawTransport.name;
+  });
+}
+
+function onDisconnect() {
+  isConnected.value = false;
+  transport.value = "N/A";
+}
+
+socket.on("connect", onConnect);
+socket.on("disconnect", onDisconnect);
+
+onBeforeUnmount(() => {
+  socket.off("connect", onConnect);
+  socket.off("disconnect", onDisconnect);
+});
+
+
 const { t } = useI18n();
 
 const items = ref([
@@ -15,11 +47,19 @@ const items = ref([
     label: 'Бот '
   }
 ])
+
+const sendMessage = () => {
+  console.log('sendMessage');
+}
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
+      <div>
+        <p>Status: {{ isConnected ? "connected" : "disconnected" }}</p>
+        <p>Transport: {{ transport }}</p>
+      </div>
       <div class="card dialogue-wrapper">
         <div class="flex w-full h-full">
           <div class="user-list h-full">
@@ -63,7 +103,7 @@ const items = ref([
             </div>
             <div class="chat-message">
               <IconField class="w-full" iconPosition="left">
-                <InputIcon style="cursor: pointer; font-size: 18px;" class="pi pi-paperclip" />
+                <InputIcon style="cursor: pointer; font-size: 18px;" class="pi pi-paperclip" @click="sendMessage" />
                 <Textarea type="text" id="message" class="w-full" :placeholder="t('enterMessage')" :autoResize="true" rows="2" cols="2" />
               </IconField>
               <i style="cursor: pointer; font-size: 18px;" class="pi pi-send" />

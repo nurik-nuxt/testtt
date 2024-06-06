@@ -281,12 +281,54 @@ const createOnlineChat = () => {
   return navigateTo(`/online-chat/${route.params.id}`)
 }
 
-const currentBot = ref({})
+const currentBot = ref({
+  _id: '',
+  user_id: '',
+  instructions: '',
+  apiKey: {
+    iv: '',
+    encryptedData: ''
+  },
+  channels: [],
+  controlSignals: {
+    stopBot: '',
+    continueBot: ''
+  },
+  description: '',
+  gpt_assistant_id: '',
+  hello_on_first: false,
+  isLimit: false,
+  isSchedule: false,
+  joinTimeout: 0,
+  maxTokens: 0,
+  messageLimit: {
+    qty: 0,
+    period: 0,
+    granularity: '',
+  },
+  model: '',
+  name: '',
+  operatorStopTime: '',
+  schedule: {
+    start: '',
+    end: '',
+    offset: 5
+  },
+  smallTimeout: 0,
+  stopOnOperator: false,
+  temperature: 0,
+  whisper: false,
+})
 onMounted(() => {
-   botStore.getBot(<string>route.params.id).then((res) => {
-    currentBot.value = res;
+  botStore.getBot(<string>route.params.id).then((res) => {
+    Object.keys(currentBot.value).forEach(key => {
+      if (key in res && res[key] !== null && res[key] !== undefined) {
+        currentBot.value[key] = res[key];
+      }
+    });
   })
 })
+
 
 const bot = computed(() => {
   return botStore.getCurrentBot
@@ -294,7 +336,6 @@ const bot = computed(() => {
 
 const confirmBotMainSettings = async () => {
   await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
-    console.log(res);
     return navigateTo('/chatbots')
   })
 }
