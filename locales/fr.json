@@ -265,5 +265,6 @@
   "integrationStatus": "Statut d'intégration",
   "checkInstallation": "Vérifier l'installation",
   "skipInstallation": "Ignorer l'installation",
-  "deleteBotButton": "Supprimer le robot"
+  "deleteBotButton": "Supprimer le robot",
+  "createKnowledgeTitle": "Créer des connaissances pour un chatbot"
 }

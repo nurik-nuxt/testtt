@@ -265,5 +265,6 @@
   "integrationStatus": "Статус интеграции",
   "checkInstallation": "Проверить установку",
   "skipInstallation": "Пропустить установку",
-  "deleteBotButton": "Удалить бота"
+  "deleteBotButton": "Удалить бота",
+  "createKnowledgeTitle": "Создайте знания для чат-бота"
 }

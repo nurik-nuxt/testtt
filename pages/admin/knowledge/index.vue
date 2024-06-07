@@ -1,5 +1,4 @@
 <script setup lang="ts">
-console.log('Admin knowledge');
 
 const bots = ref([
   {

@@ -265,5 +265,6 @@
   "integrationStatus": "حالة التكامل",
   "checkInstallation": "تحقق من التثبيت",
   "skipInstallation": "تخطي التثبيت",
-  "deleteBotButton": "حذف البوت"
+  "deleteBotButton": "حذف البوت",
+  "createKnowledgeTitle": "إنشاء المعرفة لروبوت الدردشة"
 }

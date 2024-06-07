@@ -264,5 +264,6 @@
   "integrationStatus": "Integration status",
   "checkInstallation": "Check installation",
   "skipInstallation": "Skip installation",
-  "deleteBotButton": "Delete bot"
+  "deleteBotButton": "Delete bot",
+  "createKnowledgeTitle": "Create Knowledge for Chatbot"
 }

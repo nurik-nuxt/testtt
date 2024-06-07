@@ -265,5 +265,6 @@
   "integrationStatus": "एकीकरण स्थिति",
   "checkInstallation": "स्थापना की जाँच करें",
   "skipInstallation": "स्थापना छोड़ें",
-  "deleteBotButton": "बॉट हटाएं"
+  "deleteBotButton": "बॉट हटाएं",
+  "createKnowledgeTitle": "चैटबॉट के लिए ज्ञान बनाएँ"
 }

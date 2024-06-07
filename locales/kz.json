@@ -264,5 +264,6 @@
   "integrationStatus": "Интеграция күйі",
   "checkInstallation": "Орнатуды тексеріңіз",
   "skipInstallation": "Орнатуды өткізіп жіберіңіз",
-  "deleteBotButton": "Ботты жою"
+  "deleteBotButton": "Ботты жою",
+  "createKnowledgeTitle": "Чатбот үшін білім жасаңыз"
 }
