@@ -263,5 +263,6 @@
   "addCodeBeforeBody": "Бұл кодты жабу </body> тегіне дейін сайт кодына қосыңыз",
   "integrationStatus": "Интеграция күйі",
   "checkInstallation": "Орнатуды тексеріңіз",
-  "skipInstallation": "Орнатуды өткізіп жіберіңіз"
+  "skipInstallation": "Орнатуды өткізіп жіберіңіз",
+  "deleteBotButton": "Ботты жою"
 }

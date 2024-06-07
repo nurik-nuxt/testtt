@@ -264,5 +264,6 @@
   "addCodeBeforeBody": "Добавьте этот код в код вашего сайта перед закрывающим тегом </body>",
   "integrationStatus": "Статус интеграции",
   "checkInstallation": "Проверить установку",
-  "skipInstallation": "Пропустить установку"
+  "skipInstallation": "Пропустить установку",
+  "deleteBotButton": "Удалить бота"
 }

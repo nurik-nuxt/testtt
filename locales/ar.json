@@ -264,5 +264,6 @@
   "addCodeBeforeBody": "أضف هذا الكود إلى كود موقعك قبل علامة الإغلاق </body>",
   "integrationStatus": "حالة التكامل",
   "checkInstallation": "تحقق من التثبيت",
-  "skipInstallation": "تخطي التثبيت"
+  "skipInstallation": "تخطي التثبيت",
+  "deleteBotButton": "حذف البوت"
 }

@@ -1,5 +1,5 @@
-import { defineStore } from "pinia";
-import { useApi } from "~/composable";
+import {defineStore} from "pinia";
+import {useApi} from "~/composable";
 
 interface Bot {
     _id: string;
@@ -94,6 +94,16 @@ export const useBotStore = defineStore('bot', {
                     body: botItem
                 })
                 console.log(response);
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async deleteBot(id: string){
+            try {
+                return await useApi(`/bot/${id}`, {
+                    method: 'DELETE'
+                });
             } catch (e) {
                 console.log(e)
             }

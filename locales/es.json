@@ -264,5 +264,6 @@
   "addCodeBeforeBody": "Agregue este código al código de su sitio antes de la etiqueta </body> de cierre",
   "integrationStatus": "Estado de integración",
   "checkInstallation": "Comprobar instalación",
-  "skipInstallation": "Saltar instalación"
+  "skipInstallation": "Saltar instalación",
+  "deleteBotButton": "eliminar robot"
 }

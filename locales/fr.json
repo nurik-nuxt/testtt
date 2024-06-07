@@ -264,5 +264,6 @@
   "addCodeBeforeBody": "Ajoutez ce code au code de votre site avant la balise de fermeture </body>",
   "integrationStatus": "Statut d'intégration",
   "checkInstallation": "Vérifier l'installation",
-  "skipInstallation": "Ignorer l'installation"
+  "skipInstallation": "Ignorer l'installation",
+  "deleteBotButton": "Supprimer le robot"
 }

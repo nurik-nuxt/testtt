@@ -1,21 +1,65 @@
 <script setup lang="ts">
 import { useBotStore } from "~/src/shared/store/bot";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
-
+import { socket } from "~/socket";
+import jsCookie from "js-cookie";
 interface BotItem {
   title: string;
   id: number;
   channels: string[];
   isActive: boolean
 }
+const route = useRoute();
+
+const userId = computed(() => {
+  const userCookie = jsCookie.get('user')
+  const user = userCookie ? JSON.parse(userCookie) : null
+  return user?._id
+})
+
+// const isConnected = ref(false);
+// const transport = ref("N/A");
+//
+// if (socket.connected) {
+//   onConnect();
+// }
+//
+// function onConnect() {
+//   isConnected.value = true;
+//   transport.value = socket.io.engine.transport.name;
+//   console.log(socket.io.engine.transport.name)
+//   socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
+//   socket.on("message", (rawTransport) => {
+//     console.log(rawTransport)
+//   });
+//
+// }
+
+// watch(
+//     () => isConnected.value,
+//     () => {
+//       console.log('aaa')
+//       socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
+//     },
+//     { deep: true }
+// )
+
+// function onDisconnect() {
+//   isConnected.value = false;
+//   transport.value = "N/A";
+// }
+//
+// socket.on("connect", onConnect);
+// socket.on("disconnect", onDisconnect);
+//
+// onBeforeUnmount(() => {
+//   socket.off("connect", onConnect);
+//   socket.off("disconnect", onDisconnect);
+// });
 
 const botStore = useBotStore();
-const route = useRoute();
-const switchValue = ref<boolean>(false);
 const extra = ref<boolean>(false);
 
-// const { data: catalogsList, suspense: suspenseCatalogsList } =
-//     queryCatalogList();
 
 const { data: models, suspense: suspenseModels } = queryGetModelList();
 
@@ -32,25 +76,6 @@ const apiKeyTypes = ref([
   }
 ]);
 
-// const models = ref([
-//   {
-//     title: 'ChatGPT 3.5 turbo 16k',
-//     code: 'chat_gpt_16k'
-//   },
-//   {
-//     title: 'ChatGPT 3.5 turbo 0125',
-//     code: 'chat_gpt_0125'
-//   },
-//   {
-//     title: 'ChatGPT 4 turbo',
-//     code: 'chat_gpt_4'
-//   },
-//   {
-//     title: 'Giminy',
-//     code: 'giminy'
-//   },
-// ])
-
 const limitDays = computed(() => {
   return [
     {
@@ -65,7 +90,6 @@ const limitDays = computed(() => {
 })
 const apiKey = ref(null);
 const model = ref(null);
-const limitDay = ref(null);
 
 const createKnowledgeBase = (id: number) => {
   return navigateTo({ name: 'chatbots-knowledge-id', params: { id: id }})
@@ -339,10 +363,31 @@ const confirmBotMainSettings = async () => {
     return navigateTo('/chatbots')
   })
 }
+
+const removeBot = async () => {
+  await botStore.deleteBot(<string>route.params.id).then((res) => {
+    console.log(res);
+    if (res?.success) {
+      return navigateTo('/chatbots')
+    }
+  })
+}
+// const joinToChannel = () => {
+//   socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
+// }
+
+// const message = ref('')
+// const sendMessage = () => {
+//   socket.emit('message', message.value);
+// }
+
 </script>
 
 <template>
   <div class="grid">
+<!--    {{ userId }}-->
+<!--    <button @click="joinToChannel">join</button>-->
+<!--    <button @click="sendMessage">send message</button>-->
     <div class="flex gap-2 w-full gap-4">
       <div class="card h-full flex flex-column w-full">
         <div class="flex justify-content-between">
@@ -548,6 +593,7 @@ const confirmBotMainSettings = async () => {
 
               </div>
               <div class="mt-4 flex gap-4 align-items-center justify-content-end">
+                <Button :label="t('deleteBotButton')" severity="danger" class="mr-auto" @click="removeBot"></Button>
                 <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
                 <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
               </div>
@@ -820,8 +866,8 @@ const confirmBotMainSettings = async () => {
             </div>
             <div class="h-full mb-2 mt-2 rounded-xl" style="background: #F9FAFC" />
             <div class="mt-auto flex justify-content-between align-items-center gap-3">
-              <Textarea type="text" id="message" class="w-full" :autoResize="true" rows="1" cols="2" />
-              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" />
+              <Textarea type="text" id="message" class="w-full" :autoResize="true" rows="1" cols="2" v-model="message" />
+              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" @click="sendMessage" />
             </div>
           </div>
         </div>

@@ -263,5 +263,6 @@
   "addCodeBeforeBody": "Add this code to your site code before the closing </body> tag",
   "integrationStatus": "Integration status",
   "checkInstallation": "Check installation",
-  "skipInstallation": "Skip installation"
+  "skipInstallation": "Skip installation",
+  "deleteBotButton": "Delete bot"
 }

@@ -6,7 +6,6 @@ export function queryGetModelList() {
         queryKey: ["models"],
         queryFn: () => useApi('/info/models', { method: 'GET' }),
         select: (data) => {
-            console.log(data);
             return data?.models || []
         }
     })
