@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useBotStore } from "~/src/shared/store/bot";
 
 const { t } = useI18n();
 
@@ -156,13 +157,18 @@ const deleteMessage = (id: number) => {
   messages.value = messages.value.filter(message => message.id !== id);
 }
 
+const botStore = useBotStore();
+
+const bot = computed(() => {
+  return botStore.currentBot
+})
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <h5>{{ $t('editKnowledgeBaseFile') }} "{{ bots.find((bot) => bot.id === Number(route.params.id)).title }}"</h5>
+        <h5>{{ $t('editKnowledgeBaseFile') }} "{{ bot?.title }}"</h5>
         <div class="card-form p-fluid" style="margin-top: 16px">
           <div class="flex gap-3">
             <div class="field w-full">
