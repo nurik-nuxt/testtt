@@ -168,7 +168,7 @@ const bot = computed(() => {
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <h5>{{ $t('editKnowledgeBaseFile') }} "{{ bot?.title }}"</h5>
+        <h5>{{ $t('editKnowledgeBaseFile') }} "{{ bot?.name }}"</h5>
         <div class="card-form p-fluid" style="margin-top: 16px">
           <div class="flex gap-3">
             <div class="field w-full">
