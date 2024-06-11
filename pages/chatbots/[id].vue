@@ -88,7 +88,10 @@ const limitDays = computed(() => {
     }
   ]
 })
-const apiKey = ref(null);
+const apiKey = ref({
+  title: 'Использовать отдельный токен для этого бота',
+  code: 'individual_token'
+});
 const model = ref(null);
 
 const createKnowledgeBase = (id: number) => {
@@ -432,6 +435,7 @@ const removeBot = async () => {
 
                 <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
+                {{ apiKey }}
                 <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
                 <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" />
 
