@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useBotStore } from "~/src/shared/store/bot";
+import { useUploadFileStore } from "~/src/shared/store/upload";
+import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 
 const { t } = useI18n();
 
@@ -9,7 +11,6 @@ interface BotItem {
   channels: string[];
   isActive: boolean
 }
-
 const route = useRoute();
 const bots = ref<BotItem[]>([
   {
@@ -55,10 +56,6 @@ const bots = ref<BotItem[]>([
     isActive: true
   }
 ])
-
-watchEffect(() => {
-  console.log(route);
-})
 
 const usedValue = ref<boolean>(false);
 const interruptDialogue = ref<boolean>(false);
@@ -158,10 +155,49 @@ const deleteMessage = (id: number) => {
 }
 
 const botStore = useBotStore();
+const uploadFileStore = useUploadFileStore();
+const knowledgeStore = useKnowledgeStore();
 
 const bot = computed(() => {
   return botStore.currentBot
 })
+
+const files = computed(() => {
+  return uploadFileStore.getFiles
+})
+
+const fileRef = ref();
+const openFileUploader = () => {
+  const fileInput = document.getElementById('file-upload');
+  if (fileInput) {
+    fileInput.click();
+  }
+}
+
+const addFile = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0] || null;
+  if (!file) return;
+  await uploadFileStore.loadFile(file);
+}
+
+const deleteFile = (index: number) => {
+  uploadFileStore.deleteFileByIndex(index)
+}
+
+const name = ref('')
+const rus_name = ref('')
+const content = ref('')
+
+const saveKnowledge = async () => {
+  if (name.value.length && rus_name.value.length && content.value.length) {
+    await knowledgeStore.addBaseKnowledge(<string>route.params.id, {
+      name: name.value,
+      rus_name: rus_name.value,
+      content: content.value
+    })
+  }
+}
 </script>
 
 <template>
@@ -173,11 +209,11 @@ const bot = computed(() => {
           <div class="flex gap-3">
             <div class="field w-full">
               <label for="name1">{{ $t('nameWithin7s') }}</label>
-              <InputText id="name1" type="text" />
+              <InputText id="rus_name" type="text" v-model="rus_name" />
             </div>
             <div class="field w-full">
               <label for="name1">{{ $t('nameForSearchOpenAI') }}</label>
-              <InputText id="name1" type="text" />
+              <InputText id="name" type="text" v-model="name" />
             </div>
           </div>
 
@@ -200,7 +236,7 @@ const bot = computed(() => {
         <div>
           <TabView>
             <TabPanel :header="t('fileContent')">
-              <Textarea class="mt-4 w-full" :autoResize="true" rows="5" cols="30" :placeholder="t('botResponseInstructions')" />
+              <Textarea class="mt-4 w-full" :autoResize="true" rows="5" cols="30" :placeholder="t('botResponseInstructions')" v-model="content" />
             </TabPanel>
             <TabPanel :header="t('clientReminders')">
               <div v-if="messages?.length">
@@ -223,14 +259,30 @@ const bot = computed(() => {
               </div>
               <Button :label="t('addMessage')" class="mt-4" @click="addMessage"/>
             </TabPanel>
+
             <TabPanel :header="t('sendFileInMessage')">
               <div class="mt-4 flex flex-column gap-4">
                 <span>{{ $t('fileSendingRestrictions') }}</span>
                 <div class="flex gap-3 align-items-center">
-                  <Button :label="t('attachFile')" icon="pi pi-plus"></Button>
+                  <Button :label="t('attachFile')" icon="pi pi-plus" @click="openFileUploader"></Button>
+                  <input id="file-upload" hidden type="file" @input="addFile">
                   <Button :label="t('downloadFile')" icon="pi pi-upload"></Button>
                   <Button :label="t('deleteFile')" icon="pi pi-times"></Button>
                   <span>{{ $t('maxFileSize5MB') }}</span>
+                </div>
+                <div v-if="files.length" class="flex flex-column gap-3">
+                  <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
+                    <div class="flex gap-3 align-items-center" v-if="file.mimeType.includes('image')">
+                      <img :src="`https://prompt-typically-wren.ngrok-free.app/public/${file.filename}`" :alt="file.originalName" class="image">
+                      <span class="text-base font-bold">{{ file.originalName }} image</span>
+                      <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>
+                    </div>
+                    <div class="flex gap-3 align-items-center" v-else>
+                      <i class="pi pi-file" style="font-size: 60px" @click="deleteFile(parseInt(<string>index))"></i>
+                      <span class="text-base font-bold">{{ file.originalName }}</span>
+                      <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
             </TabPanel>
@@ -279,7 +331,7 @@ const bot = computed(() => {
           </TabView>
           <div class="mt-4 flex gap-4 justify-content-end align-items-center">
             <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-            <Button :label="t('save')"></Button>
+            <Button :label="t('save')" @click="saveKnowledge"></Button>
           </div>
         </div>
       </div>
@@ -299,5 +351,10 @@ const bot = computed(() => {
   .bot-list {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
+}
+.image {
+  width: 150px;
+  height: 100px;
+  object-fit: contain;
 }
 </style>

@@ -1,5 +1,5 @@
-import {defineStore} from "pinia";
-import {useApi} from "~/composable";
+import { defineStore } from "pinia";
+import { useApi } from "~/composable";
 
 interface Bot {
     _id: string;

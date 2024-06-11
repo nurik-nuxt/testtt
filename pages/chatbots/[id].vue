@@ -309,10 +309,7 @@ const currentBot = ref({
   _id: '',
   user_id: '',
   instructions: '',
-  apiKey: {
-    iv: '',
-    encryptedData: ''
-  },
+  apiKey: '',
   channels: [],
   controlSignals: {
     stopBot: '',
@@ -392,7 +389,7 @@ const removeBot = async () => {
       <div class="card h-full flex flex-column w-full">
         <div class="flex justify-content-between">
           <h5>{{ $t('edit') }} "{{ bot?.name }}"</h5>
-          <Button :label="t('save')"></Button>
+          <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
         </div>
         <div>
           <TabView>
@@ -438,7 +435,7 @@ const removeBot = async () => {
                 <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
                 <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
-                <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" type="password" v-model="currentBot.apiKey" />
+                <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" />
 
                 <!--Bot model-->
                 <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>
@@ -601,7 +598,7 @@ const removeBot = async () => {
 
             <TabPanel :header="t('knowledgeBase')">
               <div class="flex gap-2 mt-5" style="margin-left: 1rem">
-                <Button :label="t('createFile')" @click="createKnowledgeBase(parseInt(<string>route.params.id))"/>
+                <Button :label="t('createFile')" @click="createKnowledgeBase(route.params.id)"/>
                 <Button :label="t('uploadFail')"/>
                 <Button :label="t('delete')" :disabled="!knowledgeBaseSelectedKey" />
               </div>

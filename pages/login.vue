@@ -44,9 +44,8 @@ const login = async () => {
   if (isFormCorrect) {
     try {
       const response = await authStore.login(form);
-      console.log(response);
       if (response?.access_token) {
-        return navigateTo({ name: 'index' })
+        return navigateTo({ name: 'chatbots' })
       }
       if (response?.error) {
         console.log('error');
