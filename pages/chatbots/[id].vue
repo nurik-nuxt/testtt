@@ -322,6 +322,7 @@ const currentBot = ref({
   isSchedule: false,
   joinTimeout: 0,
   maxTokens: 0,
+  bigTimeout: 0,
   messageLimit: {
     qty: 0,
     period: 0,
@@ -382,9 +383,6 @@ const removeBot = async () => {
 
 <template>
   <div class="grid">
-<!--    {{ userId }}-->
-<!--    <button @click="joinToChannel">join</button>-->
-<!--    <button @click="sendMessage">send message</button>-->
     <div class="flex gap-2 w-full gap-4">
       <div class="card h-full flex flex-column w-full">
         <div class="flex justify-content-between">
