@@ -266,5 +266,6 @@
   "checkInstallation": "Проверить установку",
   "skipInstallation": "Пропустить установку",
   "deleteBotButton": "Удалить бота",
-  "createKnowledgeTitle": "Создайте знания для чат-бота"
+  "createKnowledgeTitle": "Создайте знания для чат-бота",
+  "connectNewChannel": "Подключить новый канал"
 }

@@ -266,5 +266,6 @@
   "checkInstallation": "स्थापना की जाँच करें",
   "skipInstallation": "स्थापना छोड़ें",
   "deleteBotButton": "बॉट हटाएं",
-  "createKnowledgeTitle": "चैटबॉट के लिए ज्ञान बनाएँ"
+  "createKnowledgeTitle": "चैटबॉट के लिए ज्ञान बनाएँ",
+  "connectNewChannel": "एक नया चैनल कनेक्ट करें"
 }

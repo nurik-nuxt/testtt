@@ -265,5 +265,6 @@
   "checkInstallation": "Check installation",
   "skipInstallation": "Skip installation",
   "deleteBotButton": "Delete bot",
-  "createKnowledgeTitle": "Create Knowledge for Chatbot"
+  "createKnowledgeTitle": "Create Knowledge for Chatbot",
+  "connectNewChannel": "Connect a new channel"
 }

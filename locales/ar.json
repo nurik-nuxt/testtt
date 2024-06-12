@@ -266,5 +266,6 @@
   "checkInstallation": "تحقق من التثبيت",
   "skipInstallation": "تخطي التثبيت",
   "deleteBotButton": "حذف البوت",
-  "createKnowledgeTitle": "إنشاء المعرفة لروبوت الدردشة"
+  "createKnowledgeTitle": "إنشاء المعرفة لروبوت الدردشة",
+  "connectNewChannel": "ربط قناة جديدة"
 }

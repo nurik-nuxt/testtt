@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBotStore } from "~/src/shared/store/bot";
+import { useChannelStore } from "~/src/shared/store/channel";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
-import { socket } from "~/socket";
 import jsCookie from "js-cookie";
 interface BotItem {
   title: string;
@@ -17,47 +17,8 @@ const userId = computed(() => {
   return user?._id
 })
 
-// const isConnected = ref(false);
-// const transport = ref("N/A");
-//
-// if (socket.connected) {
-//   onConnect();
-// }
-//
-// function onConnect() {
-//   isConnected.value = true;
-//   transport.value = socket.io.engine.transport.name;
-//   console.log(socket.io.engine.transport.name)
-//   socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
-//   socket.on("message", (rawTransport) => {
-//     console.log(rawTransport)
-//   });
-//
-// }
-
-// watch(
-//     () => isConnected.value,
-//     () => {
-//       console.log('aaa')
-//       socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
-//     },
-//     { deep: true }
-// )
-
-// function onDisconnect() {
-//   isConnected.value = false;
-//   transport.value = "N/A";
-// }
-//
-// socket.on("connect", onConnect);
-// socket.on("disconnect", onDisconnect);
-//
-// onBeforeUnmount(() => {
-//   socket.off("connect", onConnect);
-//   socket.off("disconnect", onDisconnect);
-// });
-
 const botStore = useBotStore();
+const channelStore = useChannelStore();
 const extra = ref<boolean>(false);
 
 
@@ -225,7 +186,6 @@ const thursdayTimeEnd = ref(null);
 const fridayTimeEnd = ref(null);
 const saturdayTimeEnd = ref(null);
 const sundayTimeEnd = ref(null);
-const temperatureValue = ref(0.3);
 
 const active = ref(true)
 const filters = ref({});
@@ -235,8 +195,7 @@ const activeChannel = ref<string | null>(null);
 const amoChannelStep = ref<number | null>(null)
 
 const chooseChannel = (channel: string) => {
-  activeChannel.value = channel;
-  amoChannelStep.value = 1;
+  return navigateTo({ name: `chatbots-channel-create-${channel}`})
 }
 
 const channelStatus = ref('');
@@ -344,7 +303,7 @@ const currentBot = ref({
   temperature: 0,
   whisper: false,
 })
-onMounted(() => {
+onMounted(async () => {
   botStore.getBot(<string>route.params.id).then((res) => {
     Object.keys(currentBot.value).forEach(key => {
       if (key in res && res[key] !== null && res[key] !== undefined) {
@@ -352,11 +311,16 @@ onMounted(() => {
       }
     });
   })
+  await channelStore.getAllChannels();
 })
 
 
 const bot = computed(() => {
   return botStore.getCurrentBot
+});
+
+const connectedChannels = computed(() => {
+  return channelStore.getChannels
 })
 
 const confirmBotMainSettings = async () => {
@@ -373,15 +337,18 @@ const removeBot = async () => {
     }
   })
 }
-// const joinToChannel = () => {
-//   socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
-// }
 
-// const message = ref('')
-// const sendMessage = () => {
-//   socket.emit('message', message.value);
-// }
+const deleteChannel = async (id: string) => {
+  await channelStore.deleteChannel(id).then(async (res) => {
+    if (res.success) {
+      await channelStore.getAllChannels();
+    }
+  });
+}
 
+const openChannel = (type: string, id: string) => {
+  return navigateTo({ name: `chatbots-channel-${type}-id`, params: { id }})
+}
 </script>
 
 <template>
@@ -651,145 +618,16 @@ const removeBot = async () => {
 
 
             <TabPanel :header="t('channels')">
-
-              <div v-if="activeChannel === 'amoCrm'">
-                <h5 class="mt-4">AmoCRM</h5>
-                <Button v-if="amoChannelStep === 1" @click="amoChannelStep = 2" :label="t('connectAmoCRM')"></Button>
-                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
-                  <div class="flex flex-column gap-4">
-                    <Button :label="t('disableAmoCRM')" severity="danger"></Button>
-                    <div class="flex gap-3 align-items-center">
-                      <div>{{ $t('channelStatus') }}</div>
-                      <div class="flex flex-wrap gap-3">
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
-                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
-                        </div>
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
-                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex flex-column">
-                      <span>{{ $t('funnelInAmoCRM') }}</span>
-                      <Dropdown style="margin-top: 8px" id="funnelsInAmoCRM" v-model="funnelInAmoCRM" :options="funnelsInAmoCRM" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
-                    </div>
-                    <div class="flex flex-column gap-2">
-                      <span>{{ $t('stageAmo') }}</span>
-                      <div class="flex align-items-center justify-content-between" v-for="(amoStatus, index) in amoStatuses" :key="index">
-                        <span>{{ amoStatus.title }}</span>
-                        <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex flex-column gap-4">
-                    <h5>{{ $t('instructionsConnectAmoCRM') }}</h5>
-                    <span>{{ $t('instructionText') }}</span>
-                  </div>
-                </div>
+              <div v-if="connectedChannels.length" class="chanel-list">
+                <h5 class="font-bold mb-2">{{ $t('connectedChannels') }}</h5>
+                <span class="chanel-list__item" v-for="channel in connectedChannels" :key="channel._id">
+                  {{ channel.type }}
+                  <i style="cursor: pointer; margin-left: auto; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="deleteChannel(channel._id)"/>
+                  <i style="cursor: pointer" class="pi pi-cog" @click="openChannel(channel.type, channel._id)"/>
+                </span>
               </div>
-
-              <div v-else-if="activeChannel === 'whatsapp'">
-                <h5 class="mt-4">WhatsApp</h5>
-                <Button v-if="amoChannelStep === 1" @click="amoChannelStep = 2" :label="t('toPlug')"></Button>
-                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
-                  <div class="flex flex-column gap-4">
-                    <i style="cursor: pointer; font-size: 20rem" class="pi pi-qrcode" />
-                    <span>{{ $t('textToPlugWA') }}</span>
-                    <div class="flex align-items-center gap-3">
-                      <div>{{ $t('status') }}:</div>
-                      <div>{{ $t('connected')}}</div>
-                      <Button :label="t('disable')" severity="danger"></Button>
-                    </div>
-                    <div class="flex gap-3 align-items-center">
-                      <div>{{ $t('channelStatus') }}</div>
-                      <div class="flex flex-wrap gap-3">
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
-                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
-                        </div>
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
-                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div v-else-if="activeChannel === 'avito'">
-                <h5 class="mt-4">{{ $t('avitoConnection') }}</h5>
-                <div v-if="amoChannelStep === 1">
-                  <div class="flex flex-column gap-2">
-                    <span>1.{{ $t('connectAnyTariff') }}</span>
-                    <span class="mb-3">2.{{ $t('copyDataPage') }} <a target="_blank" href="https://www.avito.ru/professionals/api" style="color: #076AE1;">({{ $t('link') }})</a></span>
-                    <label for="name1" style="font-weight: 700">{{ $t('enterData') }}</label>
-                    <InputText id="name1" type="text" placeholder="Client_ID" />
-                    <InputText id="name1" type="text" placeholder="Client_Secret" />
-                    <Button :label="t('toPlug')" @click="amoChannelStep = 2"></Button>
-                  </div>
-                </div>
-                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
-                  <div class="flex flex-column gap-4">
-                    <div class="flex align-items-center gap-3">
-                      <div>{{ $t('status') }}:</div>
-                      <div>{{ $t('connected')}}</div>
-                      <Button :label="t('disable')" severity="danger"></Button>
-                    </div>
-                    <div class="flex gap-3 align-items-center">
-                      <div>{{ $t('channelStatus') }}</div>
-                      <div class="flex flex-wrap gap-3">
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
-                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
-                        </div>
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
-                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div v-else-if="activeChannel === 'telegram'">
-                <h5 class="mt-4">{{ $t('connectingTelegramBot') }}</h5>
-                <div v-if="amoChannelStep === 1">
-                  <div class="flex flex-column gap-2">
-                    <span>1.{{ $t('openTelegramApp') }}</span>
-                    <span class="mb-3">2.{{ $t('copyBotToken') }}</span>
-                    <InputText id="name1" type="text" placeholder="tokken:telegrambota" />
-                    <Button :label="t('toPlug')" @click="amoChannelStep = 2"></Button>
-                  </div>
-                </div>
-                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">
-                  <div class="flex flex-column gap-4">
-                    <div class="flex align-items-center gap-3">
-                      <div>{{ $t('status') }}:</div>
-                      <div>{{ $t('connected')}}</div>
-                      <Button :label="t('disable')" severity="danger"></Button>
-                    </div>
-                    <div class="flex gap-3 align-items-center">
-                      <div>{{ $t('channelStatus') }}</div>
-                      <div class="flex flex-wrap gap-3">
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
-                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
-                        </div>
-                        <div class="flex align-items-center">
-                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
-                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div v-else class="chanel-list">
+              <div class="chanel-list">
+                <h5 class="font-bold mb-2">{{ $t('connectNewChannel') }}</h5>
                 <span class="chanel-list__item">
                   amoCRM
                   <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('amoCrm')" />
@@ -815,6 +653,110 @@ const removeBot = async () => {
                   <i style="cursor: pointer" class="pi pi-cog" @click="createOnlineChat" />
                 </span>
               </div>
+
+
+<!--              <div v-if="activeChannel === 'amoCrm'">-->
+<!--                <h5 class="mt-4">AmoCRM</h5>-->
+<!--                <Button v-if="amoChannelStep === 1" @click="amoChannelStep = 2" :label="t('connectAmoCRM')"></Button>-->
+<!--                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">-->
+<!--                  <div class="flex flex-column gap-4">-->
+<!--                    <Button :label="t('disableAmoCRM')" severity="danger"></Button>-->
+<!--                    <div class="flex gap-3 align-items-center">-->
+<!--                      <div>{{ $t('channelStatus') }}</div>-->
+<!--                      <div class="flex flex-wrap gap-3">-->
+<!--                        <div class="flex align-items-center">-->
+<!--                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />-->
+<!--                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>-->
+<!--                        </div>-->
+<!--                        <div class="flex align-items-center">-->
+<!--                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />-->
+<!--                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="flex flex-column">-->
+<!--                      <span>{{ $t('funnelInAmoCRM') }}</span>-->
+<!--                      <Dropdown style="margin-top: 8px" id="funnelsInAmoCRM" v-model="funnelInAmoCRM" :options="funnelsInAmoCRM" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>-->
+<!--                    </div>-->
+<!--                    <div class="flex flex-column gap-2">-->
+<!--                      <span>{{ $t('stageAmo') }}</span>-->
+<!--                      <div class="flex align-items-center justify-content-between" v-for="(amoStatus, index) in amoStatuses" :key="index">-->
+<!--                        <span>{{ amoStatus.title }}</span>-->
+<!--                        <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div class="flex flex-column gap-4">-->
+<!--                    <h5>{{ $t('instructionsConnectAmoCRM') }}</h5>-->
+<!--                    <span>{{ $t('instructionText') }}</span>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div v-else-if="activeChannel === 'whatsapp'">-->
+<!--                <h5 class="mt-4">WhatsApp</h5>-->
+<!--                <Button v-if="amoChannelStep === 1" @click="amoChannelStep = 2" :label="t('toPlug')"></Button>-->
+<!--                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">-->
+<!--                  <div class="flex flex-column gap-4">-->
+<!--                    <i style="cursor: pointer; font-size: 20rem" class="pi pi-qrcode" />-->
+<!--                    <span>{{ $t('textToPlugWA') }}</span>-->
+<!--                    <div class="flex align-items-center gap-3">-->
+<!--                      <div>{{ $t('status') }}:</div>-->
+<!--                      <div>{{ $t('connected')}}</div>-->
+<!--                      <Button :label="t('disable')" severity="danger"></Button>-->
+<!--                    </div>-->
+<!--                    <div class="flex gap-3 align-items-center">-->
+<!--                      <div>{{ $t('channelStatus') }}</div>-->
+<!--                      <div class="flex flex-wrap gap-3">-->
+<!--                        <div class="flex align-items-center">-->
+<!--                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />-->
+<!--                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>-->
+<!--                        </div>-->
+<!--                        <div class="flex align-items-center">-->
+<!--                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />-->
+<!--                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--              <div v-else-if="activeChannel === 'avito'">-->
+<!--                <h5 class="mt-4">{{ $t('avitoConnection') }}</h5>-->
+<!--                <div v-if="amoChannelStep === 1">-->
+<!--                  <div class="flex flex-column gap-2">-->
+<!--                    <span>1.{{ $t('connectAnyTariff') }}</span>-->
+<!--                    <span class="mb-3">2.{{ $t('copyDataPage') }} <a target="_blank" href="https://www.avito.ru/professionals/api" style="color: #076AE1;">({{ $t('link') }})</a></span>-->
+<!--                    <label for="name1" style="font-weight: 700">{{ $t('enterData') }}</label>-->
+<!--                    <InputText id="name1" type="text" placeholder="Client_ID" />-->
+<!--                    <InputText id="name1" type="text" placeholder="Client_Secret" />-->
+<!--                    <Button :label="t('toPlug')" @click="amoChannelStep = 2"></Button>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div v-if="amoChannelStep === 2" class="flex w-full gap-8">-->
+<!--                  <div class="flex flex-column gap-4">-->
+<!--                    <div class="flex align-items-center gap-3">-->
+<!--                      <div>{{ $t('status') }}:</div>-->
+<!--                      <div>{{ $t('connected')}}</div>-->
+<!--                      <Button :label="t('disable')" severity="danger"></Button>-->
+<!--                    </div>-->
+<!--                    <div class="flex gap-3 align-items-center">-->
+<!--                      <div>{{ $t('channelStatus') }}</div>-->
+<!--                      <div class="flex flex-wrap gap-3">-->
+<!--                        <div class="flex align-items-center">-->
+<!--                          <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />-->
+<!--                          <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>-->
+<!--                        </div>-->
+<!--                        <div class="flex align-items-center">-->
+<!--                          <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />-->
+<!--                          <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
             </TabPanel>
 
 

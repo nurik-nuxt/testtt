@@ -266,5 +266,6 @@
   "checkInstallation": "Comprobar instalación",
   "skipInstallation": "Saltar instalación",
   "deleteBotButton": "eliminar robot",
-  "createKnowledgeTitle": "Crear conocimiento para un chatbot"
+  "createKnowledgeTitle": "Crear conocimiento para un chatbot",
+  "connectNewChannel": "Conecta un nuevo canal"
 }
