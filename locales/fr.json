@@ -267,5 +267,8 @@
   "skipInstallation": "Ignorer l'installation",
   "deleteBotButton": "Supprimer le robot",
   "createKnowledgeTitle": "Créer des connaissances pour un chatbot",
-  "connectNewChannel": "Connecter une nouvelle chaîne"
+  "connectNewChannel": "Connecter une nouvelle chaîne",
+  "creatingChannel": "Créer une chaîne",
+  "availableChannels": "Chaînes disponibles",
+  "connectedChannelsToBot": "Les chaînes sont liées à ce bot"
 }

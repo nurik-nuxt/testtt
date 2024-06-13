@@ -48,7 +48,6 @@ const login = async () => {
         return navigateTo({ name: 'chatbots' })
       }
       if (response?.error) {
-        console.log('error');
         toast.add({ severity: 'error', summary: t('error'), detail: response?.error, life: 5000 })
       }
     } catch (e) {

@@ -267,5 +267,8 @@
   "skipInstallation": "تخطي التثبيت",
   "deleteBotButton": "حذف البوت",
   "createKnowledgeTitle": "إنشاء المعرفة لروبوت الدردشة",
-  "connectNewChannel": "ربط قناة جديدة"
+  "connectNewChannel": "ربط قناة جديدة",
+  "creatingChannel": "إنشاء قناة",
+  "availableChannels": "القنوات المتاحة",
+  "connectedChannelsToBot": "القنوات مرتبطة بهذا البوت"
 }

@@ -267,5 +267,8 @@
   "skipInstallation": "स्थापना छोड़ें",
   "deleteBotButton": "बॉट हटाएं",
   "createKnowledgeTitle": "चैटबॉट के लिए ज्ञान बनाएँ",
-  "connectNewChannel": "एक नया चैनल कनेक्ट करें"
+  "connectNewChannel": "एक नया चैनल कनेक्ट करें",
+  "creatingChannel": "एक चैनल बनाएं",
+  "availableChannels": "उपलब्ध चैनल",
+  "connectedChannelsToBot": "चैनल इस बॉट से जुड़े हुए हैं"
 }

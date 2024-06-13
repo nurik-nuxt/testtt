@@ -3,12 +3,15 @@ import { useApi } from "~/composable";
 
 interface ChannelItem {
     status: string;
-    token: {
-        encryptedData: string;
-        iv: string
+    token?: {
+        encryptedData?: string;
+        iv?: string
     };
     type: string;
     _id: string;
+    connected: boolean;
+    connectedBotId: string;
+    title?: string
 }
 
 interface ChannelRequestItem {
@@ -76,6 +79,54 @@ export const useChannelStore = defineStore('channel', {
             } catch (e) {
                 console.log(e)
             }
+        },
+
+        async changeStatusChannelById(id: string, status: string) {
+            try {
+                const response = await useApi(`/user/source/${id}`, {
+                    method: 'PATCH',
+                    body: {
+                        status: status
+                    }
+                })
+                console.log(response);
+                return response;
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        async connectChannelToBot(idChannel: string, idBot: string) {
+            try {
+                const response = await useApi(`/user/source/${idChannel}/connect`, {
+                    method: 'POST',
+                    body: {
+                        botId: idBot
+                    }
+                })
+                if (response.success) {
+                    await this.getAllChannels()
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async disconnectChannelToBot(idChannel: string, idBot: string) {
+            try {
+                const response = await useApi(`/user/source/${idChannel}/disconnect`, {
+                    method: 'POST',
+                    body: {
+                        botId: idBot
+                    }
+                })
+                if (response.success) {
+                    await this.getAllChannels()
+                }
+            } catch (e) {
+                console.log(e)
+            }
         }
+
     }
 })

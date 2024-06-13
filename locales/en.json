@@ -266,5 +266,8 @@
   "skipInstallation": "Skip installation",
   "deleteBotButton": "Delete bot",
   "createKnowledgeTitle": "Create Knowledge for Chatbot",
-  "connectNewChannel": "Connect a new channel"
+  "connectNewChannel": "Connect a new channel",
+  "creatingChannel": "Create a channel",
+  "availableChannels": "Available channels",
+  "connectedChannelsToBot": "Channels are linked to this bot"
 }

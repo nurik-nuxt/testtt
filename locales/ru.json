@@ -267,5 +267,8 @@
   "skipInstallation": "Пропустить установку",
   "deleteBotButton": "Удалить бота",
   "createKnowledgeTitle": "Создайте знания для чат-бота",
-  "connectNewChannel": "Подключить новый канал"
+  "connectNewChannel": "Подключить новый канал",
+  "creatingChannel": "Создать канал",
+  "availableChannels": "Доступные каналы",
+  "connectedChannelsToBot": "Каналы привязано к этому боту"
 }

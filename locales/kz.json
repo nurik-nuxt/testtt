@@ -266,5 +266,8 @@
   "skipInstallation": "Орнатуды өткізіп жіберіңіз",
   "deleteBotButton": "Ботты жою",
   "createKnowledgeTitle": "Чатбот үшін білім жасаңыз",
-  "connectNewChannel": "Жаңа арнаны қосыңыз"
+  "connectNewChannel": "Жаңа арнаны қосыңыз",
+  "creatingChannel": "Арна жасаңыз",
+  "availableChannels": "Қолжетімді арналар",
+  "connectedChannelsToBot": "Арналар осы ботпен байланысты"
 }
