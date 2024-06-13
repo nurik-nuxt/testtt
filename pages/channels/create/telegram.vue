@@ -30,7 +30,8 @@ const createChannel = async () => {
           <h5 class="mt-4">{{ $t('connectingTelegramBot') }}</h5>
           <div v-if="step === 1">
             <div class="flex flex-column gap-2">
-              <span>1.{{ $t('openTelegramApp') }}</span>
+<!--              <span>1.{{ $t('openTelegramApp') }}</span>-->
+              <span>1.Откройте приложение Telegram, с помощью @BotFather создайте бота или откройте существующего бота.</span>
               <span class="mb-3">2.{{ $t('copyBotToken') }}</span>
               <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" />
               <Button :label="t('toPlug')" @click="createChannel"></Button>
