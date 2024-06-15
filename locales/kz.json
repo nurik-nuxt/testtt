@@ -223,8 +223,7 @@
   "connectAnyTariff": "Кез келген тарифті қосыңыз",
   "copyDataPage": "Осы беттегі деректерді көшіріңіз",
   "connectingTelegramBot": "Telegram ботына қосылу",
-  "openTelegramApp": "Telegram қолданбасын ашыңыз, бот жасау үшін @BotFather пайдаланыңыз немесе бар ботты ашыңыз.",
-  "copyBotToken": "Бот белгісін көшіріп, осы жерге қойыңыз",
+  "openTelegramApp": "Telegram ашыңыз, жаңа бот жасау немесе бұрыннан бар ботты таңдау үшін t.me/BotFather пайдаланыңыз.",  "copyBotToken": "Бот белгісін көшіріп, осы жерге қойыңыз",
   "connected": "Қосылды",
   "disable": "Өшіру",
   "downloadFile": "Жүктеп алу",
@@ -269,5 +268,10 @@
   "connectNewChannel": "Жаңа арнаны қосыңыз",
   "creatingChannel": "Арна жасаңыз",
   "availableChannels": "Қолжетімді арналар",
-  "connectedChannelsToBot": "Арналар осы ботпен байланысты"
+  "connectedChannelsToBot": "Арна осы ботқа қосылған",
+  "connectToBot": "Ботқа қосылыңыз",
+  "updateDataCRM": "CRM деректерін жаңартыңыз",
+  "channelNameOnly": "Арна атауы (тек сізге ыңғайлы болу үшін)",
+  "aIBotWillDeleted": "Бұл AI ботының барлық параметрлері мен ақпараты жойылады. Осы AI роботын шынымен жойғыңыз келе ме?",
+  "cancel": "Бас тарту"
 }

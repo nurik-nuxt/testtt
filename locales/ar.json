@@ -223,7 +223,7 @@
   "connectAnyTariff": "ربط أي تعريفة",
   "copyDataPage": "انسخ البيانات الموجودة على هذه الصفحة",
   "connectingTelegramBot": "ربط بوت التليجرام",
-  "openTelegramApp": "افتح تطبيق Telegram، واستخدم @BotFather لإنشاء روبوت، أو افتح روبوتًا موجودًا.",
+  "openTelegramApp": "افتح Telegram، واستخدم t.me/BotFather لإنشاء روبوت جديد أو تحديد روبوت موجود.",
   "copyBotToken": "انسخ رمز البوت والصقه هنا",
   "connected": "متصل",
   "disconnected": "عاجز ",
@@ -270,5 +270,10 @@
   "connectNewChannel": "ربط قناة جديدة",
   "creatingChannel": "إنشاء قناة",
   "availableChannels": "القنوات المتاحة",
-  "connectedChannelsToBot": "القنوات مرتبطة بهذا البوت"
+  "connectedChannelsToBot": "القنوات مرتبطة بهذا البوت",
+  "connectToBot": "الاتصال بالبوت",
+  "updateDataCRM": "تحديث البيانات من CRM",
+  "channelNameOnly": "اسم القناة (للتيسير عليك فقط)",
+  "aIBotWillDeleted": "سيتم حذف جميع الإعدادات والمعلومات الخاصة بروبوت الذكاء الاصطناعي هذا. هل أنت متأكد أنك تريد حذف روبوت الذكاء الاصطناعي هذا؟",
+  "cancel": "يلغي"
 }

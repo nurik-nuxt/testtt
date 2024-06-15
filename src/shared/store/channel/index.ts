@@ -17,6 +17,7 @@ interface ChannelItem {
 interface ChannelRequestItem {
     type: string;
     token?: string;
+    title?: string;
 }
 
 export const useChannelStore = defineStore('channel', {

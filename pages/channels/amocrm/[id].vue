@@ -8,94 +8,99 @@ const amoCrmStore = useAmoCrmStore();
 const route = useRoute();
 const channelStatus = ref('');
 const { t } = useI18n();
-const funnelInAmoCRM = ref(null);
-const mondayActive = ref(true);
-const voronkas = ref([])
-const funnelsInAmoCRM = ref([
-  {
-    id: 1,
-    title: 'Воронка AMO 1'
-  },
-  {
-    id: 2,
-    title: 'Воронка AMO 2'
-  },
-  {
-    id: 3,
-    title: 'Воронка AMO 3'
-  },
-  {
-    id: 4,
-    title: 'Воронка AMO 4'
-  },
-  {
-    id: 5,
-    title: 'Воронка AMO 5'
-  }
-])
-const amoStatuses = ref([
-  {
-    id: 1,
-    title: 'Неразобранное',
-    active: true
-  },
-  {
-    id: 2,
-    title: 'GPT',
-    active: true
-  },
-  {
-    id: 3,
-    title: 'Отправил ссылку',
-    active: true
-  },
-  {
-    id: 4,
-    title: 'Телефон',
-    active: true
-  },
-  {
-    id: 5,
-    title: 'Заполнил анкету',
-    active: true
-  },
-  {
-    id: 6,
-    title: 'Оплатил мини курс',
-    active: true
-  },
-  {
-    id: 7,
-    title: 'Созвон + КП',
-    active: true
-  }
-])
+const voronkas = ref([]);
 
 const fetchChannel = async () => {
-  await channelStore.getChannelById(<string>route.params.id).then((res) => {
-    channelStatus.value = res.status
-  })
-}
+  const res = await channelStore.getChannelById(<string>route.params.id);
+  channelStatus.value = res.status;
+};
 
 const fetchVoronki = async () => {
-  await amoCrmStore.fetchVoronki().then((res) => {
-    console.log(res);
-    voronkas.value = res;
-  });
-}
+  const res = await amoCrmStore.fetchVoronki();
+  voronkas.value = res;
+};
+
+const fetchActiveFunnels = async () => {
+  await amoCrmStore.fetchActiveFunnels(<string>route.params.id);
+};
+
+const activeFunnels = computed(() => {
+  return amoCrmStore.getActiveFunnels;
+});
 
 const changeChannelStatus = async (status: string) => {
-  await channelStore.changeStatusChannelById(<string>route.params.id, status).then((res) => {
-    if (res.success) {
-      fetchChannel();
-    }
-  })
-}
+  const res = await channelStore.changeStatusChannelById(<string>route.params.id, status);
+  if (res.success) {
+    fetchChannel();
+  }
+};
+
+const refreshCrm = () => {
+  fetchChannel();
+  fetchVoronki();
+  fetchActiveFunnels();
+};
 
 onMounted(() => {
   fetchChannel();
   fetchVoronki();
-})
+  fetchActiveFunnels();
+});
+
+const getStatusKey = (idFunnel: number, idStatus: number) => {
+  return `${idFunnel}-${idStatus}`;
+};
+
+const isActiveStatus = (idFunnel: number, idStatus: number) => {
+  return activeFunnels.value?.find((funnel: { pipeline_id: number }) => funnel.pipeline_id === idFunnel)?.active_statuses?.includes(idStatus);
+};
+
+const statusMap = ref(new Map());
+
+const initializeStatusMap = () => {
+  voronkas.value.forEach((voronka) => {
+    voronka?._embedded?.statuses.forEach((status) => {
+      const key = getStatusKey(voronka.id, status.id);
+      statusMap.value.set(key, isActiveStatus(voronka.id, status.id));
+    });
+  });
+};
+
+watch(voronkas, initializeStatusMap);
+
+const computedStatus = (idFunnel: number, idStatus: number) => {
+  const key = getStatusKey(idFunnel, idStatus);
+  return computed({
+    get() {
+      return statusMap.value.get(key) || false;
+    },
+    set(value) {
+      statusMap.value.set(key, value);
+      // Update the store or API as needed
+    }
+  });
+};
+
+const saveStatusMap = async () => {
+  const pipelineStatusMap = new Map();
+
+  statusMap.value.forEach((value, key) => {
+    const [pipelineId, statusId] = key.split('-').map(Number);
+    if (value) {
+      if (!pipelineStatusMap.has(pipelineId)) {
+        pipelineStatusMap.set(pipelineId, []);
+      }
+      pipelineStatusMap.get(pipelineId).push(statusId);
+    }
+  });
+
+  const requestBody = Array.from(pipelineStatusMap.entries()).map(([pipeline_id, active_statuses]) => ({
+    pipeline_id,
+    active_statuses
+  }));
+
+  await amoCrmStore.changeActiveStatus(requestBody,<string>route.params.id)
+};
 </script>
 
 <template>
@@ -105,8 +110,9 @@ onMounted(() => {
         <h5 class="font-bold">AmoCRM</h5>
         <div class="flex w-full gap-8">
           <div class="flex flex-column gap-4">
-            <Button v-if="channelStatus === 'active'" :label="t('disableAmoCRM')" severity="danger" @click="changeChannelStatus('off')"></Button>
-            <Button v-else :label="t('connectAmoCRM')" @click="changeChannelStatus('active')"></Button>
+            <Button v-if="channelStatus === 'active'" :label="t('disableAmoCRM')" severity="danger" @click="changeChannelStatus('off')" />
+            <Button v-else :label="t('connectAmoCRM')" @click="changeChannelStatus('active')" />
+            <Button :label="t('updateDataCRM')" severity="contrast" outlined @click="refreshCrm" />
             <div class="flex gap-3 align-items-center">
               <div>{{ $t('channelStatus') }}</div>
               <div class="flex flex-wrap gap-3">
@@ -120,26 +126,26 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-            <div class="flex flex-column">
-              <span>{{ $t('funnelInAmoCRM') }}</span>
-              <Dropdown style="margin-top: 8px" id="funnelsInAmoCRM" v-model="funnelInAmoCRM" :options="voronkas" optionLabel="name" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
-            </div>
-            <div class="flex flex-column gap-2">
-              <span class="font-bold">{{ $t('stageAmo') }}:</span>
-              <div class="flex align-items-center justify-content-between" v-for="(amoStatus, index) in amoStatuses" :key="index">
-                <span>{{ amoStatus.title }}</span>
-                <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>
-              </div>
-            </div>
           </div>
           <div class="flex flex-column gap-4">
             <h5>{{ $t('instructionsConnectAmoCRM') }}</h5>
             <span>{{ $t('instructionText') }}</span>
           </div>
         </div>
+        <div class="flex flex-column mt-5 gap-3">
+          <h5 class="font-bold">{{ $t('funnelInAmoCRM') }}</h5>
+          <div class="flex flex-column gap-3" style="width: 27%" v-for="voronka in voronkas" :key="voronka.id">
+            <span style="background: #F0F4F9; padding: 4px 4px 4px 0" class="font-bold">{{ voronka.name }}</span>
+            <span>{{ $t('stageAmo') }}:</span>
+            <span v-for="status in voronka?._embedded?.statuses" :key="status.id" class="flex align-items-center justify-content-between">
+              <span class="mr-2">{{ status.name }}</span>
+              <InputSwitch v-model="computedStatus(voronka.id, status.id).value" />
+            </span>
+          </div>
+        </div>
         <div class="mt-5 flex gap-4 align-items-center justify-content-end">
-          <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-          <Button :label="t('save')"></Button>
+          <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack') }}</nuxt-link>
+          <Button :label="t('save')" @click="saveStatusMap"/>
         </div>
       </div>
     </div>

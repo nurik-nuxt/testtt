@@ -4,6 +4,7 @@ import { useChannelStore } from "~/src/shared/store/channel";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
 import jsCookie from "js-cookie";
 import { useToast } from "primevue/usetoast";
+import { socket } from "~/socket";
 
 const toast = useToast();
 interface BotItem {
@@ -22,7 +23,7 @@ const userId = computed(() => {
 
 const botStore = useBotStore();
 const channelStore = useChannelStore();
-const extra = ref<boolean>(false);
+const extra = ref<boolean>(true);
 
 
 const { data: models, suspense: suspenseModels } = queryGetModelList();
@@ -193,9 +194,7 @@ const sundayTimeEnd = ref(null);
 const active = ref(true)
 const filters = ref({});
 
-const activeChannel = ref<string | null>(null);
-
-const amoChannelStep = ref<number | null>(null)
+const message = ref<string>('')
 
 const chooseChannel = (channel: string) => {
   return navigateTo({ name: `chatbots-channel-create-${channel}`})
@@ -315,8 +314,18 @@ onMounted(async () => {
     });
   })
   await channelStore.getAllChannels();
+  socket.connect();
+  joinToChannel();
 })
 
+const joinToChannel = () => {
+  socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
+}
+
+const sendMessage = () => {
+  console.log('sendMessage');
+  socket.emit('message', message.value);
+}
 
 const bot = computed(() => {
   return botStore.getCurrentBot
@@ -339,7 +348,12 @@ const confirmBotMainSettings = async () => {
   })
 }
 
+const visibleDeleteBot = ref<boolean>(false)
 const removeBot = async () => {
+  visibleDeleteBot.value = true;
+}
+
+const confirmRemoveBot = async () => {
   await botStore.deleteBot(<string>route.params.id).then((res) => {
     if (res?.success) {
       return navigateTo('/chatbots')
@@ -358,6 +372,9 @@ const deleteChannel = async (id: string) => {
 }
 
 const openChannel = (type: string, id: string) => {
+  if (type === 'wappi') {
+    return navigateTo({ name: `channels-whatsapp-id`, params: { id }})
+  }
   return navigateTo({ name: `channels-${type}-id`, params: { id }})
 }
 
@@ -375,6 +392,14 @@ const disconnectToBot = async (channelId: string) => {
 
 <template>
   <Toast />
+  <Dialog v-model:visible="visibleDeleteBot" modal :header="t('deleteBotButton')" :style="{ width: '25rem' }">
+    <span class="text-surface-500 dark:text-surface-400 block mb-4">{{ $t('aIBotWillDeleted') }}</span>
+    <div class="flex justify-content-center gap-2 w-full">
+      <Button type="button" :label="t('delete')" severity="danger" @click="confirmRemoveBot"></Button>
+      <Button type="button" :label="t('cancel')" @click="visibleDeleteBot = false"></Button>
+    </div>
+  </Dialog>
+
   <div class="grid">
     <div class="flex gap-2 w-full gap-4">
       <div class="card h-full flex flex-column w-full">
@@ -425,7 +450,6 @@ const disconnectToBot = async (channelId: string) => {
 
                 <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
-                {{ apiKey }}
                 <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
                 <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" />
 
@@ -648,58 +672,22 @@ const disconnectToBot = async (channelId: string) => {
               <div class="chanel-list" v-if="connectedChannels.length">
                 <h5 class="font-bold mb-2">{{ $t('connectedChannelsToBot') }}</h5>
                 <span class="chanel-list__item" v-for="channel in connectedChannels" :key="channel._id">
-                  {{ channel.type }}
-                  <InputSwitch class="ml-auto" v-model="channel.connected" @change="disconnectToBot(channel._id)"  />
-                  <i style="cursor: pointer; margin-left: 30px; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="deleteChannel(channel._id)"/>
-                  <i style="cursor: pointer" class="pi pi-cog" @click="openChannel(channel.type, channel._id)"/>
+                  {{ channel.title }}
+                  <span class="font-bold ml-2">({{ channel.type }})</span>
+                  <span class="ml-auto" style="color: #19C927">{{ $t('connected') }}</span>
+                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="disconnectToBot(channel._id)"  />
                 </span>
               </div>
 
               <div class="chanel-list" v-if="availableChannels.length">
                 <h5 class="font-bold mb-2">{{ $t('availableChannels') }}</h5>
                 <span class="chanel-list__item" v-for="channel in availableChannels" :key="channel._id">
-                  {{ channel.type }}
-                  <InputSwitch class="ml-auto" v-model="channel.connected" @change="connectToBot(channel._id)"  />
-                  <i style="cursor: pointer; margin-left: 30px; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="deleteChannel(channel._id)"/>
-                  <i style="cursor: pointer" class="pi pi-cog" @click="openChannel(channel.type, channel._id)"/>
+                  {{ channel.title }}
+                  <span class="font-bold ml-2">({{ channel.type }})</span>
+                  <span class="ml-auto">{{ $t('connectToBot') }}</span>
+                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="connectToBot(channel._id)"  />
                 </span>
               </div>
-
-<!--              <div v-if="connectedChannels.length" class="chanel-list">-->
-<!--                <h5 class="font-bold mb-2">{{ $t('connectedChannels') }}</h5>-->
-<!--                <span class="chanel-list__item" v-for="channel in connectedChannels" :key="channel._id">-->
-<!--                  {{ channel.type }}-->
-<!--                  <i style="cursor: pointer; margin-left: auto; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="deleteChannel(channel._id)"/>-->
-<!--                  <i style="cursor: pointer" class="pi pi-cog" @click="openChannel(channel.type, channel._id)"/>-->
-<!--                </span>-->
-<!--              </div>-->
-<!--              <div class="chanel-list">-->
-<!--                <h5 class="font-bold mb-2">{{ $t('connectNewChannel') }}</h5>-->
-<!--                <span class="chanel-list__item">-->
-<!--                  amoCRM-->
-<!--                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('amocrm')" />-->
-<!--                </span>-->
-<!--                <span class="chanel-list__item">-->
-<!--                  Bitrix24-->
-<!--                  <i style="cursor: pointer" class="pi pi-cog" />-->
-<!--                </span>-->
-<!--                <span class="chanel-list__item">-->
-<!--                  Telegram-->
-<!--                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('telegram')" />-->
-<!--                </span>-->
-<!--                <span class="chanel-list__item">-->
-<!--                  Whatsapp-->
-<!--                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('whatsapp')" />-->
-<!--                </span>-->
-<!--                <span class="chanel-list__item">-->
-<!--                  Avito-->
-<!--                  <i style="cursor: pointer" class="pi pi-cog" @click="chooseChannel('avito')" />-->
-<!--                </span>-->
-<!--                <span class="chanel-list__item">-->
-<!--                  {{ $t('onlineChat') }}-->
-<!--                  <i style="cursor: pointer" class="pi pi-cog" @click="createOnlineChat" />-->
-<!--                </span>-->
-<!--              </div>-->
             </TabPanel>
 
 

@@ -223,7 +223,7 @@
   "connectAnyTariff": "Connectez n'importe quel tarif",
   "copyDataPage": "Copiez les données sur cette page",
   "connectingTelegramBot": "Connexion du robot Telegram",
-  "openTelegramApp": "Ouvrez l'application Telegram, utilisez @BotFather pour créer un bot ou ouvrez un bot existant.",
+  "openTelegramApp": "Ouvrez Telegram, utilisez t.me/BotFather pour créer un nouveau bot ou sélectionnez un bot existant.",
   "copyBotToken": "Copiez le jeton du bot et collez-le ici",
   "connected": "Connecté",
   "disconnected": "Désactivé",
@@ -270,5 +270,10 @@
   "connectNewChannel": "Connecter une nouvelle chaîne",
   "creatingChannel": "Créer une chaîne",
   "availableChannels": "Chaînes disponibles",
-  "connectedChannelsToBot": "Les chaînes sont liées à ce bot"
+  "connectedChannelsToBot": "La chaîne est connectée à ce bot",
+  "connectToBot": "Se connecter au bot",
+  "updateDataCRM": "Mettre à jour les données depuis CRM",
+  "channelNameOnly": "Nom de la chaîne (pour votre commodité uniquement)",
+  "aIBotWillDeleted": "Tous les paramètres et informations de ce bot AI seront supprimés. Êtes-vous sûr de vouloir supprimer ce bot IA ?",
+  "cancel": "Annuler"
 }

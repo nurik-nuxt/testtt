@@ -223,7 +223,7 @@
   "connectAnyTariff": "Verbinden Sie jeden Tarif",
   "copyDataPage": "Kopieren Sie die Daten auf dieser Seite",
   "connectingTelegramBot": "Telegram-Bot verbinden",
-  "openTelegramApp": "Öffnen Sie die Telegram-App, erstellen Sie mit @BotFather einen Bot oder öffnen Sie einen vorhandenen Bot.",
+  "openTelegramApp": "Öffnen Sie Telegram, erstellen Sie mit t.me/BotFather einen neuen Bot oder wählen Sie einen vorhandenen Bot aus.",
   "copyBotToken": "Kopieren Sie das Bot-Token und fügen Sie es hier ein",
   "connected": "In Verbindung gebracht",
   "disconnected": "Deaktiviert",
@@ -270,5 +270,10 @@
   "connectNewChannel": "Verbinden Sie einen neuen Kanal",
   "creatingChannel": "Erstellen Sie einen Kanal",
   "availableChannels": "Verfügbare Kanäle",
-  "connectedChannelsToBot": "Kanäle sind mit diesem Bot verknüpft"
+  "connectedChannelsToBot": "Der Kanal ist mit diesem Bot verbunden",
+  "connectToBot": "Mit Bot verbinden",
+  "updateDataCRM": "Aktualisieren Sie Daten aus CRM",
+  "channelNameOnly": "Kanalname (nur zu Ihrer Bequemlichkeit)",
+  "aIBotWillDeleted": "Alle Einstellungen und Informationen dieses KI-Bots werden gelöscht. Sind Sie sicher, dass Sie diesen KI-Bot löschen möchten?",
+  "cancel": "Stornieren"
 }

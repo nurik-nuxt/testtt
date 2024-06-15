@@ -9,6 +9,7 @@ const channelStore = useChannelStore();
 
 const type = ref<string>('telegram');
 const token = ref<string>('')
+const channelTitle = ref<string>('')
 
 const createChannel = async () => {
   await channelStore.createNewChannel({
@@ -30,11 +31,15 @@ const createChannel = async () => {
           <h5 class="mt-4">{{ $t('connectingTelegramBot') }}</h5>
           <div v-if="step === 1">
             <div class="flex flex-column gap-2">
-<!--              <span>1.{{ $t('openTelegramApp') }}</span>-->
-              <span>1.Откройте приложение Telegram, с помощью @BotFather создайте бота или откройте существующего бота.</span>
+              <span>1.{{ $t('openTelegramApp') }}</span>
+<!--              <span>1.Откройте приложение Telegram, с помощью @BotFather создайте бота или откройте существующего бота.</span>-->
               <span class="mb-3">2.{{ $t('copyBotToken') }}</span>
-              <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" />
-              <Button :label="t('toPlug')" @click="createChannel"></Button>
+              <div class="flex flex-column gap-2 mb-2">
+                <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
+                <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
+              </div>
+              <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" style="width: 50%" class="mb-2" />
+              <Button :label="t('toPlug')" @click="createChannel" :disabled="!token.length || !channelTitle.length" style="width: 50%"></Button>
             </div>
           </div>
         </div>

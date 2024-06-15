@@ -6,8 +6,9 @@ const toast = useToast();
 const { t } = useI18n();
 const channelStore = useChannelStore()
 const type = ref<string>('amocrm')
+const channelTitle = ref<string>('')
 const createAmoCrmChannel = async () => {
-  await channelStore.createNewChannel({ type: type.value }).then((res) => {
+  await channelStore.createNewChannel({ type: type.value, title: channelTitle.value }).then((res) => {
     if (!res.success) {
       toast.add({ severity: 'error', summary: t('error'), detail: res?.message, life: 5000 })
     } else {
@@ -26,7 +27,11 @@ const createAmoCrmChannel = async () => {
     <div class="col-12">
       <div class="card">
         <h5 class="font-bold">AmoCRM</h5>
-        <Button :label="t('connectAmoCRM')" @click="createAmoCrmChannel"></Button>
+        <div class="flex flex-column gap-2 mb-4">
+          <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
+          <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
+        </div>
+        <Button :label="t('connectAmoCRM')" @click="createAmoCrmChannel" :disabled="!channelTitle.length"></Button>
       </div>
     </div>
   </div>

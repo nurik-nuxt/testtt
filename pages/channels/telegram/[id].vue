@@ -37,7 +37,7 @@ const changeChannelStatus = async (status: string) => {
               <div v-if="channelStatus === 'active'">{{ $t('connected')}}</div>
               <div v-else>{{ $t('disconnected')}}</div>
               <Button v-if="channelStatus === 'active'" :label="t('disable')" severity="danger" @click="changeChannelStatus('off')"></Button>
-              <Button v-else :label="t('connectAmoCRM')"  @click="changeChannelStatus('active')"></Button>
+              <Button v-else :label="t('toPlug')"  @click="changeChannelStatus('active')"></Button>
             </div>
             <div class="flex gap-3 align-items-center">
               <div>{{ $t('channelStatus') }}</div>
