@@ -5,10 +5,13 @@ const channelStore = useChannelStore();
 const channelStatus = ref('');
 const { t } = useI18n();
 const route = useRoute();
-
+const channelTitle = ref<string>('')
+const token = ref<string>('')
 const fetchChannel = async () => {
   await channelStore.getChannelById(<string>route.params.id).then((res) => {
-    channelStatus.value = res.status
+    channelStatus.value = res.status;
+    channelTitle.value = res.title;
+    token.value = res.token
   })
 }
 
@@ -22,6 +25,14 @@ const changeChannelStatus = async (status: string) => {
         fetchChannel();
       }
     })
+}
+
+const changeChannel = async () => {
+  await channelStore.changeStatusChannelById(<string>route.params.id, channelStatus.value, channelTitle.value, token.value).then((res) => {
+    if (res.success) {
+      fetchChannel();
+    }
+  })
 }
 </script>
 
@@ -53,6 +64,14 @@ const changeChannelStatus = async (status: string) => {
               </div>
             </div>
           </div>
+        </div>
+        <div class="flex flex-column gap-2 mt-3">
+          <div class="flex flex-column gap-2 mb-2">
+            <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
+            <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
+          </div>
+          <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" style="width: 50%" class="mb-2" />
+          <Button :label="t('toPlug')" @click="changeChannel" :disabled="!token.length || !channelTitle.length" style="width: 50%"></Button>
         </div>
       </div>
     </div>

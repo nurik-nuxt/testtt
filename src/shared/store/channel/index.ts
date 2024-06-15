@@ -1,5 +1,5 @@
-import { defineStore } from "pinia";
-import { useApi } from "~/composable";
+import {defineStore} from "pinia";
+import {useApi} from "~/composable";
 
 interface ChannelItem {
     status: string;
@@ -72,22 +72,22 @@ export const useChannelStore = defineStore('channel', {
 
         async getChannelById(id: string) {
             try {
-                const response = await useApi(`/user/source/${id}`, {
+                return await useApi(`/user/source/${id}`, {
                     method: 'GET'
-                })
-                console.log(response);
-                return response;
+                });
             } catch (e) {
                 console.log(e)
             }
         },
 
-        async changeStatusChannelById(id: string, status: string) {
+        async changeStatusChannelById(id: string, status?: string, title?: string, token?: string) {
             try {
                 const response = await useApi(`/user/source/${id}`, {
                     method: 'PATCH',
                     body: {
-                        status: status
+                        status: status,
+                        title: title,
+                        token: token
                     }
                 })
                 console.log(response);

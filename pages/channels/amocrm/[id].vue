@@ -13,6 +13,8 @@ const voronkas = ref([]);
 const fetchChannel = async () => {
   const res = await channelStore.getChannelById(<string>route.params.id);
   channelStatus.value = res.status;
+  channelTitle.value = res.title;
+  console.log(res);
 };
 
 const fetchVoronki = async () => {
@@ -101,6 +103,14 @@ const saveStatusMap = async () => {
 
   await amoCrmStore.changeActiveStatus(requestBody,<string>route.params.id)
 };
+
+const channelTitle = ref<string>('')
+
+const changeChannel = async () => {
+  await channelStore.changeStatusChannelById(<string>route.params.id, channelStatus.value, channelTitle.value).then(() => {
+    fetchChannel();
+  })
+}
 </script>
 
 <template>
@@ -125,6 +135,11 @@ const saveStatusMap = async () => {
                   <label for="off" class="ml-2">{{ $t('switchedOff') }}</label>
                 </div>
               </div>
+            </div>
+            <div class="flex flex-column gap-2 mb-4">
+              <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
+              <InputText id="channelTitle" type="text" v-model="channelTitle" />
+              <Button :label="t('save')" @click="changeChannel" :disabled="!channelTitle.length"></Button>
             </div>
           </div>
           <div class="flex flex-column gap-4">

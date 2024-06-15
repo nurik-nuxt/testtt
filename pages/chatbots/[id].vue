@@ -315,15 +315,16 @@ onMounted(async () => {
   })
   await channelStore.getAllChannels();
   socket.connect();
-  joinToChannel();
+  // joinToChannel();
 })
 
 const joinToChannel = () => {
-  socket.emit('joinChat', { botId: route.params.id, userId: userId.value})
+  socket.emit('joinedRoom', { botId: route.params.id, userId: userId.value})
 }
 
 const sendMessage = () => {
   console.log('sendMessage');
+  joinToChannel();
   socket.emit('message', message.value);
 }
 

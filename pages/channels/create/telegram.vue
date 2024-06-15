@@ -14,7 +14,8 @@ const channelTitle = ref<string>('')
 const createChannel = async () => {
   await channelStore.createNewChannel({
     type: type.value,
-    token: token.value
+    token: token.value,
+    title: channelTitle.value,
   }).then((res) => {
     if (res.success) {
       return navigateTo({ name: 'channels-telegram-id', params: { id: res?.channel?._id }})
@@ -32,7 +33,6 @@ const createChannel = async () => {
           <div v-if="step === 1">
             <div class="flex flex-column gap-2">
               <span>1.{{ $t('openTelegramApp') }}</span>
-<!--              <span>1.Откройте приложение Telegram, с помощью @BotFather создайте бота или откройте существующего бота.</span>-->
               <span class="mb-3">2.{{ $t('copyBotToken') }}</span>
               <div class="flex flex-column gap-2 mb-2">
                 <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
