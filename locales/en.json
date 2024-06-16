@@ -274,5 +274,8 @@
   "updateDataCRM": "Update data from CRM",
   "channelNameOnly": "Channel name (for your convenience only)",
   "aIBotWillDeleted": "All settings and information of this AI bot will be deleted. Are you sure you want to delete this AI bot?",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "instructionWaQr1": "1. Open WhatsApp on your phone",
+  "instructionWaQr2": "2. Click menu “⁝” or “Settings” → “Paired devices” → “Pair device”",
+  "instructionWaQr3": "3. Point your phone at the screen to scan the code"
 }

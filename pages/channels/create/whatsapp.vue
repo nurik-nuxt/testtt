@@ -7,8 +7,7 @@ const { t } = useI18n();
 const channelTitle = ref<string>('')
 
 const createChannel = async () => {
-  console.log('createChannel')
-  await channelStore.createNewChannel({ type: 'wappi', title: channelTitle.value }).then((res) => {
+  await channelStore.createNewChannel({ type: 'whatsapp', title: channelTitle.value }).then((res) => {
     if (res.success) {
       return navigateTo({ name: 'channels-whatsapp-id', params: { id: res.channel._id } })
     }

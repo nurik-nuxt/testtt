@@ -275,5 +275,8 @@
   "updateDataCRM": "Aktualisieren Sie Daten aus CRM",
   "channelNameOnly": "Kanalname (nur zu Ihrer Bequemlichkeit)",
   "aIBotWillDeleted": "Alle Einstellungen und Informationen dieses KI-Bots werden gelöscht. Sind Sie sicher, dass Sie diesen KI-Bot löschen möchten?",
-  "cancel": "Stornieren"
+  "cancel": "Stornieren",
+  "instructionWaQr1": "1. Öffnen Sie WhatsApp auf Ihrem Telefon",
+  "instructionWaQr2": "2. Klicken Sie auf das Menü „⁝“ oder „Einstellungen“ → „Gekoppelte Geräte“ → „Gerät koppeln“.",
+  "instructionWaQr3": "3. Richten Sie Ihr Telefon auf den Bildschirm, um den Code zu scannen"
 }

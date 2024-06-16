@@ -20,7 +20,7 @@ onMounted(() => {
 })
 
 const changeChannelStatus = async (status: string) => {
-    await channelStore.changeStatusChannelById(<string>route.params.id, status).then((res) => {
+    await channelStore.changeStatusChannelById(<string>route.params.id, status, channelTitle.value).then((res) => {
       if (res.success) {
         fetchChannel();
       }
@@ -55,11 +55,11 @@ const changeChannel = async () => {
               <div class="flex flex-wrap gap-3">
                 <div class="flex align-items-center">
                   <RadioButton v-model="channelStatus" inputId="active" name="active" value="active" />
-                  <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
+                  <label for="active" class="ml-2">{{ $t('included') }}</label>
                 </div>
                 <div class="flex align-items-center">
-                  <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
-                  <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
+                  <RadioButton v-model="channelStatus" inputId="off" name="off" value="off" />
+                  <label for="off" class="ml-2">{{ $t('switchedOff') }}</label>
                 </div>
               </div>
             </div>
@@ -71,7 +71,7 @@ const changeChannel = async () => {
             <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
           </div>
           <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" style="width: 50%" class="mb-2" />
-          <Button :label="t('toPlug')" @click="changeChannel" :disabled="!token.length || !channelTitle.length" style="width: 50%"></Button>
+          <Button :label="t('toPlug')" @click="changeChannel" :disabled="!token?.length || !channelTitle?.length" style="width: 50%"></Button>
         </div>
       </div>
     </div>

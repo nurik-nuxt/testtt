@@ -33,11 +33,11 @@ await suspenseModels();
 const apiKeyTypes = ref([
   {
     title: 'Использовать отдельный токен для этого бота',
-    code: 'individual_token'
+    code: 'own'
   },
   {
     title: 'Использовать токен 7s',
-    code: '7s_token'
+    code: 'shared'
   }
 ]);
 
@@ -274,6 +274,7 @@ const currentBot = ref({
   user_id: '',
   instructions: '',
   apiKey: '',
+  apiKeyType: '',
   channels: [],
   controlSignals: {
     stopBot: '',
@@ -285,24 +286,24 @@ const currentBot = ref({
   isLimit: false,
   isSchedule: false,
   joinTimeout: 0,
-  maxTokens: 0,
-  bigTimeout: 0,
+  maxTokens: 300,
+  bigTimeout: 24,
   messageLimit: {
-    qty: 0,
-    period: 0,
-    granularity: '',
+    qty: 30,
+    period: 1,
+    granularity: 'day',
   },
   model: '',
   name: '',
-  operatorStopTime: '',
+  operatorStopTime: 20,
   schedule: {
     start: '',
     end: '',
     offset: 5
   },
-  smallTimeout: 0,
+  smallTimeout: 10,
   stopOnOperator: false,
-  temperature: 0,
+  temperature: 0.5,
   whisper: false,
 })
 onMounted(async () => {
@@ -314,7 +315,7 @@ onMounted(async () => {
     });
   })
   await channelStore.getAllChannels();
-  socket.connect();
+  // socket.connect();
   // joinToChannel();
 })
 
@@ -451,8 +452,8 @@ const disconnectToBot = async (channelId: string) => {
 
                 <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
-                <Dropdown style="margin-top: 8px" id="apiKey" v-model="apiKey" :options="apiKeyTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
-                <InputText style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" />
+                <Dropdown class="mb-2" style="margin-top: 8px" id="apiKey" v-model="currentBot.apiKeyType" :options="apiKeyTypes" optionLabel="title" option-value="code" :placeholder="t('chooseOption')"></Dropdown>
+                <InputText v-if="currentBot.apiKeyType === 'own'" style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" />
 
                 <!--Bot model-->
                 <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>

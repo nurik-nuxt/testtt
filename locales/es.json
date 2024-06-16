@@ -275,5 +275,8 @@
   "updateDataCRM": "Actualizar datos desde CRM",
   "channelNameOnly": "Nombre del canal (solo para su comodidad)",
   "aIBotWillDeleted": "Se eliminarán todas las configuraciones y la información de este bot de IA. ¿Estás seguro de que quieres eliminar este bot de IA?",
-  "cancel": "Cancelar"
+  "cancel": "Cancelar",
+  "instructionWaQr1": "1. Abre WhatsApp en tu teléfono",
+  "instructionWaQr2": "2. Haga clic en el menú “⁝” o “Configuración” → “Dispositivos emparejados” → “Emparejar dispositivo”",
+  "instructionWaQr3": "3. Apunta tu teléfono a la pantalla para escanear el código."
 }
