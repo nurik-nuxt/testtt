@@ -2,6 +2,8 @@
 import { useBotStore } from "~/src/shared/store/bot";
 import { useUploadFileStore } from "~/src/shared/store/upload";
 import { useKnowledgeStore } from "~/src/shared/store/knowledge";
+import { useAmoCrmStore } from "~/src/shared/store/amocrm";
+import {ac} from "~/.output/public/_nuxt/CAVwC06F";
 
 const { t } = useI18n();
 
@@ -61,49 +63,10 @@ const usedValue = ref<boolean>(false);
 const interruptDialogue = ref<boolean>(false);
 const telegramNotification = ref<boolean>(false);
 
-const funnels = ref([
-  {
-    title: 'Воронка 1',
-    id: 'funnel1'
-  },
-  {
-    title: 'Воронка 2',
-    id: 'funnel2'
-  },
-  {
-    title: 'Воронка 3',
-    id: 'funnel3'
-  },
-  {
-    title: 'Воронка 4',
-    id: 'funnel4'
-  },
-  {
-    title: 'Воронка 5',
-    id: 'funnel5'
-  }
-]);
-
 const funnelId = ref<string>('');
-
-const statuses = ref([
-  {
-    title: 'В работе',
-    id: 'inProcess'
-  },
-  {
-    title: 'В ожидании',
-    id: 'waiting'
-  },
-  {
-    title: 'Готово',
-    id: 'done'
-  }
-]);
 
 const statusId = ref<string>('')
 
-const isClientRemindersNewMessage = ref(false);
 
 const timeList = ref([
   {
@@ -161,6 +124,7 @@ const deleteMessage = (id: number) => {
 const botStore = useBotStore();
 const uploadFileStore = useUploadFileStore();
 const knowledgeStore = useKnowledgeStore();
+const amoCrmStore = useAmoCrmStore();
 
 const bot = computed(() => {
   return botStore.currentBot
@@ -189,11 +153,24 @@ const deleteFile = (index: number) => {
   uploadFileStore.deleteFileByIndex(index)
 }
 
+onMounted(async () => {
+  await amoCrmStore.fetchVoronki()
+})
+
+const funnels = computed(() => {
+  return amoCrmStore.getAllFunnels
+})
+
+const statuses = computed(() => {
+  return amoCrmStore.getAllFunnels?.find((funnel) => funnel.id === funnelId.value)?._embedded?.statuses
+})
+
 const name = ref('')
 const rus_name = ref('')
 const content = ref('')
 
 const actions = ref<any>([])
+const writeDealNote = ref('')
 
 const saveKnowledge = async () => {
 
@@ -224,7 +201,15 @@ const saveKnowledge = async () => {
             });
           });
         }
-        await knowledgeStore.addKnowledgeActions(<string>route.params.id, res.insertedId, actions.value)
+        if (funnelId.value && statusId.value) {
+          actions.value.push({ parameters: { status_id: statusId.value, pipeline: funnelId.value }, name: 'move_in_pipeline'})
+        }
+        if (writeDealNote.value) {
+          actions.value.push({ parameters: { text: writeDealNote.value }, name: 'add_note' })
+        }
+        await knowledgeStore.addKnowledgeActions(<string>route.params.id, res.insertedId, actions.value).then(() => {
+          return navigateTo({ name: 'chatbots-id', params: { id: route.params.id }})
+        })
       }
     })
   }
@@ -301,13 +286,10 @@ const saveKnowledge = async () => {
                   <Button :label="t('deleteFile')" icon="pi pi-times"></Button>
                   <span>{{ $t('maxFileSize5MB') }}</span>
                 </div>
-                <pre>{{ files }}</pre>
-<!--                <img src="https://minio.clevermart.kz/food/images/2024/4/10/b29209e8-7537-4c32-b9da-0ccb9df81801/S_Фрукты,_ягоды.png" alt="ppp">-->
                 <div v-if="files.length" class="flex flex-column gap-3">
                   <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
                     <div class="flex gap-3 align-items-center" v-if="file.mimeType.includes('image')">
-                      <span>{{ `http://api.7sales.ai/public/${encodeURI(file.filename)}` }}</span>
-                      <img :src="`http://api.7sales.ai/public/${encodeURI(file.filenameEncodeFull)}`" :alt="file.originalName" class="image">
+                      <img :src="`https://api.7sales.ai/public/${file.filenameEncodeFull}`" :alt="file.originalName" class="image">
                       <span class="text-base font-bold">{{ file.originalName }} image</span>
                       <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>
                     </div>
@@ -325,16 +307,16 @@ const saveKnowledge = async () => {
               <div class="mt-4 flex justify-content-between gap-4">
                 <div class="flex flex-column w-full gap-2">
                   <label for="funnel">{{ $t('choosePipeline') }}:</label>
-                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" :placeholder="t('chooseField')"></Dropdown>
+                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
                 </div>
                 <div class="flex flex-column w-full gap-2">
                   <label for="statusId">{{ $t('changeStatus') }}:</label>
-                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" :placeholder="t('chooseField')"></Dropdown>
+                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
                 </div>
               </div>
               <div class="flex flex-column mt-3">
                 <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">{{ $t('writeDealNote') }}</label>
-                <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" />
+                <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" v-model="writeDealNote" />
               </div>
               <div class="flex flex-column mt-3">
                 <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>

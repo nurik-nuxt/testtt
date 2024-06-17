@@ -11,12 +11,14 @@ export const useAmoCrmStore = defineStore('amocrm', {
 
     state: () => {
         return {
-            activeFunnels: [] as any
+            activeFunnels: [] as any,
+            funnels: [] as any
         }
     },
 
     getters: {
-        getActiveFunnels: (state) => state.activeFunnels
+        getActiveFunnels: (state) => state.activeFunnels,
+        getAllFunnels: (state) => state.funnels
     },
     actions: {
         async fetchVoronki() {
@@ -25,6 +27,7 @@ export const useAmoCrmStore = defineStore('amocrm', {
                     method: 'GET'
                 })
                 console.log(response);
+                this.funnels = response
                 return response;
             } catch (e) {
                 console.log(e)

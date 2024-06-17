@@ -37,7 +37,6 @@ export const useKnowledgeStore = defineStore('knowledge', {
                         actions: actions
                     }
                 })
-                console.log(response);
                 return response;
             } catch (e) {
                 console.log(e)
