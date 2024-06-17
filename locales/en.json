@@ -277,5 +277,6 @@
   "cancel": "Cancel",
   "instructionWaQr1": "1. Open WhatsApp on your phone",
   "instructionWaQr2": "2. Click menu “⁝” or “Settings” → “Paired devices” → “Pair device”",
-  "instructionWaQr3": "3. Point your phone at the screen to scan the code"
+  "instructionWaQr3": "3. Point your phone at the screen to scan the code",
+  "perSeconds": "seconds"
 }

@@ -71,7 +71,7 @@ const changeChannel = async () => {
             <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
           </div>
           <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" style="width: 50%" class="mb-2" />
-          <Button :label="t('toPlug')" @click="changeChannel" :disabled="!token?.length || !channelTitle?.length" style="width: 50%"></Button>
+          <Button :label="t('save')" @click="changeChannel" :disabled="!token?.length || !channelTitle?.length" style="width: 50%"></Button>
         </div>
       </div>
     </div>

@@ -5,6 +5,8 @@ interface FileItem {
     filename: string;
     mimeType: string;
     originalName: string;
+    filePath: string;
+    filenameEncodeFull: string;
 }
 export const useUploadFileStore = defineStore('uploadFile', {
     state: () => {
@@ -26,9 +28,9 @@ export const useUploadFileStore = defineStore('uploadFile', {
                 const response = await useApi('/upload', {
                     method: 'POST',
                     body
-                })
+                }, true, false)
                 console.log(response)
-                this.files.push({ filename: response?.filename, mimeType: response?.mimeType, originalName: response?.originalName })
+                this.files.push({ filename: response?.filename, mimeType: response?.mimeType, originalName: response?.originalName, filePath: response?.filePath, filenameEncodeFull: response?.filenameEncodeFull })
             } catch (e) {
                 console.log(e);
             }

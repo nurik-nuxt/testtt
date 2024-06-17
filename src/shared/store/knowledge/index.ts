@@ -1,5 +1,5 @@
-import { defineStore } from "pinia";
-import { useApi } from "~/composable";
+import {defineStore} from "pinia";
+import {useApi} from "~/composable";
 
 interface BaseKnowledgeItem {
     name: string;
@@ -7,15 +7,58 @@ interface BaseKnowledgeItem {
     content: string
 }
 export const useKnowledgeStore = defineStore('knowledge', {
+    state:() => {
+        return {
+            knowledgeList: []
+        }
+    },
+
+    getters: {
+        getKnowledgeList: (state) => state.knowledgeList
+    },
     actions: {
         async addBaseKnowledge(id: string, baseKnowledgeItem: BaseKnowledgeItem) {
             try {
-                const response = await useApi(`/bot/${id}/file`, {
+                return await useApi(`/bot/${id}/file`, {
                     method: 'POST',
                     body: baseKnowledgeItem
 
                 })
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async addKnowledgeActions(botId: string, insertedId: string, actions: any) {
+            try {
+                const response = await useApi(`/bot/${botId}/file/${insertedId}/actions`, {
+                    method: 'POST',
+                    body: {
+                        actions: actions
+                    }
+                })
                 console.log(response);
+                return response;
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async getKnowledgeListByBot(botId: string) {
+            try {
+                const response = await useApi(`/bot/${botId}/file`, {
+                    method: 'GET'
+                })
+                console.log(response);
+                this.knowledgeList = response.map(item => ({
+                    key: item._id,
+                    data: {
+                        label: item.name,
+                        notification: true,
+                        active: true
+                    }
+                }));
+                return response;
             } catch (e) {
                 console.log(e)
             }

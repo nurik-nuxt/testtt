@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { useBotStore } from "~/src/shared/store/bot";
 import { useChannelStore } from "~/src/shared/store/channel";
+import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
 import jsCookie from "js-cookie";
 import { useToast } from "primevue/usetoast";
-import { socket } from "~/socket";
+// import { socket } from "~/socket";
 
 const toast = useToast();
 interface BotItem {
@@ -23,6 +24,7 @@ const userId = computed(() => {
 
 const botStore = useBotStore();
 const channelStore = useChannelStore();
+const knowledgeStore = useKnowledgeStore();
 const extra = ref<boolean>(true);
 
 
@@ -293,7 +295,7 @@ const currentBot = ref({
     period: 1,
     granularity: 'day',
   },
-  model: '',
+  model: 'gpt-4o',
   name: '',
   operatorStopTime: 20,
   schedule: {
@@ -315,18 +317,19 @@ onMounted(async () => {
     });
   })
   await channelStore.getAllChannels();
+  await knowledgeStore.getKnowledgeListByBot(<string>route.params.id)
   // socket.connect();
   // joinToChannel();
 })
 
-const joinToChannel = () => {
-  socket.emit('joinedRoom', { botId: route.params.id, userId: userId.value})
-}
+// const joinToChannel = () => {
+//   socket.emit('joinedRoom', { botId: route.params.id, userId: userId.value})
+// }
 
 const sendMessage = () => {
   console.log('sendMessage');
-  joinToChannel();
-  socket.emit('message', message.value);
+  // joinToChannel();
+  // socket.emit('message', message.value);
 }
 
 const bot = computed(() => {
@@ -390,6 +393,10 @@ const connectToBot = async (channelId: string) => {
 const disconnectToBot = async (channelId: string) => {
   await channelStore.disconnectChannelToBot(channelId, <string>route.params.id)
 }
+
+const files = computed(() => {
+  return knowledgeStore.getKnowledgeList
+})
 </script>
 
 <template>
@@ -621,7 +628,7 @@ const disconnectToBot = async (channelId: string) => {
                 <Button :label="t('delete')" :disabled="!knowledgeBaseSelectedKey" />
               </div>
               <div>
-                <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="knowledgeBaseList" selectionMode="checkbox" class="w-full">
+                <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="files" selectionMode="checkbox" class="w-full">
                   <template #header>
                     <div class="text-left">
                       <InputText v-model="filters['global']" :placeholder="t('searchBase')" />

@@ -107,15 +107,19 @@ const isClientRemindersNewMessage = ref(false);
 
 const timeList = ref([
   {
-    id: 'perMinutes',
+    id: 'seconds',
+    title: t('perSeconds')
+  },
+  {
+    id: 'minutes',
     title: t('perMinutes')
   },
   {
-    id: 'perHour',
+    id: 'hours',
     title: t('perHour')
   },
   {
-    id: 'perDay',
+    id: 'days',
     title: t('perDay')
   }
 ]);
@@ -132,10 +136,10 @@ const selectedMessageTypes = ref([
   }
 ])
 
-const messages = ref<{ id: number }[]>([]);
+const messages = ref<{ id: number, quantity: number, message: string, timeframe: string }[]>([]);
 
 const addMessage = () => {
-  messages.value.push({ id: messages.value.length + 1})
+  messages.value.push({ id: messages.value.length + 1, quantity: 10, message: '', timeframe: 'seconds'})
 }
 
 const messageTypes = ref([
@@ -189,12 +193,39 @@ const name = ref('')
 const rus_name = ref('')
 const content = ref('')
 
+const actions = ref<any>([])
+
 const saveKnowledge = async () => {
+
   if (name.value.length && rus_name.value.length && content.value.length) {
     await knowledgeStore.addBaseKnowledge(<string>route.params.id, {
       name: name.value,
       rus_name: rus_name.value,
       content: content.value
+    }).then(async (res) => {
+      if (res.success) {
+        if (messages?.value?.length) {
+          const delay = {
+            parameters: {
+              times: messages.value
+            },
+            name: 'delay'
+          }
+          actions.value.push(delay)
+        }
+        if (files.value.length) {
+          files?.value?.forEach(file => {
+            actions.value.push({
+              parameters: {
+                fileName: file.filename,
+                type: file.mimeType
+              },
+              name: "send_file"
+            });
+          });
+        }
+        await knowledgeStore.addKnowledgeActions(<string>route.params.id, res.insertedId, actions.value)
+      }
     })
   }
 }
@@ -247,12 +278,12 @@ const saveKnowledge = async () => {
                     </div>
                     <div class="flex align-items-center gap-3 ml-4 mt-4">
                       <span>{{ $t('clientNoResponseTime') }}</span>
-                      <InputText id="name1" type="number" min="1" style="max-width: 70px" />
-                      <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="timeItem" :options="timeList" optionLabel="title"></Dropdown>
+                      <InputText id="quantity" type="number" min="1" style="max-width: 70px" v-model="message.quantity"/>
+                      <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="message.timeframe" :options="timeList" optionLabel="title" option-value="id"></Dropdown>
                     </div>
                     <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="messageType" :options="messageTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
                     <InputText class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" />
-                    <Textarea class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" />
+                    <Textarea class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />
                     <i class="pi pi-trash ml-auto mt-3" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>
                   </div>
                 </div>
@@ -270,10 +301,13 @@ const saveKnowledge = async () => {
                   <Button :label="t('deleteFile')" icon="pi pi-times"></Button>
                   <span>{{ $t('maxFileSize5MB') }}</span>
                 </div>
+                <pre>{{ files }}</pre>
+<!--                <img src="https://minio.clevermart.kz/food/images/2024/4/10/b29209e8-7537-4c32-b9da-0ccb9df81801/S_Фрукты,_ягоды.png" alt="ppp">-->
                 <div v-if="files.length" class="flex flex-column gap-3">
                   <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
                     <div class="flex gap-3 align-items-center" v-if="file.mimeType.includes('image')">
-                      <img :src="`https://prompt-typically-wren.ngrok-free.app/public/${file.filename}`" :alt="file.originalName" class="image">
+                      <span>{{ `http://api.7sales.ai/public/${encodeURI(file.filename)}` }}</span>
+                      <img :src="`http://api.7sales.ai/public/${encodeURI(file.filenameEncodeFull)}`" :alt="file.originalName" class="image">
                       <span class="text-base font-bold">{{ file.originalName }} image</span>
                       <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>
                     </div>
@@ -330,7 +364,7 @@ const saveKnowledge = async () => {
             </TabPanel>
           </TabView>
           <div class="mt-4 flex gap-4 justify-content-end align-items-center">
-            <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
+            <nuxt-link :to="`/chatbots/${route.params.id}`" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
             <Button :label="t('save')" @click="saveKnowledge"></Button>
           </div>
         </div>

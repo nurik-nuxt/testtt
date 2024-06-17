@@ -44,7 +44,7 @@ const createChannel = (key: string) => {
 }
 
 const availableChannels = computed(() => {
-  return channelStore.getChannels?.filter((channel) => !channel.connected)
+  return channelStore.getChannels
 })
 
 
@@ -84,7 +84,7 @@ onMounted(async () => {
           >{{ bot.title }}</button>
         </div>
         <div class="chanel-list" v-if="availableChannels.length">
-          <h5 class="font-bold mb-2">{{ $t('availableChannels') }}</h5>
+          <h5 class="font-bold mb-2">{{ $t('connectedChannels') }}</h5>
           <span class="chanel-list__item" v-for="channel in availableChannels" :key="channel._id">
                   {{ channel.title }}
                   <span class="font-bold ml-2">({{ channel.type }})</span>

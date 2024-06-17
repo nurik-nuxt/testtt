@@ -1,5 +1,5 @@
-import {$fetch, FetchOptions} from 'ohmyfetch';
-import jsCookie from 'js-cookie'
+import { $fetch, FetchOptions } from 'ohmyfetch';
+import jsCookie from 'js-cookie';
 import { useLoaderStore } from "~/src/shared/store/loader";
 
 interface ApiResponse<T = any> {
@@ -7,7 +7,7 @@ interface ApiResponse<T = any> {
     data: T;
 }
 
-export const useApi = async (uri: string, options: FetchOptions = {}, isLoading: boolean = true) => {
+export const useApi = async (uri: string, options: FetchOptions = {}, isLoading: boolean = true, withContentType: boolean = true) => {
     const loaderStore = useLoaderStore();
     const { apiBaseUrl } = useRuntimeConfig().public;
 
@@ -15,25 +15,29 @@ export const useApi = async (uri: string, options: FetchOptions = {}, isLoading:
         loaderStore.setLoader(true);
     }
 
-    const headers = {
+    // Explicitly define headers type
+    const headers: Record<string, string> = {
         Accept: 'application/json',
-        Authorization: 'Bearer ' + jsCookie.get('accessToken'),
+        Authorization: 'Bearer ' + jsCookie.get('accessToken') || ''
+    };
+
+    if (withContentType) {
+        headers['Content-Type'] = 'application/json';
     }
 
     try {
         const response = await $fetch(apiBaseUrl + uri, {
             ...options,
             headers,
-        })
+        });
         if (isLoading) {
             loaderStore.setLoader(false);
         }
-        return response
+        return response;
     } catch (e) {
         if (isLoading) {
             loaderStore.setLoader(false);
         }
-        console.log(e?.response?._data)
-        return e?.response?._data
+        return e?.response?._data;
     }
-}
+};

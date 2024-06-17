@@ -38,7 +38,6 @@ export const useChannelStore = defineStore('channel', {
                 const response = await useApi('/user/source', {
                     method: 'GET'
                 })
-                console.log(response);
                 this.channels = response;
             } catch (e) {
                 console.log(e)
