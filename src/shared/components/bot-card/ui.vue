@@ -45,9 +45,9 @@ const hasAmoCrm = computed(() => {
       <div class="bot-card__channels">
         <span>{{ $t('channels') }}</span>
         <div class="bot-card__channels-list" v-if="props.channels?.length">
-          <i v-if="hasInstagram" style="color: #ec4899; font-size: 30px" class="pi pi-instagram" />
-          <i v-if="hasTelegram" style="color: #3B82F6; font-size: 30px" class="pi pi-telegram" />
-          <i v-if="hasWhatsApp" style="color: #22c55e; font-size: 30px" class="pi pi-whatsapp" />
+          <i v-if="hasInstagram" style="color: #ec4899; font-size: 27px" class="pi pi-instagram" />
+          <i v-if="hasTelegram" style="color: #3B82F6; font-size: 27px" class="pi pi-telegram" />
+          <i v-if="hasWhatsApp" style="color: #22c55e; font-size: 27px" class="pi pi-whatsapp" />
           <span v-if="hasAmoCrm" style="width: 30px">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="0 0 30 30" version="1.1">
 <defs>

@@ -14,8 +14,6 @@ const botStore = useBotStore();
 const createBot = async () => {
   await botStore.createBot().then(async (res) => {
     return navigateTo({ name: 'chatbots-id', params: { id: res.id }})
-    // console.log(res)
-    // await botStore.getBotList()
   });
 }
 const { t } = useI18n();
