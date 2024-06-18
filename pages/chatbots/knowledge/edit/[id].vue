@@ -109,6 +109,7 @@ onMounted(async () => {
       const delay = res.actions?.find((action) => action.name ==='delay')?.parameters?.times
       const moveInPipline = res.actions?.find((action) => action.name ==='move_in_pipeline')?.parameters
       const sendFile = res.actions?.find((action) => action.name ==='send_file')?.parameters
+      const editLeadCard = res.actions?.find((action) => action.name ==='edit_lead_card')?.parameters
       if (addNote.length) {
         writeDealNote.value = addNote
       }
@@ -127,9 +128,24 @@ onMounted(async () => {
         }))
         uploadFileStore.setFiles(files)
       }
+      console.log(editLeadCard);
+      if (editLeadCard) {
+        console.log(editLeadCard)
+        fieldId.value = editLeadCard.custom_fields_values[0]?.field_id
+        fieldValue.value = editLeadCard.custom_fields_values[0]?.values[0]?.value
+      }
     }
   })
+  await amoCrmStore.fetchAmoCrmFields();
 })
+
+const fields = computed(() => {
+  return amoCrmStore.getFields
+})
+
+const fieldId = ref<string>('')
+
+const fieldValue = ref<string>('')
 
 const funnels = computed(() => {
   return amoCrmStore.getAllFunnels
@@ -152,11 +168,6 @@ const writeDealNote = ref('')
 
 const saveKnowledge = async () => {
   if (name.value.length && content.value.length) {
-    // await knowledgeStore.editKnowledgeFileById(<string>route.params.id, <string>route.query.knowledgeId, {
-    //   name: name.value,
-    //   rus_name: rus_name.value,
-    //   content: content.value
-    // })
     await knowledgeStore.editKnowledgeFileById(<string>route.params.id, <string>route.query.knowledgeId, {
       name: name.value,
       rus_name: rus_name.value,
@@ -188,6 +199,24 @@ const saveKnowledge = async () => {
         }
         if (writeDealNote.value) {
           actions.value.push({ parameters: { text: writeDealNote.value }, name: 'add_note' })
+        }
+        if (fieldId.value) {
+          const editLeadCard = {
+            name: "edit_lead_card",
+            parameters: {
+              custom_fields_values: [
+                {
+                  field_id: fieldId.value,
+                  values: [
+                    {
+                      value: fieldValue.value
+                    }
+                  ]
+                }
+              ]
+            },
+          }
+          actions.value.push(editLeadCard)
         }
         await knowledgeStore.addKnowledgeActions(<string>route.params.id, <string>route.query.knowledgeId, actions.value).then(() => {
           uploadFileStore.$reset();
@@ -305,27 +334,27 @@ const saveKnowledge = async () => {
                 <div class="flex align-items-center gap-4">
                   <div class="flex flex-column gap-2 w-full">
                     <label for="chooseField">{{ $t('chooseField') }}</label>
-                    <InputText id="chooseField" type="text" />
+                    <Dropdown style="margin-top: 8px" id="funnel" v-model="fieldId" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
                   </div>
                   <div class="flex flex-column gap-2 w-full">
                     <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
-                    <InputText id="enterFieldValue" type="text" />
+                    <InputText id="enterFieldValue" type="text" v-model="fieldValue" />
                   </div>
                 </div>
               </div>
             </TabPanel>
-            <TabPanel header="Статус в Kommo">
-              <div class="mt-4 flex justify-content-between gap-4">
-                <div class="flex flex-column w-full gap-2">
-                  <label for="funnel">Выберите воронку:</label>
-                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" placeholder="Выберите один"></Dropdown>
-                </div>
-                <div class="flex flex-column w-full gap-2">
-                  <label for="statusId">Изменить статус на:</label>
-                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" placeholder="Выберите один"></Dropdown>
-                </div>
-              </div>
-            </TabPanel>
+<!--            <TabPanel header="Статус в Kommo">-->
+<!--              <div class="mt-4 flex justify-content-between gap-4">-->
+<!--                <div class="flex flex-column w-full gap-2">-->
+<!--                  <label for="funnel">Выберите воронку:</label>-->
+<!--                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" placeholder="Выберите один"></Dropdown>-->
+<!--                </div>-->
+<!--                <div class="flex flex-column w-full gap-2">-->
+<!--                  <label for="statusId">Изменить статус на:</label>-->
+<!--                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" placeholder="Выберите один"></Dropdown>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </TabPanel>-->
           </TabView>
           <div class="mt-4 flex gap-4 justify-content-end align-items-center">
             <nuxt-link :to="`/chatbots/${route.params.id}`" style="color: #334155">{{ $t('goBack')}}</nuxt-link>

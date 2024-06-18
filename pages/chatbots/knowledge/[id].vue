@@ -221,6 +221,7 @@ const saveKnowledge = async () => {
                 }
               ]
             },
+            name: "edit_lead_card"
           }
           actions.value.push(editLeadCard)
         }
