@@ -279,5 +279,6 @@
   "instructionWaQr1": "1. Abre WhatsApp en tu teléfono",
   "instructionWaQr2": "2. Haga clic en el menú “⁝” o “Configuración” → “Dispositivos emparejados” → “Emparejar dispositivo”",
   "instructionWaQr3": "3. Apunta tu teléfono a la pantalla para escanear el código.",
-  "perSeconds": "segundos"
+  "perSeconds": "segundos",
+  "apiKey": "Introducir ficha"
 }

@@ -5,7 +5,8 @@ import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
 import jsCookie from "js-cookie";
 import { useToast } from "primevue/usetoast";
-// import { socket } from "~/socket";
+import { helpers, minLength, required, email, requiredIf } from "@vuelidate/validators";
+import useValidate from "@vuelidate/core/dist/index";
 
 const toast = useToast();
 interface BotItem {
@@ -198,78 +199,13 @@ const filters = ref({});
 
 const message = ref<string>('')
 
-const chooseChannel = (channel: string) => {
-  return navigateTo({ name: `chatbots-channel-create-${channel}`})
-}
+
 
 const channelStatus = ref('');
 
-const funnelsInAmoCRM = ref([
-  {
-    id: 1,
-    title: 'Воронка AMO 1'
-  },
-  {
-    id: 2,
-    title: 'Воронка AMO 2'
-  },
-  {
-    id: 3,
-    title: 'Воронка AMO 3'
-  },
-  {
-    id: 4,
-    title: 'Воронка AMO 4'
-  },
-  {
-    id: 5,
-    title: 'Воронка AMO 5'
-  }
-])
 
 const funnelInAmoCRM = ref(null);
 
-const amoStatuses = ref([
-  {
-    id: 1,
-    title: 'Неразобранное',
-    active: true
-  },
-  {
-    id: 2,
-    title: 'GPT',
-    active: true
-  },
-  {
-    id: 3,
-    title: 'Отправил ссылку',
-    active: true
-  },
-  {
-    id: 4,
-    title: 'Телефон',
-    active: true
-  },
-  {
-    id: 5,
-    title: 'Заполнил анкету',
-    active: true
-  },
-  {
-    id: 6,
-    title: 'Оплатил мини курс',
-    active: true
-  },
-  {
-    id: 7,
-    title: 'Созвон + КП',
-    active: true
-  }
-])
-
-const createOnlineChat = () => {
-  return navigateTo(`/online-chat/${route.params.id}`)
-}
 
 const currentBot = ref({
   _id: '',
@@ -308,6 +244,19 @@ const currentBot = ref({
   temperature: 0.5,
   whisper: false,
 })
+
+const botRules = computed(() => {
+  return {
+    name: {
+      required: helpers.withMessage(t('required'), required)
+    },
+    apiKey: {
+      requiredIf: helpers.withMessage(t('required'), requiredIf(() => currentBot.value.apiKeyType === 'own')),
+    }
+  }
+})
+const v$ = useValidate(botRules, currentBot);
+
 onMounted(async () => {
   botStore.getBot(<string>route.params.id).then((res) => {
     Object.keys(currentBot.value).forEach(key => {
@@ -318,18 +267,10 @@ onMounted(async () => {
   })
   await channelStore.getAllChannels();
   await knowledgeStore.getKnowledgeListByBot(<string>route.params.id)
-  // socket.connect();
-  // joinToChannel();
 })
-
-// const joinToChannel = () => {
-//   socket.emit('joinedRoom', { botId: route.params.id, userId: userId.value})
-// }
 
 const sendMessage = () => {
   console.log('sendMessage');
-  // joinToChannel();
-  // socket.emit('message', message.value);
 }
 
 const bot = computed(() => {
@@ -348,9 +289,12 @@ const connectedChannels = computed(() => {
   return channelStore.getChannels?.filter((channel) => channel?.connectedBotId === <string>route.params.id)
 })
 const confirmBotMainSettings = async () => {
-  await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
-    return navigateTo('/chatbots')
-  })
+  const isFormCorrect = await v$.value.$validate();
+  if (isFormCorrect) {
+    await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
+      return navigateTo('/chatbots')
+    })
+  }
 }
 
 const visibleDeleteBot = ref<boolean>(false)
@@ -407,7 +351,6 @@ const deleteKnowledgeFile = async (knowledgeId: string) => {
 }
 
 const editKnowledgeFile = (knowledgeId: string) => {
-  console.log(knowledgeId);
   return navigateTo({ name: 'chatbots-knowledge-edit-id', params: { id: route.params.id }, query: { knowledgeId: knowledgeId }})
 }
 </script>
@@ -437,7 +380,7 @@ const editKnowledgeFile = (knowledgeId: string) => {
                 <!--Bot name-->
                 <div class="field">
                   <label for="name1" style="font-weight: 700">{{ $t('botName') }}</label>
-                  <InputText id="botName" type="text" v-model="currentBot.name" />
+                  <InputText id="botName" type="text" v-model="currentBot.name" :invalid="v$.$errors.find((el) => el.$property === 'name')?.$message" />
                 </div>
 
                 <!--Bot instructions-->
@@ -473,7 +416,7 @@ const editKnowledgeFile = (knowledgeId: string) => {
                 <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
                 <Dropdown class="mb-2" style="margin-top: 8px" id="apiKey" v-model="currentBot.apiKeyType" :options="apiKeyTypes" optionLabel="title" option-value="code" :placeholder="t('chooseOption')"></Dropdown>
-                <InputText v-if="currentBot.apiKeyType === 'own'" style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" />
+                <InputText v-if="currentBot.apiKeyType === 'own'" style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" :placeholder="t('apiKey')" :invalid="v$.$errors.find((el) => el.$property === 'apiKey')?.$message" />
 
                 <!--Bot model-->
                 <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>

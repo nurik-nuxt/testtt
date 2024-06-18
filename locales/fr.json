@@ -279,5 +279,6 @@
   "instructionWaQr1": "1. Ouvrez WhatsApp sur votre téléphone",
   "instructionWaQr2": "2. Cliquez sur le menu «⁝» ou «Paramètres» → «Appareils couplés» → «Appairer l'appareil»",
   "instructionWaQr3": "3. Pointez votre téléphone vers l'écran pour scanner le code",
-  "perSeconds": "secondes"
+  "perSeconds": "secondes",
+  "apiKey": "Entrez le jeton"
 }
