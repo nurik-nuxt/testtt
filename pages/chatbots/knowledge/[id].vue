@@ -304,7 +304,7 @@ const saveKnowledge = async () => {
                   <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
                     <div class="flex gap-3 align-items-center" v-if="file.mimeType.includes('image')">
                       <img :src="`https://api.7sales.ai/public/${file.filenameEncodeFull}`" :alt="file.originalName" class="image">
-                      <span class="text-base font-bold">{{ file.originalName }} image</span>
+                      <span class="text-base font-bold">{{ file.originalName }}</span>
                       <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>
                     </div>
                     <div class="flex gap-3 align-items-center" v-else>
