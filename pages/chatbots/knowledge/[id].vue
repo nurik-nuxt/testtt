@@ -280,9 +280,9 @@ const saveKnowledge = async () => {
                       <InputText id="quantity" type="number" min="1" style="max-width: 70px" v-model="message.quantity"/>
                       <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="message.timeframe" :options="timeList" optionLabel="title" option-value="id"></Dropdown>
                     </div>
-                    <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="messageType" :options="messageTypes" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
-                    <InputText class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" />
-                    <Textarea class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />
+                    <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="messageType" :options="messageTypes" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
+                    <InputText v-if="messageType ==='sendMyMessage'" class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" />
+                    <Textarea v-if="messageType ==='generateUsingAI'" class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />
                     <i class="pi pi-trash ml-auto mt-3" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>
                   </div>
                 </div>
@@ -337,7 +337,7 @@ const saveKnowledge = async () => {
                 <div class="flex align-items-center gap-4">
                   <div class="flex flex-column gap-2 w-full">
                     <label for="chooseField">{{ $t('chooseField') }}</label>
-                    <Dropdown style="margin-top: 8px" id="funnel" v-model="fieldId" :options="fields" optionLabel="title" placeholder="Выберите один"></Dropdown>
+                    <Dropdown style="margin-top: 8px" id="funnel" v-model="fieldId" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
                   </div>
                   <div class="flex flex-column gap-2 w-full">
                     <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
@@ -346,18 +346,18 @@ const saveKnowledge = async () => {
                 </div>
               </div>
             </TabPanel>
-            <TabPanel header="Статус в Kommo">
-              <div class="mt-4 flex justify-content-between gap-4">
-                <div class="flex flex-column w-full gap-2">
-                  <label for="funnel">Выберите воронку:</label>
-                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" placeholder="Выберите один"></Dropdown>
-                </div>
-                <div class="flex flex-column w-full gap-2">
-                  <label for="statusId">Изменить статус на:</label>
-                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" placeholder="Выберите один"></Dropdown>
-                </div>
-              </div>
-            </TabPanel>
+<!--            <TabPanel header="Статус в Kommo">-->
+<!--              <div class="mt-4 flex justify-content-between gap-4">-->
+<!--                <div class="flex flex-column w-full gap-2">-->
+<!--                  <label for="funnel">Выберите воронку:</label>-->
+<!--                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" placeholder="Выберите один"></Dropdown>-->
+<!--                </div>-->
+<!--                <div class="flex flex-column w-full gap-2">-->
+<!--                  <label for="statusId">Изменить статус на:</label>-->
+<!--                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" placeholder="Выберите один"></Dropdown>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </TabPanel>-->
           </TabView>
           <div class="mt-4 flex gap-4 justify-content-end align-items-center">
             <nuxt-link :to="`/chatbots/${route.params.id}`" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
