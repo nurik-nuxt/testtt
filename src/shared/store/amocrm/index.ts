@@ -1,6 +1,5 @@
-import { useApi } from "~/composable";
-import { defineStore } from "pinia";
-import {use} from "h3";
+import {useApi} from "~/composable";
+import {defineStore} from "pinia";
 
 interface ActiveStatusItem {
     pipeline_id: number;
@@ -12,13 +11,15 @@ export const useAmoCrmStore = defineStore('amocrm', {
     state: () => {
         return {
             activeFunnels: [] as any,
-            funnels: [] as any
+            funnels: [] as any,
+            fields: [] as any
         }
     },
 
     getters: {
         getActiveFunnels: (state) => state.activeFunnels,
-        getAllFunnels: (state) => state.funnels
+        getAllFunnels: (state) => state.funnels,
+        getFields: (state) => state.fields
     },
     actions: {
         async fetchVoronki() {
@@ -26,7 +27,6 @@ export const useAmoCrmStore = defineStore('amocrm', {
                 const response = await useApi('/amocrm/voronkas', {
                     method: 'GET'
                 })
-                console.log(response);
                 this.funnels = response
                 return response;
             } catch (e) {
@@ -54,6 +54,16 @@ export const useAmoCrmStore = defineStore('amocrm', {
                 })
                 console.log(response)
                 return response;
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async fetchAmoCrmFields() {
+            try {
+                this.fields = await useApi(`/amocrm/fields`, {
+                    method: 'GET'
+                });
             } catch (e) {
                 console.log(e)
             }

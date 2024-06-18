@@ -48,7 +48,6 @@ export const useKnowledgeStore = defineStore('knowledge', {
                 const response = await useApi(`/bot/${botId}/file`, {
                     method: 'GET'
                 })
-                console.log(response);
                 this.knowledgeList = response.map(item => ({
                     key: item._id,
                     data: {
@@ -58,6 +57,43 @@ export const useKnowledgeStore = defineStore('knowledge', {
                     }
                 }));
                 return response;
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async deleteKnowledgeFile(botId: string, insertedId: string) {
+            try {
+                const response = await useApi(`/bot/${botId}/file/${insertedId}`, {
+                    method: 'DELETE'
+                })
+                console.log(response);
+                return response;
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async getKnowledgeFileById(botId: string, insertedId: string) {
+            try {
+                const response = await useApi(`/bot/${botId}/file/${insertedId}`, {
+                    method: 'GET'
+                })
+                console.log(response);
+                return response;
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        async editKnowledgeFileById(botId: string, insertedId: string,baseKnowledgeItem: BaseKnowledgeItem){
+            try {
+                const response = await useApi(`/bot/${botId}/file/${insertedId}`, {
+                    method: 'PATCH',
+                    body: baseKnowledgeItem
+                })
+                console.log(response)
+                return response
             } catch (e) {
                 console.log(e)
             }

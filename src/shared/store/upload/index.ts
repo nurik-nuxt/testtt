@@ -2,10 +2,10 @@ import { defineStore } from "pinia";
 import { useApi } from "~/composable";
 
 interface FileItem {
-    filename: string;
-    mimeType: string;
-    originalName: string;
-    filePath: string;
+    filename?: string;
+    mimeType?: string;
+    originalName?: string;
+    filePath?: string;
     filenameEncodeFull: string;
 }
 export const useUploadFileStore = defineStore('uploadFile', {
@@ -30,7 +30,7 @@ export const useUploadFileStore = defineStore('uploadFile', {
                     body
                 }, true, false)
                 console.log(response)
-                this.files.push({ filename: response?.filename, mimeType: response?.mimeType, originalName: response?.originalName, filePath: response?.filePath, filenameEncodeFull: response?.filenameEncodeFull })
+                this.files.push({ filename: response?.filename, mimeType: response?.mimeType, originalName: decodeURIComponent(escape(response?.originalName)), filePath: response?.filePath, filenameEncodeFull: response?.filenameEncodeFull })
             } catch (e) {
                 console.log(e);
             }
@@ -43,6 +43,10 @@ export const useUploadFileStore = defineStore('uploadFile', {
             } else {
                 console.error('Index out of bounds');
             }
+        },
+
+        setFiles(files: FileItem[]) {
+            this.files = files
         }
     }
 })

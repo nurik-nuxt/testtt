@@ -6,6 +6,7 @@ const channelStore = useChannelStore();
 const amoCrmStore = useAmoCrmStore();
 
 const route = useRoute();
+const router = useRouter(); // Initialize useRouter
 const channelStatus = ref('');
 const { t } = useI18n();
 const voronkas = ref([]);
@@ -38,9 +39,10 @@ const changeChannelStatus = async (status: string) => {
 };
 
 const refreshCrm = () => {
-  fetchChannel();
-  fetchVoronki();
-  fetchActiveFunnels();
+  // fetchChannel();
+  // fetchVoronki();
+  // fetchActiveFunnels();
+  router.go(0);
 };
 
 onMounted(() => {

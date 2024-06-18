@@ -3,6 +3,7 @@ import { useBotStore } from "~/src/shared/store/bot";
 import { useUploadFileStore } from "~/src/shared/store/upload";
 import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 import { useAmoCrmStore } from "~/src/shared/store/amocrm";
+import {fi} from "cronstrue/dist/i18n/locales/fi";
 
 const { t } = useI18n();
 
@@ -13,50 +14,6 @@ interface BotItem {
   isActive: boolean
 }
 const route = useRoute();
-const bots = ref<BotItem[]>([
-  {
-    title: 'Bot 1',
-    id: 123454,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 1',
-    id: 123454,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 2',
-    id: 3434,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 3',
-    id: 6556,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 4',
-    id: 12334545454,
-    channels: ['whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 5',
-    id: 656534,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  },
-  {
-    title: 'Bot 6',
-    id: 34345,
-    channels: ['instagram', 'whatsapp', 'telegram'],
-    isActive: true
-  }
-])
 
 const usedValue = ref<boolean>(true);
 const interruptDialogue = ref<boolean>(false);
@@ -122,7 +79,6 @@ const files = computed(() => {
   return uploadFileStore.getFiles
 })
 
-const fileRef = ref();
 const openFileUploader = () => {
   const fileInput = document.getElementById('file-upload');
   if (fileInput) {
@@ -141,22 +97,43 @@ const deleteFile = (index: number) => {
   uploadFileStore.deleteFileByIndex(index)
 }
 
+const botName = ref<string>('')
 onMounted(async () => {
-  await amoCrmStore.fetchVoronki();
-  await amoCrmStore.fetchAmoCrmFields();
+  await amoCrmStore.fetchVoronki()
+  await knowledgeStore.getKnowledgeFileById(<string>route.params.id, <string>route.query.knowledgeId).then((res) => {
+    botName.value = res.botName
+    name.value = res.name
+    content.value = res.content
+    if (res?.actions?.length) {
+      const addNote = res.actions?.find((action) => action.name ==='add_note')?.parameters?.text
+      const delay = res.actions?.find((action) => action.name ==='delay')?.parameters?.times
+      const moveInPipline = res.actions?.find((action) => action.name ==='move_in_pipeline')?.parameters
+      const sendFile = res.actions?.find((action) => action.name ==='send_file')?.parameters
+      if (addNote.length) {
+        writeDealNote.value = addNote
+      }
+      if (delay.length) {
+        messages.value = delay
+      }
+      if (moveInPipline?.pipeline) {
+        funnelId.value = moveInPipline.pipeline
+        statusId.value = moveInPipline.status_id
+      }
+      if (sendFile) {
+        const files = res.actions?.filter((action) => action.name === 'send_file')?.map((item) => ({
+          filenameEncodeFull: item.parameters.fileName,
+          mimeType: item.parameters.type === "picture" ? "image/png" : "application/pdf",
+          originalName: item.parameters.fileName
+        }))
+        uploadFileStore.setFiles(files)
+      }
+    }
+  })
 })
 
 const funnels = computed(() => {
   return amoCrmStore.getAllFunnels
 })
-
-const fields = computed(() => {
-  return amoCrmStore.getFields
-})
-
-const fieldId = ref<string>('')
-
-const fieldValue = ref<string>('')
 
 const statuses = computed(() => {
   if (amoCrmStore.getAllFunnels.length) {
@@ -175,7 +152,12 @@ const writeDealNote = ref('')
 
 const saveKnowledge = async () => {
   if (name.value.length && content.value.length) {
-    await knowledgeStore.addBaseKnowledge(<string>route.params.id, {
+    // await knowledgeStore.editKnowledgeFileById(<string>route.params.id, <string>route.query.knowledgeId, {
+    //   name: name.value,
+    //   rus_name: rus_name.value,
+    //   content: content.value
+    // })
+    await knowledgeStore.editKnowledgeFileById(<string>route.params.id, <string>route.query.knowledgeId, {
       name: name.value,
       rus_name: rus_name.value,
       content: content.value
@@ -207,24 +189,7 @@ const saveKnowledge = async () => {
         if (writeDealNote.value) {
           actions.value.push({ parameters: { text: writeDealNote.value }, name: 'add_note' })
         }
-        if (fieldId.value) {
-          const editLeadCard = {
-            parameters: {
-              custom_fields_values: [
-                {
-                  field_id: fieldId.value,
-                  values: [
-                    {
-                      value: fieldValue.value
-                    }
-                  ]
-                }
-              ]
-            },
-          }
-          actions.value.push(editLeadCard)
-        }
-        await knowledgeStore.addKnowledgeActions(<string>route.params.id, res.insertedId, actions.value).then(() => {
+        await knowledgeStore.addKnowledgeActions(<string>route.params.id, <string>route.query.knowledgeId, actions.value).then(() => {
           uploadFileStore.$reset();
           return navigateTo({ name: 'chatbots-id', params: { id: route.params.id }})
         })
@@ -238,7 +203,7 @@ const saveKnowledge = async () => {
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <h5>{{ $t('editKnowledgeBaseFile') }} "{{ bot?.name }}"</h5>
+        <h5>{{ $t('editKnowledgeBaseFile') }} "{{ botName }}"</h5>
         <div class="card-form p-fluid" style="margin-top: 16px">
           <div class="flex gap-3">
             <div class="field w-full">
@@ -265,9 +230,11 @@ const saveKnowledge = async () => {
         </div>
         <div>
           <TabView>
+
             <TabPanel :header="t('fileContent')">
               <Textarea class="mt-4 w-full" :autoResize="true" rows="5" cols="30" :placeholder="t('botResponseInstructions')" v-model="content" />
             </TabPanel>
+
             <TabPanel :header="t('clientReminders')">
               <div v-if="messages?.length">
                 <div v-for="(message, i) in messages" :key="i" class="mt-4 flex align-items-center gap-8">
@@ -316,6 +283,7 @@ const saveKnowledge = async () => {
                 </div>
               </div>
             </TabPanel>
+
             <TabPanel :header="t('crmSystemManagement')">
               <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
               <div class="mt-4 flex justify-content-between gap-4">
@@ -337,11 +305,11 @@ const saveKnowledge = async () => {
                 <div class="flex align-items-center gap-4">
                   <div class="flex flex-column gap-2 w-full">
                     <label for="chooseField">{{ $t('chooseField') }}</label>
-                    <Dropdown style="margin-top: 8px" id="funnel" v-model="fieldId" :options="fields" optionLabel="title" placeholder="Выберите один"></Dropdown>
+                    <InputText id="chooseField" type="text" />
                   </div>
                   <div class="flex flex-column gap-2 w-full">
                     <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
-                    <InputText id="enterFieldValue" type="text" v-model="fieldValue" />
+                    <InputText id="enterFieldValue" type="text" />
                   </div>
                 </div>
               </div>

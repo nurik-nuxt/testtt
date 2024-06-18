@@ -396,7 +396,20 @@ const disconnectToBot = async (channelId: string) => {
 
 const files = computed(() => {
   return knowledgeStore.getKnowledgeList
-})
+});
+
+const deleteKnowledgeFile = async (knowledgeId: string) => {
+  await knowledgeStore.deleteKnowledgeFile(<string>route.params.id, knowledgeId).then(async (res) => {
+    if (res.success) {
+      await knowledgeStore.getKnowledgeListByBot(<string>route.params.id)
+    }
+  })
+}
+
+const editKnowledgeFile = (knowledgeId: string) => {
+  console.log(knowledgeId);
+  return navigateTo({ name: 'chatbots-knowledge-edit-id', params: { id: route.params.id }, query: { knowledgeId: knowledgeId }})
+}
 </script>
 
 <template>
@@ -621,6 +634,32 @@ const files = computed(() => {
               </div>
             </TabPanel>
 
+            <TabPanel :header="t('channels')">
+              <div class="mt-3" v-if="!allChannels.length">
+                <Button :label="t('creatingChannel')" @click="createChannel"></Button>
+              </div>
+
+              <div class="chanel-list" v-if="connectedChannels.length">
+                <h5 class="font-bold mb-2">{{ $t('connectedChannelsToBot') }}</h5>
+                <span class="chanel-list__item" v-for="channel in connectedChannels" :key="channel._id">
+                  {{ channel.title }}
+                  <span class="font-bold ml-2">({{ channel.type }})</span>
+                  <span class="ml-auto" style="color: #19C927">{{ $t('connected') }}</span>
+                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="disconnectToBot(channel._id)"  />
+                </span>
+              </div>
+
+              <div class="chanel-list" v-if="availableChannels.length">
+                <h5 class="font-bold mb-2">{{ $t('availableChannels') }}</h5>
+                <span class="chanel-list__item" v-for="channel in availableChannels" :key="channel._id">
+                  {{ channel.title }}
+                  <span class="font-bold ml-2">({{ channel.type }})</span>
+                  <span class="ml-auto">{{ $t('connectToBot') }}</span>
+                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="connectToBot(channel._id)"  />
+                </span>
+              </div>
+            </TabPanel>
+
             <TabPanel :header="t('knowledgeBase')">
               <div class="flex gap-2 mt-5" style="margin-left: 1rem">
                 <Button :label="t('createFile')" @click="createKnowledgeBase(route.params.id)"/>
@@ -660,10 +699,10 @@ const files = computed(() => {
                   </Column>
 
                   <Column field="actions">
-                    <template #body>
+                    <template #body="slotProps">
                       <div class="flex flex-row-reverse gap-3 ml-auto">
-                        <i style="cursor: pointer; color: #EE9186;" class="pi pi-trash" />
-                        <i style="cursor: pointer" class="pi pi-file-edit" />
+                        <i style="cursor: pointer; color: #EE9186;" class="pi pi-trash" @click="deleteKnowledgeFile(slotProps?.node?.key)" />
+                        <i style="cursor: pointer" class="pi pi-file-edit" @click="editKnowledgeFile(slotProps?.node?.key)" />
                         <i style="cursor: pointer; color: #187CF9" class="pi pi-download" />
                       </div>
                     </template>
@@ -672,32 +711,6 @@ const files = computed(() => {
               </div>
             </TabPanel>
 
-
-            <TabPanel :header="t('channels')">
-              <div class="mt-3" v-if="!allChannels.length">
-                <Button :label="t('creatingChannel')" @click="createChannel"></Button>
-              </div>
-
-              <div class="chanel-list" v-if="connectedChannels.length">
-                <h5 class="font-bold mb-2">{{ $t('connectedChannelsToBot') }}</h5>
-                <span class="chanel-list__item" v-for="channel in connectedChannels" :key="channel._id">
-                  {{ channel.title }}
-                  <span class="font-bold ml-2">({{ channel.type }})</span>
-                  <span class="ml-auto" style="color: #19C927">{{ $t('connected') }}</span>
-                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="disconnectToBot(channel._id)"  />
-                </span>
-              </div>
-
-              <div class="chanel-list" v-if="availableChannels.length">
-                <h5 class="font-bold mb-2">{{ $t('availableChannels') }}</h5>
-                <span class="chanel-list__item" v-for="channel in availableChannels" :key="channel._id">
-                  {{ channel.title }}
-                  <span class="font-bold ml-2">({{ channel.type }})</span>
-                  <span class="ml-auto">{{ $t('connectToBot') }}</span>
-                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="connectToBot(channel._id)"  />
-                </span>
-              </div>
-            </TabPanel>
 
 
             <TabPanel :header="t('notifications')">
