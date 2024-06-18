@@ -174,7 +174,7 @@ const actions = ref<any>([])
 const writeDealNote = ref('')
 
 const saveKnowledge = async () => {
-  if (name.value.length && content.value.length) {
+  if (name.value.length) {
     await knowledgeStore.addBaseKnowledge(<string>route.params.id, {
       name: name.value,
       rus_name: rus_name.value,
@@ -231,8 +231,19 @@ const saveKnowledge = async () => {
         })
       }
     })
+  } else {
+    nameInvalid.value = true
   }
 }
+const nameInvalid = ref<boolean>(false);
+
+watch(
+    () => name.value,
+    (value) => {
+      nameInvalid.value = !value.length;
+    },
+    { deep: true }
+)
 </script>
 
 <template>
@@ -244,7 +255,7 @@ const saveKnowledge = async () => {
           <div class="flex gap-3">
             <div class="field w-full">
               <label for="name1">{{ $t('nameWithin7s') }}</label>
-              <InputText id="rus_name" type="text" v-model="name" />
+              <InputText id="rus_name" type="text" v-model="name" :invalid="nameInvalid"/>
             </div>
           </div>
 

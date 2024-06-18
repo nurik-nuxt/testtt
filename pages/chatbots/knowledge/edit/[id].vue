@@ -224,8 +224,19 @@ const saveKnowledge = async () => {
         })
       }
     })
+  } else {
+    nameInvalid.value = true
   }
 }
+const nameInvalid = ref<boolean>(false);
+
+watch(
+    () => name.value,
+    (value) => {
+      nameInvalid.value = !value.length;
+    },
+    { deep: true }
+)
 </script>
 
 <template>
@@ -237,7 +248,7 @@ const saveKnowledge = async () => {
           <div class="flex gap-3">
             <div class="field w-full">
               <label for="name1">{{ $t('nameWithin7s') }}</label>
-              <InputText id="rus_name" type="text" v-model="name" />
+              <InputText id="rus_name" type="text" v-model="name" :invalid="nameInvalid" />
             </div>
           </div>
 
