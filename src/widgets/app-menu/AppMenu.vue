@@ -14,14 +14,14 @@ interface MenuItem {
 const menu = computed(() => {
   return [
     {
-      label: t('chatbots'),
-      icon: 'pi pi-fw pi-android',
-      url: 'chatbots'
-    },
-    {
       label: t('channels'),
       icon: 'pi pi-fw pi-sitemap',
       url: 'channels'
+    },
+    {
+      label: t('chatbots'),
+      icon: 'pi pi-fw pi-android',
+      url: 'chatbots'
     },
     {
       label: t('tariff'),
