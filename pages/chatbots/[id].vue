@@ -666,7 +666,6 @@ const openTelegram = (url: string) => {
                   <div class="flex flex-column gap-2">
                     <h5>{{ $t('telegram') }}</h5>
                     <span style="color: #0f172a;">{{ $t('subscribeBotLink') }}
-<!--                      <a target="_blank" href="https://web.telegram.org/" style="color: #076AE1;">({{ $t('link') }})</a>-->
                     </span>
                     <Button severity="secondary" raised :label="t('subscribe')" style="width: 30%" class="mt-3" @click="openTelegram('https://t.me/info7s_bot')"/>
                   </div>
@@ -688,13 +687,7 @@ const openTelegram = (url: string) => {
                     <div class="json-snippet">
                       <span class="font-bold">json</span>
                       <span class="ml-2 font-bold">fghj</span>
-                      <span class="ml-2 font-bold">fghj</span>
-                      <span class="ml-2 font-bold">fghj</span>
                       <span class="ml-4 font-bold">"ghjkl;'"</span>
-                      <span class="ml-4 font-bold">"ghjkl;'"</span>
-                      <span class="ml-4 font-bold">"ghjkl;'"</span>
-                      <span class="ml-2 font-bold">"hjbnmpokl"</span>
-                      <span class="ml-2 font-bold">"hjbnmpokl"</span>
                       <span class="ml-2 font-bold">"hjbnmpokl"</span>
                       <span class="font-bold">end</span>
                     </div>
@@ -754,8 +747,8 @@ const openTelegram = (url: string) => {
   background-color: #D6F0FF;
   border-radius: 4px;
   padding: 8px;
-  height: 190px;
-  width: 500px;
+  height: 100px;
+  width: 250px;
   display: flex;
   flex-direction: column;
   justify-content: center;
