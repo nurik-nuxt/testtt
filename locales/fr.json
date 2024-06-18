@@ -280,5 +280,6 @@
   "instructionWaQr2": "2. Cliquez sur le menu «⁝» ou «Paramètres» → «Appareils couplés» → «Appairer l'appareil»",
   "instructionWaQr3": "3. Pointez votre téléphone vers l'écran pour scanner le code",
   "perSeconds": "secondes",
-  "apiKey": "Entrez le jeton"
+  "apiKey": "Entrez le jeton",
+  "subscribe": "S'abonner "
 }

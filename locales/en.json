@@ -279,5 +279,6 @@
   "instructionWaQr2": "2. Click menu “⁝” or “Settings” → “Paired devices” → “Pair device”",
   "instructionWaQr3": "3. Point your phone at the screen to scan the code",
   "perSeconds": "seconds",
-  "apiKey": "Enter token"
+  "apiKey": "Enter token",
+  "subscribe": "Subscribe "
 }

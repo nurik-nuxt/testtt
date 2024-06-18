@@ -280,5 +280,6 @@
   "instructionWaQr2": "2. Klicken Sie auf das Menü „⁝“ oder „Einstellungen“ → „Gekoppelte Geräte“ → „Gerät koppeln“.",
   "instructionWaQr3": "3. Richten Sie Ihr Telefon auf den Bildschirm, um den Code zu scannen",
   "perSeconds": "Sekunden",
-  "apiKey": "Token eingeben"
+  "apiKey": "Token eingeben",
+  "subscribe": "Jetzt abonnieren "
 }

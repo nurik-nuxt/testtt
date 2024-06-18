@@ -24,14 +24,14 @@ const menu = computed(() => {
       url: 'chatbots'
     },
     {
-      label: t('tariff'),
-      icon: 'pi pi-fw pi-star',
-      url: 'tariffs'
-    },
-    {
       label: t('message'),
       icon: 'pi pi-fw pi-comment',
       url: 'dialogues'
+    },
+    {
+      label: t('tariff'),
+      icon: 'pi pi-fw pi-star',
+      url: 'tariffs'
     },
     {
       label: t('callAnalytics'),

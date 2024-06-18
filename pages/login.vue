@@ -45,7 +45,7 @@ const login = async () => {
     try {
       const response = await authStore.login(form);
       if (response?.access_token) {
-        return navigateTo({ name: 'chatbots' })
+        return navigateTo({ name: 'channels' })
       }
       if (response?.error) {
         toast.add({ severity: 'error', summary: t('error'), detail: response?.error, life: 5000 })
