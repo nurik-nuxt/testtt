@@ -280,5 +280,6 @@
   "instructionWaQr3": "3. Point your phone at the screen to scan the code",
   "perSeconds": "seconds",
   "apiKey": "Enter token",
-  "subscribe": "Subscribe "
+  "subscribe": "Subscribe",
+  "ready": "Ready"
 }

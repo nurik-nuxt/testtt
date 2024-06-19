@@ -4,7 +4,9 @@ import { useUploadFileStore } from "~/src/shared/store/upload";
 import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 import { useAmoCrmStore } from "~/src/shared/store/amocrm";
 import { useMainStore } from "~/src/shared/store/main";
+import { useToast } from "primevue/usetoast";
 
+const toast = useToast();
 const { t } = useI18n();
 
 interface BotItem {
@@ -229,7 +231,8 @@ const saveKnowledge = async () => {
         }
         await knowledgeStore.addKnowledgeActions(<string>route.params.id, res.insertedId, actions.value).then(() => {
           uploadFileStore.$reset();
-          return navigateTo({ name: 'chatbots-id', params: { id: route.params.id }})
+          toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
+          return navigateTo({ name: 'chatbots-knowledge-edit-id', params: { id: route.params.id }, query: { knowledgeId: res.insertedId}})
         })
       }
     })
@@ -253,6 +256,7 @@ const goBack = () => {
 </script>
 
 <template>
+  <Toast />
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">

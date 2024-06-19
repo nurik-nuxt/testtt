@@ -281,5 +281,6 @@
   "instructionWaQr3": "3. Apunta tu teléfono a la pantalla para escanear el código.",
   "perSeconds": "segundos",
   "apiKey": "Introducir ficha",
-  "subscribe": "Suscribir "
+  "subscribe": "Suscribir",
+  "ready": "Listo"
 }
