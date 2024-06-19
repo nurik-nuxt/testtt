@@ -12,6 +12,7 @@ const createAmoCrmChannel = async () => {
     if (!res.success) {
       toast.add({ severity: 'error', summary: t('error'), detail: res?.message, life: 5000 })
     } else {
+      toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
       if (res.needActions) {
         window.open(res?.actions.data, '_blank');
       }

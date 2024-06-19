@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { useChannelStore } from "~/src/shared/store/channel";
+import { useToast } from "primevue/usetoast";
 
 const channelStatus = ref('');
 const step = ref<number | null>(1)
 const { t } = useI18n();
+const toast = useToast();
+
 
 const channelStore = useChannelStore();
 
@@ -18,6 +21,7 @@ const createChannel = async () => {
     title: channelTitle.value,
   }).then((res) => {
     if (res.success) {
+      toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
       return navigateTo({ name: 'channels-telegram-id', params: { id: res?.channel?._id }})
     }
   })

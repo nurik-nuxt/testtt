@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { useChannelStore } from "~/src/shared/store/channel";
+import {useToast} from "primevue/usetoast";
 
 const channelStore = useChannelStore();
 const { t } = useI18n();
+const toast = useToast();
 
 const channelTitle = ref<string>('')
 
 const createChannel = async () => {
   await channelStore.createNewChannel({ type: 'whatsapp', title: channelTitle.value }).then((res) => {
     if (res.success) {
+      toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
       return navigateTo({ name: 'channels-whatsapp-id', params: { id: res.channel._id } })
     }
   })

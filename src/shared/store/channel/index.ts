@@ -35,10 +35,9 @@ export const useChannelStore = defineStore('channel', {
     actions: {
         async getAllChannels() {
             try {
-                const response = await useApi('/user/source', {
+                this.channels = await useApi('/user/source', {
                     method: 'GET'
-                })
-                this.channels = response;
+                });
             } catch (e) {
                 console.log(e)
             }
@@ -50,6 +49,9 @@ export const useChannelStore = defineStore('channel', {
                     method: 'POST',
                     body: channel
                 })
+                if (response.success) {
+
+                }
                 console.log(response);
                 return response;
             } catch (e) {
