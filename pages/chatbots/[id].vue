@@ -2,6 +2,7 @@
 import { useBotStore } from "~/src/shared/store/bot";
 import { useChannelStore } from "~/src/shared/store/channel";
 import { useKnowledgeStore } from "~/src/shared/store/knowledge";
+import { useMainStore } from "~/src/shared/store/main";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
 import jsCookie from "js-cookie";
 import { useToast } from "primevue/usetoast";
@@ -26,6 +27,7 @@ const userId = computed(() => {
 const botStore = useBotStore();
 const channelStore = useChannelStore();
 const knowledgeStore = useKnowledgeStore();
+const mainStore = useMainStore();
 const extra = ref<boolean>(true);
 
 
@@ -357,6 +359,7 @@ const editKnowledgeFile = (knowledgeId: string) => {
 const openTelegram = (url: string) => {
   window.open(url, '_blank');
 }
+const activeTab = ref(mainStore.chatBotActiveTab)
 </script>
 
 <template>
@@ -377,7 +380,7 @@ const openTelegram = (url: string) => {
           <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
         </div>
         <div>
-          <TabView>
+          <TabView v-model:activeIndex="activeTab">
             <TabPanel :header="t('general')">
               <div class="card-form p-fluid" style="margin-top: 16px">
 
@@ -657,8 +660,6 @@ const openTelegram = (url: string) => {
                 </TreeTable>
               </div>
             </TabPanel>
-
-
 
             <TabPanel :header="t('notifications')">
               <div class="notification-wrapper">

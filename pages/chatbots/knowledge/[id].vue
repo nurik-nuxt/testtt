@@ -3,6 +3,7 @@ import { useBotStore } from "~/src/shared/store/bot";
 import { useUploadFileStore } from "~/src/shared/store/upload";
 import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 import { useAmoCrmStore } from "~/src/shared/store/amocrm";
+import { useMainStore } from "~/src/shared/store/main";
 
 const { t } = useI18n();
 
@@ -113,6 +114,7 @@ const botStore = useBotStore();
 const uploadFileStore = useUploadFileStore();
 const knowledgeStore = useKnowledgeStore();
 const amoCrmStore = useAmoCrmStore();
+const mainStore = useMainStore();
 
 const bot = computed(() => {
   return botStore.currentBot
@@ -244,6 +246,10 @@ watch(
     },
     { deep: true }
 )
+const goBack = () => {
+  mainStore.setChatBotActiveTab(2)
+  return navigateTo(`/chatbots/${route.params.id}`)
+}
 </script>
 
 <template>
@@ -372,7 +378,8 @@ watch(
 <!--            </TabPanel>-->
           </TabView>
           <div class="mt-4 flex gap-4 justify-content-end align-items-center">
-            <nuxt-link :to="`/chatbots/${route.params.id}`" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
+<!--            <nuxt-link :to="`/chatbots/${route.params.id}`" style="color: #334155">{{ $t('goBack')}}</nuxt-link>-->
+            <Button :label="t('goBack')" @click="goBack" severity="secondary" text></Button>
             <Button :label="t('save')" @click="saveKnowledge"></Button>
           </div>
         </div>
