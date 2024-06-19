@@ -294,7 +294,7 @@ const confirmBotMainSettings = async () => {
   const isFormCorrect = await v$.value.$validate();
   if (isFormCorrect) {
     await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
-      return navigateTo('/chatbots')
+      toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
     })
   }
 }
@@ -310,23 +310,6 @@ const confirmRemoveBot = async () => {
       return navigateTo('/chatbots')
     }
   })
-}
-
-const deleteChannel = async (id: string) => {
-  await channelStore.deleteChannel(id).then(async (res) => {
-    if (res.success) {
-      await channelStore.getAllChannels();
-    } else {
-      toast.add({ severity: 'error', summary: t('error'), detail: res?.message, life: 5000 })
-    }
-  });
-}
-
-const openChannel = (type: string, id: string) => {
-  if (type === 'wappi') {
-    return navigateTo({ name: `channels-whatsapp-id`, params: { id }})
-  }
-  return navigateTo({ name: `channels-${type}-id`, params: { id }})
 }
 
 const createChannel = () => {
