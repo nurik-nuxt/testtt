@@ -213,7 +213,7 @@ const logout = async () => {
               <InputGroup class="mb-2">
                 <InputText :value="authStore?.userData?._id" readonly class="w-25rem"></InputText>
                 <InputGroupAddon>
-                  <i class="pi pi-copy" @click="copyToClipboard"></i>
+                  <i class="pi pi-copy" style="cursor: pointer" @click="copyToClipboard"></i>
                 </InputGroupAddon>
               </InputGroup>
               <span>{{ $t('contactingSupport') }}</span>
