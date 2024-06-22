@@ -282,5 +282,6 @@
   "perSeconds": "segundos",
   "apiKey": "Introducir ficha",
   "subscribe": "Suscribir",
-  "ready": "Listo"
+  "ready": "Listo",
+  "successClipboard": "El enlace se copió correctamente en el portapapeles."
 }

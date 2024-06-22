@@ -282,5 +282,6 @@
   "perSeconds": "ثواني",
   "apiKey": "أدخل الرمز المميز",
   "subscribe": "يشترك ",
-  "ready": "مستعد"
+  "ready": "مستعد",
+  "successClipboard": "تم نسخ الرابط بنجاح إلى الحافظة"
 }

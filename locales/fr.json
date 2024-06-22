@@ -282,5 +282,6 @@
   "perSeconds": "secondes",
   "apiKey": "Entrez le jeton",
   "subscribe": "S'abonner",
-  "ready": "Prêt"
+  "ready": "Prêt",
+  "successClipboard": "Le lien a été copié avec succès dans le presse-papiers"
 }

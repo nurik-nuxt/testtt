@@ -39,16 +39,15 @@ const changeChannelStatus = async (status: string) => {
 };
 
 const refreshCrm = () => {
-  // fetchChannel();
-  // fetchVoronki();
-  // fetchActiveFunnels();
   router.go(0);
 };
 
 onMounted(() => {
-  fetchChannel();
-  fetchVoronki();
-  fetchActiveFunnels();
+  Promise.all([
+      fetchChannel(),
+      fetchVoronki(),
+      fetchActiveFunnels()
+  ])
 });
 
 const getStatusKey = (idFunnel: number, idStatus: number) => {
@@ -141,7 +140,7 @@ const changeChannel = async () => {
             <div class="flex flex-column gap-2 mb-4">
               <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
               <InputText id="channelTitle" type="text" v-model="channelTitle" />
-              <Button :label="t('save')" @click="changeChannel" :disabled="!channelTitle.length"></Button>
+              <Button :label="t('save')" @click="changeChannel" :disabled="!channelTitle?.length"></Button>
             </div>
           </div>
           <div class="flex flex-column gap-4">

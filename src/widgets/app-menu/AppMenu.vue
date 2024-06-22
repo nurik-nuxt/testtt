@@ -2,10 +2,21 @@
 import { AppMenuItem } from "~/src/shared/components/app-menu-item";
 import { useAuthStore } from "~/src/shared/store/auth";
 import jsCookie from "js-cookie";
+import { useClipboard } from '@vueuse/core';
+import { useToast } from "primevue/usetoast";
 
+
+const toast = useToast();
 const authStore = useAuthStore();
 const { t } = useI18n();
+const { copy } = useClipboard();
 
+const copyToClipboard = async () => {
+  await copy(<string>authStore?.userData?._id).then(() => {
+    toast.add({ severity: 'success', summary: t('successClipboard'), life: 5000 });
+
+  });
+}
 interface MenuItem {
   label: string;
   url: string;
@@ -200,9 +211,9 @@ const logout = async () => {
             <div>
               <span class="font-medium text-900 block mb-2">{{ $t('yourId') }}</span>
               <InputGroup class="mb-2">
-                <InputText value="473485384" readonly class="w-25rem"></InputText>
+                <InputText :value="authStore?.userData?._id" readonly class="w-25rem"></InputText>
                 <InputGroupAddon>
-                  <i class="pi pi-copy"></i>
+                  <i class="pi pi-copy" @click="copyToClipboard"></i>
                 </InputGroupAddon>
               </InputGroup>
               <span>{{ $t('contactingSupport') }}</span>

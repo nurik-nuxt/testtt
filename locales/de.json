@@ -282,5 +282,6 @@
   "perSeconds": "Sekunden",
   "apiKey": "Token eingeben",
   "subscribe": "Jetzt abonnieren",
-  "ready": "Bereit"
+  "ready": "Bereit",
+  "successClipboard": "Der Link wurde erfolgreich in die Zwischenablage kopiert"
 }

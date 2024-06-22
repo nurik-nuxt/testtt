@@ -281,5 +281,6 @@
   "perSeconds": "seconds",
   "apiKey": "Enter token",
   "subscribe": "Subscribe",
-  "ready": "Ready"
+  "ready": "Ready",
+  "successClipboard": "The link was successfully copied to the clipboard"
 }

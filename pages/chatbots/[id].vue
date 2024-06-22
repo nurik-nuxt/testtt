@@ -3,11 +3,13 @@ import { useBotStore } from "~/src/shared/store/bot";
 import { useChannelStore } from "~/src/shared/store/channel";
 import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 import { useMainStore } from "~/src/shared/store/main";
+import { useNotificationStore } from "~/src/shared/store/notification";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
 import jsCookie from "js-cookie";
 import { useToast } from "primevue/usetoast";
 import { helpers, minLength, required, email, requiredIf } from "@vuelidate/validators";
 import useValidate from "@vuelidate/core/dist/index";
+import { socket, state } from "~/socket";
 
 const toast = useToast();
 interface BotItem {
@@ -28,6 +30,7 @@ const botStore = useBotStore();
 const channelStore = useChannelStore();
 const knowledgeStore = useKnowledgeStore();
 const mainStore = useMainStore();
+const notificationStore = useNotificationStore();
 const extra = ref<boolean>(true);
 
 
@@ -215,7 +218,6 @@ const currentBot = ref({
   instructions: '',
   apiKey: '',
   apiKeyType: '',
-  channels: [],
   controlSignals: {
     stopBot: '',
     continueBot: ''
@@ -258,21 +260,55 @@ const botRules = computed(() => {
   }
 })
 const v$ = useValidate(botRules, currentBot);
+const telegramLink = ref<string>('')
 
+const isJoinedChat = ref<boolean>(false)
+const joinToChat = () => {
+  socket.emit('joinChat', { botId: <string>route.params.id, userId: userId.value })
+  isJoinedChat.value = true
+}
+
+
+onUnmounted(() => {
+  socket.disconnect();
+})
 onMounted(async () => {
-  botStore.getBot(<string>route.params.id).then((res) => {
-    Object.keys(currentBot.value).forEach(key => {
-      if (key in res && res[key] !== null && res[key] !== undefined) {
-        currentBot.value[key] = res[key];
-      }
-    });
-  })
-  await channelStore.getAllChannels();
-  await knowledgeStore.getKnowledgeListByBot(<string>route.params.id)
+  socket.connect();
+  await Promise.all([
+    botStore.getBot(<string>route.params.id).then((res) => {
+      Object.keys(currentBot.value).forEach(key => {
+        if (key in res && res[key] !== null && res[key] !== undefined) {
+          currentBot.value[key] = res[key];
+        }
+      });
+    }),
+    channelStore.getAllChannels(),
+     knowledgeStore.getKnowledgeListByBot(<string>route.params.id),
+     notificationStore.getTelegramNotificationLink().then((res) => {
+      const response = JSON.parse(res)
+      telegramLink.value = response?.link
+    })
+  ])
 })
 
 const sendMessage = () => {
-  console.log('sendMessage');
+  if (!currentBot.value.apiKeyType) {
+    toast.add({ severity: 'error', summary: 'Ошибка', detail: 'Заполняйте API Key и сохраните бота', life: 5000 })
+  } else {
+    if (!isJoinedChat.value) {
+      joinToChat();
+    }
+    if (message.value.trim() !== '' ) {
+      const currentMessage = message.value; // Capture the current message value
+
+      setTimeout(() => {
+        socket.emit('message', currentMessage)
+      }, 1000)
+
+      state.messages.unshift({ id: state.messages.length + 1, sender: 'Me', message: message.value });
+      message.value = '';
+    }
+  }
 }
 
 const bot = computed(() => {
@@ -339,10 +375,13 @@ const editKnowledgeFile = (knowledgeId: string) => {
   return navigateTo({ name: 'chatbots-knowledge-edit-id', params: { id: route.params.id }, query: { knowledgeId: knowledgeId }})
 }
 
-const openTelegram = (url: string) => {
-  window.open(url, '_blank');
+const openTelegram = () => {
+  window.open(telegramLink.value, '_blank');
 }
 const activeTab = ref(mainStore.chatBotActiveTab)
+const messages = computed(() => {
+  return state.messages.reverse();
+})
 </script>
 
 <template>
@@ -651,7 +690,7 @@ const activeTab = ref(mainStore.chatBotActiveTab)
                     <h5>{{ $t('telegram') }}</h5>
                     <span style="color: #0f172a;">{{ $t('subscribeBotLink') }}
                     </span>
-                    <Button severity="secondary" raised :label="t('subscribe')" style="width: 30%" class="mt-3" @click="openTelegram('https://t.me/info7s_bot')"/>
+                    <Button severity="secondary" raised :label="t('subscribe')" style="width: 30%" class="mt-3" @click="openTelegram"/>
                   </div>
                 </div>
                 <div class="notification-card">
@@ -691,7 +730,11 @@ const activeTab = ref(mainStore.chatBotActiveTab)
               <div>{{ $t('chatWithBot') }} <br>"{{ bot?.name }}"</div>
               <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-trash" />
             </div>
-            <div class="h-full mb-2 mt-2 rounded-xl" style="background: #F9FAFC" />
+            <div class="chat-messages h-full">
+              <div v-for="(message, index) in state.messages" :key="index" :class="{'user-message': message.sender === 'Me', 'bot-message': message.sender === 'Bot'}">
+                {{ message.message }}
+              </div>
+            </div>
             <div class="mt-auto flex justify-content-between align-items-center gap-3">
               <Textarea type="text" id="message" class="w-full" :autoResize="true" rows="1" cols="2" v-model="message" />
               <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" @click="sendMessage" />
@@ -736,5 +779,34 @@ const activeTab = ref(mainStore.chatBotActiveTab)
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.user-message {
+  text-align: right;
+  color: white;
+  padding: 9px;
+  background-color: #175CCA;
+  border-radius: 8px;
+  display: inline-block;
+  max-width: 80%;
+  align-self: flex-end;
+}
+.bot-message {
+  text-align: left;
+  color: white;
+  padding: 8px;
+  background-color: green;
+  border-radius: 8px;
+  display: inline-block;
+  max-width: 80%;
+  align-self: flex-start;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  padding: 10px;
+  background-color: #fff;
+  gap: 12px;
 }
 </style>

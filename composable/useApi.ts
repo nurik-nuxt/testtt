@@ -1,6 +1,7 @@
 import { $fetch, FetchOptions } from 'ohmyfetch';
 import jsCookie from 'js-cookie';
 import { useLoaderStore } from "~/src/shared/store/loader";
+import { useAuthStore } from "~/src/shared/store/auth";
 
 interface ApiResponse<T = any> {
     status: number;
@@ -9,6 +10,7 @@ interface ApiResponse<T = any> {
 
 export const useApi = async (uri: string, options: FetchOptions = {}, isLoading: boolean = true, withContentType: boolean = true) => {
     const loaderStore = useLoaderStore();
+    const authStore = useAuthStore();
     const { apiBaseUrl } = useRuntimeConfig().public;
 
     if (isLoading) {
@@ -35,6 +37,37 @@ export const useApi = async (uri: string, options: FetchOptions = {}, isLoading:
         }
         return response;
     } catch (e) {
+        if (e?.response && e.response.status === 401) {
+            try {
+                const response = await $fetch(`${apiBaseUrl}/auth/refresh`, {
+                    method: 'POST',
+                    headers,
+                    body: {
+                        refresh_token: jsCookie.get('refreshToken')
+                    },
+                })
+                const accessTokenExpiryHours = 3 / 24;
+                const refreshTokenExpiryDays = 3;
+
+                jsCookie.set('accessToken', response.access_token ?? '', { path: '/', expires: accessTokenExpiryHours });
+                jsCookie.set('refreshToken', response.refresh_token ?? '', { path: '/', expires: refreshTokenExpiryDays });
+                authStore.setTokens(response.access_token, response.refresh_token)
+                const resp = await $fetch(apiBaseUrl + uri, {
+                    ...options,
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: 'Bearer ' + response.access_token,
+                    },
+                });
+                if (isLoading) {
+                    loaderStore.setLoader(false);
+                }
+                return resp;
+            } catch (e) {
+
+            }
+        }
         if (isLoading) {
             loaderStore.setLoader(false);
         }
