@@ -37,14 +37,15 @@ const extra = ref<boolean>(true);
 const { data: models, suspense: suspenseModels } = queryGetModelList();
 
 await suspenseModels();
+const { t } = useI18n();
 
 const apiKeyTypes = ref([
   {
-    title: 'Использовать отдельный токен для этого бота',
+    title: t('useSeparateToken'),
     code: 'own'
   },
   {
-    title: 'Использовать токен 7s',
+    title: t('use7sTokens'),
     code: 'shared'
   }
 ]);
@@ -154,7 +155,6 @@ const knowledgeBaseList = ref([
   }
 ]);
 const knowledgeBaseSelectedKey = ref(null);
-const { t } = useI18n();
 
 const fullTimeWork = ref<boolean>(false);
 
@@ -225,6 +225,7 @@ const currentBot = ref({
   description: '',
   gpt_assistant_id: '',
   hello_on_first: false,
+  helloMessage: '',
   isLimit: false,
   isSchedule: false,
   joinTimeout: 0,
@@ -290,6 +291,11 @@ onMounted(async () => {
     })
   ])
 })
+
+const clearChat = () => {
+  socket.disconnect();
+  state.messages.splice(0,state.messages.length)
+}
 
 const sendMessage = () => {
   if (!currentBot.value.apiKeyType) {
@@ -421,7 +427,7 @@ const messages = computed(() => {
                     </div>
                     <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
                   </div>
-                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="true" rows="3" cols="2" v-model="currentBot.instructions"/>
+                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="false" rows="25" cols="2" v-model="currentBot.instructions"/>
                 </div>
               </div>
 
@@ -433,7 +439,7 @@ const messages = computed(() => {
 
               <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
                 <div class="field" style="margin-top: 12px">
-                  <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" />
+                  <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" v-model="currentBot.helloMessage" />
                 </div>
               </div>
               <span class="bot-card__activate" style="margin-top: 8px">
@@ -728,7 +734,7 @@ const messages = computed(() => {
           <div class="card-chat h-full">
             <div class="flex justify-content-between align-items-center">
               <div>{{ $t('chatWithBot') }} <br>"{{ bot?.name }}"</div>
-              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-trash" />
+              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-trash" @click="clearChat" />
             </div>
             <div class="chat-messages h-full">
               <div v-for="(message, index) in state.messages" :key="index" :class="{'user-message': message.sender === 'Me', 'bot-message': message.sender === 'Bot'}">
@@ -736,7 +742,7 @@ const messages = computed(() => {
               </div>
             </div>
             <div class="mt-auto flex justify-content-between align-items-center gap-3">
-              <Textarea type="text" id="message" class="w-full" :autoResize="true" rows="1" cols="2" v-model="message" />
+              <Textarea type="text" id="message" class="w-full" :autoResize="true" rows="1" cols="2" v-model="message" @keypress.enter="sendMessage" />
               <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" @click="sendMessage" />
             </div>
           </div>

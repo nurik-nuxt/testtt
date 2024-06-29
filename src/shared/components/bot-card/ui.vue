@@ -34,6 +34,9 @@ const hasWhatsApp = computed(() => {
 const hasAmoCrm = computed(() => {
   return props.channels?.some(channel => channel.type === 'amocrm')
 })
+const hasAvito = computed(() => {
+  return props.channels?.some(channel => channel.type === 'avito')
+})
 
 </script>
 
@@ -77,6 +80,17 @@ const hasAmoCrm = computed(() => {
 <path style=" stroke:none;fill-rule:evenodd;fill:rgb(7.058824%,53.333333%,78.431373%);fill-opacity:1;" d="M 26.25 20.417969 C 25.910156 21.402344 25.355469 22.234375 24.582031 22.917969 C 18.101562 22.546875 11.621094 22.546875 5.140625 22.917969 C 4.367188 22.234375 3.8125 21.402344 3.472656 20.417969 C 3.570312 20.035156 3.800781 19.757812 4.167969 19.582031 C 11.367188 19.882812 18.496094 19.882812 25.554688 19.582031 C 25.792969 19.878906 26.023438 20.160156 26.25 20.417969 Z M 26.25 20.417969 "/>
 <path style=" stroke:none;fill-rule:evenodd;fill:rgb(7.45098%,51.764706%,77.647059%);fill-opacity:1;" d="M 24.582031 22.917969 C 22.039062 26.15625 18.660156 27.730469 14.445312 27.640625 C 10.578125 27.488281 7.476562 25.914062 5.140625 22.917969 C 11.621094 22.546875 18.101562 22.546875 24.582031 22.917969 Z M 24.582031 22.917969 "/>
 </g>
+</svg>
+          </span>
+          <span v-if="hasAvito" style="width: 30px">
+            <svg width="30px" height="30px" viewBox="0 0 144 144" xmlns="http://www.w3.org/2000/svg">
+  <title>Avito</title>
+  <g fill="none" fill-rule="evenodd">
+    <circle fill="#FF0000" cx="36" cy="72" r="36"/>
+    <circle fill="#00FF00" cx="108" cy="72" r="36"/>
+    <circle fill="#0000FF" cx="72" cy="36" r="36"/>
+    <circle fill="#FFA500" cx="72" cy="108" r="36"/>
+  </g>
 </svg>
           </span>
 

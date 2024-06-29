@@ -1,6 +1,10 @@
 import {defineStore} from "pinia";
 import {useApi} from "~/composable";
 
+type ChannelCredentials = {
+    client_id?: string;
+    client_secret?: string
+}
 interface ChannelItem {
     status: string;
     token?: {
@@ -18,6 +22,7 @@ interface ChannelRequestItem {
     type: string;
     token?: string;
     title?: string;
+    credentials?: ChannelCredentials
 }
 
 export const useChannelStore = defineStore('channel', {
@@ -49,9 +54,6 @@ export const useChannelStore = defineStore('channel', {
                     method: 'POST',
                     body: channel
                 })
-                if (response.success) {
-
-                }
                 console.log(response);
                 return response;
             } catch (e) {

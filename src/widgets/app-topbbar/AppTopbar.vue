@@ -60,8 +60,11 @@ const isOutsideClicked = (event) => {
 
   return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 };
+const userIdToImpersonate = ref('');
+const applyImpersonate = async () => {
+  await authStore.makeImpersonate(userIdToImpersonate.value)
+}
 
-const languageDialog = ref(false);
 </script>
 
 
@@ -72,8 +75,9 @@ const languageDialog = ref(false);
     </nuxt-link>
     <div v-else-if="authStore.isSupport" class="flex align-items-center gap-4">
       <span>{{ $t('idClient') }}:</span>
-      <InputText type="text" value="467897" />
-      <Button :label="t('apply')"/>
+      <InputText type="text" v-model="userIdToImpersonate" />
+      <Button :disabled="!userIdToImpersonate.length" :label="t('apply')" @click="applyImpersonate"/>
+      <span style="color: red" v-if="authStore.supportedUserEmail">{{ authStore.supportedUserEmail }}</span>
     </div>
     <nuxt-link v-else to="/" class="layout-topbar-logo">
       <span class="layout-topbar-logo-text">7sales</span>

@@ -12,6 +12,7 @@ interface AuthItem {
     access_token?: string;
     refresh_token?: string;
     user: User;
+    supportedEmail: string
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -22,7 +23,8 @@ export const useAuthStore = defineStore('auth', {
             name: null
         },
         access_token: undefined,
-        refresh_token: undefined
+        refresh_token: undefined,
+        supportedEmail: undefined
     }),
 
     getters: {
@@ -33,6 +35,14 @@ export const useAuthStore = defineStore('auth', {
             if (process.client && jsCookie.get('accessToken')) {
                 const userCookie = jsCookie.get('user')
                 return userCookie ? JSON.parse(userCookie) : null
+            } else {
+                return null;
+            }
+        },
+        supportedUserEmail(state){
+            if (process.client) {
+                const userCookie = jsCookie.get('supportedUserEmail')
+                return userCookie ? JSON.parse(userCookie) : state.supportedEmail
             } else {
                 return null;
             }
@@ -80,6 +90,25 @@ export const useAuthStore = defineStore('auth', {
                 })
             } catch (e) {
                 console.log(e)
+            }
+        },
+
+        async makeImpersonate(userIdToImpersonate: string) {
+            try {
+                const response = await useApi(`/auth/impersonate`, {
+                    method: 'POST',
+                    body: {
+                        userIdToImpersonate: userIdToImpersonate
+                    }
+                })
+                jsCookie.set('supportAccessToken', response.access_token);
+                jsCookie.set('supportRefreshToken', response.refresh_token);
+                console.log(response);
+                jsCookie.set('supportedUserEmail', JSON.stringify(response?.user?.email))
+                this.supportedEmail = response?.user?.email
+                // jsCookie.set('supportedUserId', response?.user?._id)
+            } catch (e) {
+                console.log(e);
             }
         },
 

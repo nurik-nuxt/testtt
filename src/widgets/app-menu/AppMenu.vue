@@ -81,7 +81,7 @@ const menuSupport = computed(() => {
     {
       label: t('chatbots'),
       icon: 'pi pi-fw pi-android',
-      url: 'supports/chatbots'
+      url: 'chatbots'
     },
     {
       label: t('tariff'),
@@ -165,6 +165,9 @@ const logout = async () => {
       jsCookie.remove('accessToken');
       jsCookie.remove('refreshToken');
       jsCookie.remove('user');
+      jsCookie.remove('supportAccessToken');
+      jsCookie.remove('supportRefreshToken');
+      jsCookie.remove('supportedUser');
       return navigateTo({ name: 'login' })
     }
   } catch (e) {

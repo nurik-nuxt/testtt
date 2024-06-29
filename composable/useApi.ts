@@ -18,9 +18,11 @@ export const useApi = async (uri: string, options: FetchOptions = {}, isLoading:
     }
 
     // Explicitly define headers type
+    const accessToken = jsCookie.get('supportAccessToken') ? jsCookie.get('supportAccessToken') : jsCookie.get('accessToken') || '';
+
     const headers: Record<string, string> = {
         Accept: 'application/json',
-        Authorization: 'Bearer ' + jsCookie.get('accessToken') || ''
+        Authorization: `Bearer ${accessToken}`
     };
 
     if (withContentType) {

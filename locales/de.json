@@ -41,7 +41,7 @@
 "apiSecretKey": "API-Schlüssel",
 "chooseOption": "Wählen Sie eine der Optionen",
 "useSeparateToken": "Verwenden Sie ein separates Token für diesen Bot",
-"use7sTokens": "Verwenden Sie die 7s-Tokens (inaktiv, in Entwicklung)",
+"use7sTokens": "Verwenden Sie die 7s-Tokens",
 "model": "Modell",
 "modelChoice": "Die Wahl des Modells beeinflusst die Kosten der Tokens und die Qualität der Antworten. GPT-3.5 ist das schnellste und günstigste Textmodell, GPT-4 ist teurer.",
 "messageMergeTimeout": "Nachrichten-Merge-Timeout (Sek.)",

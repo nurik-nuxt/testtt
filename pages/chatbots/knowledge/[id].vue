@@ -90,19 +90,19 @@ const timeList = ref([
 ]);
 
 
-const messages = ref<{ id: number, quantity: number, message: string, timeframe: string }[]>([]);
+const messages = ref<{ id: number, quantity: number, message: string, timeframe: string, type: string }[]>([]);
 
 const addMessage = () => {
-  messages.value.push({ id: messages.value.length + 1, quantity: 10, message: '', timeframe: 'seconds'})
+  messages.value.push({ id: messages.value.length + 1, quantity: 10, message: '', timeframe: 'seconds', type: 'message'})
 }
 
 const messageTypes = ref([
   {
-    id: 'sendMyMessage',
+    id: 'message',
     title: t('sendMyMessage')
   },
   {
-    id: 'generateUsingAI',
+    id: 'prompt',
     title: t('generateUsingAI')
   }
 ])
@@ -188,7 +188,7 @@ const saveKnowledge = async () => {
         if (messages?.value?.length) {
           const delay = {
             parameters: {
-              times: messages.value
+              timers: messages.value
             },
             name: 'delay'
           }
@@ -302,9 +302,9 @@ const goBack = () => {
                       <InputText id="quantity" type="number" min="1" style="max-width: 70px" v-model="message.quantity"/>
                       <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="message.timeframe" :options="timeList" optionLabel="title" option-value="id"></Dropdown>
                     </div>
-                    <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="messageType" :options="messageTypes" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
-                    <InputText v-if="messageType ==='sendMyMessage'" class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" />
-                    <Textarea v-if="messageType ==='generateUsingAI'" class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />
+                    <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="message.type" :options="messageTypes" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
+                    <InputText v-if="message.type ==='message'" class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" v-model="message.message" />
+                    <Textarea v-if="message.type ==='prompt'" class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />
                     <i class="pi pi-trash ml-auto mt-3" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>
                   </div>
                 </div>
