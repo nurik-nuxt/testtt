@@ -83,14 +83,11 @@ const hasAvito = computed(() => {
 </svg>
           </span>
           <span v-if="hasAvito" style="width: 30px">
-            <svg width="30px" height="30px" viewBox="0 0 144 144" xmlns="http://www.w3.org/2000/svg">
-  <title>Avito</title>
-  <g fill="none" fill-rule="evenodd">
-    <circle fill="#FF0000" cx="36" cy="72" r="36"/>
-    <circle fill="#00FF00" cx="108" cy="72" r="36"/>
-    <circle fill="#0000FF" cx="72" cy="36" r="36"/>
-    <circle fill="#FFA500" cx="72" cy="108" r="36"/>
-  </g>
+            <svg width="30px" height="30px" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="60" cy="140" r="40" fill="#59ff59"/>
+  <circle cx="140" cy="140" r="30" fill="#ff5959"/>
+  <circle cx="140" cy="80" r="50" fill="#59a1ff"/>
+  <circle cx="80" cy="60" r="20" fill="#a159ff"/>
 </svg>
           </span>
 
