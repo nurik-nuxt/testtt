@@ -24,6 +24,12 @@ const createChannel = async () => {
       toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
       return navigateTo({ name: 'channels-telegram-id', params: { id: res?.channel?._id }})
     }
+    if (res?.reason === 'not_unique') {
+      toast.add({ severity: 'error', summary: t('telegramAlreadyRegistered'), life: 5000 });
+    }
+    // else {
+    //   toast.add({ severity: 'error', summary: res?.message, life: 5000 });
+    // }
   })
 }
 </script>

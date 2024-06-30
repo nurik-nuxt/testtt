@@ -288,5 +288,6 @@
   "deleteUserConfirm2": "بعد حذف حسابك، سيتم فقدان كافة الروبوتات والقنوات. هل أنت متأكد 100%؟",
   "deleteUserConfirm3": "هل تريد حذف حسابك بالكامل دون إمكانية استرداده؟",
   "deleteUser": "مسح المستخدم",
-  "yes": "نعم"
+  "yes": "نعم",
+  "telegramAlreadyRegistered": "تم تسجيل روبوت Telegram بالفعل في حساب 7sales الحالي."
 }

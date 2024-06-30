@@ -288,5 +288,6 @@
   "deleteUserConfirm2": "Nach dem Löschen Ihres Kontos gehen alle Bots und Kanäle verloren. Sind Sie 100 % sicher?",
   "deleteUserConfirm3": "Ihr Konto vollständig löschen, ohne dass eine Wiederherstellung möglich ist?",
   "deleteUser": "Benutzer löschen",
-  "yes": "Ja"
+  "yes": "Ja",
+  "telegramAlreadyRegistered": "Der Telegram-Bot ist bereits im aktuellen 7sales-Konto registriert."
 }
