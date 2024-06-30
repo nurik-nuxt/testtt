@@ -147,12 +147,14 @@
     display: flex;
     gap: 16px;
     align-items: center;
+    max-width: 450px;
 }
 
 .profile {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    width: 80%;
 }
 
 .profile-settings {

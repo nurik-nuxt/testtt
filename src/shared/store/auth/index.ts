@@ -93,6 +93,16 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
+        async deleteUser(){
+            try {
+                return await useApi('/user/me', {
+                    method: 'DELETE'
+                })
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
         async makeImpersonate(userIdToImpersonate: string) {
             try {
                 const response = await useApi(`/auth/impersonate`, {

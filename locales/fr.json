@@ -283,5 +283,10 @@
   "apiKey": "Entrez le jeton",
   "subscribe": "S'abonner",
   "ready": "Prêt",
-  "successClipboard": "Le lien a été copié avec succès dans le presse-papiers"
+  "successClipboard": "Le lien a été copié avec succès dans le presse-papiers",
+  "deleteUserConfirm1": "Voulez-vous supprimer complètement votre compte ?",
+  "deleteUserConfirm2": "Après avoir supprimé votre compte, tous les robots et chaînes seront perdus. Etes-vous sûr à 100% ?",
+  "deleteUserConfirm3": "Supprimer complètement votre compte sans possibilité de récupération ?",
+  "deleteUser": "Supprimer l'utilisateur",
+  "yes": "Oui"
 }

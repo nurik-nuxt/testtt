@@ -283,5 +283,10 @@
   "apiKey": "Token eingeben",
   "subscribe": "Jetzt abonnieren",
   "ready": "Bereit",
-  "successClipboard": "Der Link wurde erfolgreich in die Zwischenablage kopiert"
+  "successClipboard": "Der Link wurde erfolgreich in die Zwischenablage kopiert",
+  "deleteUserConfirm1": "Möchten Sie Ihr Konto vollständig löschen?",
+  "deleteUserConfirm2": "Nach dem Löschen Ihres Kontos gehen alle Bots und Kanäle verloren. Sind Sie 100 % sicher?",
+  "deleteUserConfirm3": "Ihr Konto vollständig löschen, ohne dass eine Wiederherstellung möglich ist?",
+  "deleteUser": "Benutzer löschen",
+  "yes": "Ja"
 }

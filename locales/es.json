@@ -283,5 +283,10 @@
   "apiKey": "Introducir ficha",
   "subscribe": "Suscribir",
   "ready": "Listo",
-  "successClipboard": "El enlace se copió correctamente en el portapapeles."
+  "successClipboard": "El enlace se copió correctamente en el portapapeles.",
+  "deleteUserConfirm1": "¿Quieres eliminar completamente tu cuenta?",
+  "deleteUserConfirm2": "Después de eliminar su cuenta, se perderán todos los bots y canales. ¿Estás 100% seguro?",
+  "deleteUserConfirm3": "¿Eliminar tu cuenta por completo sin posibilidad de recuperación?",
+  "deleteUser": "Borrar usuario",
+  "yes": "Sí"
 }

@@ -282,5 +282,10 @@
   "apiKey": "Enter token",
   "subscribe": "Subscribe",
   "ready": "Ready",
-  "successClipboard": "The link was successfully copied to the clipboard"
+  "successClipboard": "The link was successfully copied to the clipboard",
+  "deleteUserConfirm1": "Do you want to completely delete your account?",
+  "deleteUserConfirm2": "After deleting your account, all bots and channels will be lost. Are you 100% sure?",
+  "deleteUserConfirm3": "Delete your account completely without the possibility of recovery?",
+  "deleteUser": "Delete user",
+  "yes": "Yes"
 }

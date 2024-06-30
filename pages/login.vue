@@ -45,7 +45,6 @@ const login = async () => {
     try {
       const response = await authStore.login(form);
       if (response?.access_token) {
-        console.log(response);
         if (response?.user?.role === 'support') {
           return navigateTo({ name: 'supports-chatbots' })
         } else {
