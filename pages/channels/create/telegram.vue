@@ -27,9 +27,6 @@ const createChannel = async () => {
     if (res?.reason === 'not_unique') {
       toast.add({ severity: 'error', summary: t('telegramAlreadyRegistered'), life: 5000 });
     }
-    // else {
-    //   toast.add({ severity: 'error', summary: res?.message, life: 5000 });
-    // }
   })
 }
 </script>

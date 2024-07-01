@@ -3,6 +3,8 @@ import jsCookie from 'js-cookie'
 import { useAuthStore } from "~/src/shared/store/auth";
 const authStore = useAuthStore();
 
+const opDeleteUser = ref();
+
 const { t } = useI18n();
 const user = computed(() => {
   const userCookie = jsCookie.get('user')
@@ -56,7 +58,6 @@ const confirmDeleteModal3 = async () => {
   visibleDeleteModal3.value = false;
   try {
     await authStore.deleteUser().then((res) => {
-      console.log(res);
       if (res.success) {
         jsCookie.remove('accessToken');
         jsCookie.remove('refreshToken');
@@ -67,6 +68,10 @@ const confirmDeleteModal3 = async () => {
   } catch (e) {
     console.log(e)
   }
+}
+
+const toggleDeleteUser = (event) => {
+  opDeleteUser.value.toggle(event)
 }
 </script>
 
@@ -94,17 +99,27 @@ const confirmDeleteModal3 = async () => {
       <Button type="button" :label="t('cancel')" @click="visibleDeleteModal3 = false"></Button>
     </div>
   </Dialog>
+  <OverlayPanel ref="opDeleteUser">
+    <div>
+      <Button :label="t('deleteFile')" class="p-0 text-left"  style="margin-top: auto; color: #EF4444" link @click="openDeleteModal1" />
+    </div>
+  </OverlayPanel>
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
         <div class="avatar-wrapper">
           <Avatar :label="firstLetterOfName" class="mr-2" size="xlarge" shape="circle" />
           <div class="profile">
-            <span style="font-weight: 700; font-size: 18px">{{ user?.name }}</span>
+            <span class="flex justify-content-between align-items-center" style="font-weight: 700; font-size: 18px">
+              {{ user?.name }}
+              <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="toggleDeleteUser">
+                <i class="pi pi-ellipsis-h" style="font-size: 18px"></i>
+              </button>
+            </span>
             <span>{{ $t('administrator') }}</span>
             <div class="flex justify-content-between w-full">
               <Button :label="t('logOut')" class="p-0 text-left"  style="margin-top: auto; color: #076AE1" link @click="logout" />
-              <Button :label="t('deleteFile')" class="p-0 text-left"  style="margin-top: auto; color: #EF4444" link @click="openDeleteModal1" />
+<!--              <Button :label="t('deleteFile')" class="p-0 text-left"  style="margin-top: auto; color: #EF4444" link @click="openDeleteModal1" />-->
             </div>
           </div>
         </div>
