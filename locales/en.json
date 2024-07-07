@@ -288,5 +288,6 @@
   "deleteUserConfirm3": "Delete your account completely without the possibility of recovery?",
   "deleteUser": "Delete user",
   "yes": "Yes",
-  "telegramAlreadyRegistered": "The Telegram bot is already registered in the current 7sales account."
+  "telegramAlreadyRegistered": "The Telegram bot is already registered in the current 7sales account.",
+  "selectChat": "Select dialogue"
 }

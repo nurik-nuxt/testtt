@@ -289,5 +289,6 @@
   "deleteUserConfirm3": "Удалить аккаунт полностью без возможности восстановления?",
   "deleteUser": "Удалить пользователя",
   "yes": "Да",
-  "telegramAlreadyRegistered": "Telegram-бот уже зарегистрирован в текущем аккаунте 7sales."
+  "telegramAlreadyRegistered": "Telegram-бот уже зарегистрирован в текущем аккаунте 7sales.",
+  "selectChat": "Выберите диалог"
 }

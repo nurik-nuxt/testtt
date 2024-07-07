@@ -388,6 +388,13 @@ const activeTab = ref(mainStore.chatBotActiveTab)
 const messages = computed(() => {
   return state.messages.reverse();
 })
+
+function handleKeyDown(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+}
 </script>
 
 <template>
@@ -405,7 +412,10 @@ const messages = computed(() => {
       <div class="card h-full flex flex-column w-full">
         <div class="flex justify-content-between">
           <h5>{{ $t('edit') }} "{{ bot?.name }}"</h5>
-          <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
+          <div class="flex align-items-center gap-4">
+            <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
+            <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
+          </div>
         </div>
         <div>
           <TabView v-model:activeIndex="activeTab">
@@ -742,7 +752,7 @@ const messages = computed(() => {
               </div>
             </div>
             <div class="mt-auto flex justify-content-between align-items-center gap-3">
-              <Textarea type="text" id="message" class="w-full" :autoResize="true" rows="1" cols="2" v-model="message" @keypress.enter="sendMessage" />
+              <Textarea style="max-height: 80px" type="text" id="message" class="w-full" maxlength="1000" :autoResize="true" rows="1" cols="2" v-model="message" @keydown="handleKeyDown" />
               <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" @click="sendMessage" />
             </div>
           </div>

@@ -113,10 +113,10 @@ onMounted(async () => {
       const moveInPipline = res.actions?.find((action) => action.name ==='move_in_pipeline')?.parameters
       const sendFile = res.actions?.find((action) => action.name ==='send_file')?.parameters
       const editLeadCard = res.actions?.find((action) => action.name ==='edit_lead_card')?.parameters
-      if (addNote.length) {
+      if (addNote?.length) {
         writeDealNote.value = addNote
       }
-      if (delay.length) {
+      if (delay?.length) {
         messages.value = delay
       }
       if (moveInPipline?.pipeline) {
