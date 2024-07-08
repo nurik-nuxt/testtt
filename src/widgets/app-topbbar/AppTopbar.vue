@@ -3,7 +3,7 @@ import { useLayout } from '~/composable';
 import { useAuthStore } from "~/src/shared/store/auth";
 
 
-const { layoutConfig, onMenuToggle, showLanguageDialog, setToggleChat, chatVisible } = useLayout();
+const { layoutConfig, layoutState, onMenuToggle, showLanguageDialog, setToggleChat, chatVisible } = useLayout();
 const authStore = useAuthStore();
 
 const outsideClickListener = ref(null);
