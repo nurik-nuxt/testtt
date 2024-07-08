@@ -9,6 +9,7 @@ const authStore = useAuthStore();
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
 const router = useRouter();
+const route = useRoute();
 const { t } = useI18n();
 
 onMounted(() => {
@@ -19,9 +20,7 @@ onBeforeUnmount(() => {
   unbindOutsideClickListener();
 });
 
-const logoUrl = computed(() => {
-  return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
-});
+console.log(route?.name);
 
 const onTopBarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
@@ -88,10 +87,10 @@ const applyImpersonate = async () => {
       <i class="pi pi-bars"></i>
     </button>
 
-    <button v-if="!chatVisible" style="margin-left: auto" class="mobile-chat-toggle p-link layout-topbar-menu-button layout-topbar-button" @click="setToggleChat(true)">
+    <button v-if="!chatVisible && route?.name ==='chatbots-id'" style="margin-left: auto" class="mobile-chat-toggle p-link layout-topbar-menu-button layout-topbar-button" @click="setToggleChat(true)">
       <i class="pi pi-comments"></i>
     </button>
-    <button v-if="chatVisible" style="margin-left: auto" class="mobile-chat-toggle p-link layout-topbar-menu-button layout-topbar-button" @click="setToggleChat(false)">
+    <button v-if="chatVisible && route?.name ==='chatbots-id'" style="margin-left: auto" class="mobile-chat-toggle p-link layout-topbar-menu-button layout-topbar-button" @click="setToggleChat(false)">
       <i style="color: #076AE1;" class="pi pi-comments"></i>
     </button>
     <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
