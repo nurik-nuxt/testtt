@@ -41,16 +41,35 @@ const createChannel = async () => {
           <span class="mb-3">2.{{ $t('copyDataPage') }} <a target="_blank" href="https://www.avito.ru/professionals/api" style="color: #076AE1;">({{ $t('link') }})</a></span>
           <div class="flex flex-column gap-2 mb-2">
             <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
-            <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
+            <InputText id="channelTitle" type="text" v-model="channelTitle" class="channel-title" />
           </div>
           <div class="flex flex-column gap-3 mb-2">
             <label for="name1" style="font-weight: 700">{{ $t('enterData') }}</label>
-            <InputText id="clientId" type="text" placeholder="Client_ID" v-model="clientId" style="width: 50%" />
-            <InputText id="clientSecret" type="text" placeholder="Client_Secret" v-model="clientSecret" style="width: 50%" />
+            <InputText id="clientId" type="text" placeholder="Client_ID" v-model="clientId" class="channel-title" />
+            <InputText id="clientSecret" type="text" placeholder="Client_Secret" v-model="clientSecret" class="channel-title" />
           </div>
-          <Button :label="t('toPlug')" @click="createChannel" :disabled="!clientId.length || !clientSecret.length || !channelTitle.length" style="width: 50%"></Button>
+          <Button :label="t('toPlug')" @click="createChannel" :disabled="!clientId.length || !clientSecret.length || !channelTitle.length" class="save-btn"></Button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.save-btn {
+  width: 50%
+}
+
+.channel-title {
+  width: 50%
+}
+
+@media (max-width: 601px) {
+  .save-btn {
+    width: 100% !important;
+  }
+  .channel-title {
+    width: 100% !important;
+  }
+}
+</style>

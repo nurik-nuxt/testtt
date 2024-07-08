@@ -70,13 +70,32 @@ onMounted(() => {
         <div class="flex flex-column gap-2 mt-3">
           <div class="flex flex-column gap-3 mb-2">
             <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
-            <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
-            <InputText id="clientId" type="text" placeholder="Client_ID" v-model="clientId" style="width: 50%" />
-            <InputText id="clientSecret" type="text" placeholder="Client_Secret" v-model="clientSecret" style="width: 50%" />
+            <InputText id="channelTitle" type="text" v-model="channelTitle" class="channel-title" />
+            <InputText id="clientId" type="text" placeholder="Client_ID" v-model="clientId" class="channel-title" />
+            <InputText id="clientSecret" type="text" placeholder="Client_Secret" v-model="clientSecret" class="channel-title" />
           </div>
-          <Button :label="t('save')" @click="changeChannel" :disabled="!clientId?.length || !clientSecret?.length || !channelTitle?.length" style="width: 50%"></Button>
+          <Button :label="t('save')" @click="changeChannel" :disabled="!clientId?.length || !clientSecret?.length || !channelTitle?.length" class="save-btn"></Button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.save-btn {
+  width: 50%
+}
+
+.channel-title {
+  width: 50%
+}
+
+@media (max-width: 601px) {
+  .save-btn {
+    width: 100% !important;
+  }
+  .channel-title {
+    width: 100% !important;
+  }
+}
+</style>

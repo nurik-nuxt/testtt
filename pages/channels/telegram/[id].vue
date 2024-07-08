@@ -68,12 +68,31 @@ const changeChannel = async () => {
         <div class="flex flex-column gap-2 mt-3">
           <div class="flex flex-column gap-2 mb-2">
             <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
-            <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
+            <InputText id="channelTitle" type="text" v-model="channelTitle" class="channel-title" />
           </div>
-          <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" style="width: 50%" class="mb-2" />
-          <Button :label="t('save')" @click="changeChannel" :disabled="!token?.length || !channelTitle?.length" style="width: 50%"></Button>
+          <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" class="channel-title mb-2"/>
+          <Button :label="t('save')" @click="changeChannel" :disabled="!token?.length || !channelTitle?.length" class="save-btn"></Button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.save-btn {
+  width: 50%
+}
+
+.channel-title {
+  width: 50%
+}
+
+@media (max-width: 601px) {
+  .save-btn {
+    width: 100% !important;
+  }
+  .channel-title {
+    width: 100% !important;
+  }
+}
+</style>

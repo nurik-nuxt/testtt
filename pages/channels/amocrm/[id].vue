@@ -119,7 +119,7 @@ const changeChannel = async () => {
     <div class="col-12">
       <div class="card">
         <h5 class="font-bold">AmoCRM</h5>
-        <div class="flex w-full gap-8">
+        <div class="channel-wrapper">
           <div class="flex flex-column gap-4">
             <Button v-if="channelStatus === 'active'" :label="t('disableAmoCRM')" severity="danger" @click="changeChannelStatus('off')" />
             <Button v-else :label="t('connectAmoCRM')" @click="changeChannelStatus('active')" />
@@ -150,7 +150,7 @@ const changeChannel = async () => {
         </div>
         <div class="flex flex-column mt-5 gap-3">
           <h5 class="font-bold">{{ $t('funnelInAmoCRM') }}</h5>
-          <div class="flex flex-column gap-3" style="width: 27%" v-for="voronka in voronkas" :key="voronka.id">
+          <div class="voronka" v-for="voronka in voronkas" :key="voronka.id">
             <span style="background: #F0F4F9; padding: 4px 4px 4px 0" class="font-bold">{{ voronka.name }}</span>
             <span>{{ $t('stageAmo') }}:</span>
             <span v-for="status in voronka?._embedded?.statuses" :key="status.id" class="flex align-items-center justify-content-between">
@@ -167,3 +167,27 @@ const changeChannel = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.channel-wrapper {
+  display: flex;
+  width: 100%;
+  gap: 32px;
+}
+@media (max-width: 601px){
+  .channel-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+  }
+  .voronka {
+    width: 100% !important;
+  }
+}
+.voronka {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 27%
+}
+</style>

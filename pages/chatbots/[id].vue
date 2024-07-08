@@ -782,7 +782,7 @@ function handleKeyDown(event) {
   min-width: 300px;
 }
 /* Media query for smaller screens (e.g., mobile devices) */
-@media (max-width: 600px) {
+@media (max-width: 601px) {
   .bot-list {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }

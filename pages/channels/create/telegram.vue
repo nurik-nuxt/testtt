@@ -43,10 +43,10 @@ const createChannel = async () => {
               <span class="mb-3">2.{{ $t('copyBotToken') }}</span>
               <div class="flex flex-column gap-2 mb-2">
                 <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
-                <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
+                <InputText id="channelTitle" type="text" v-model="channelTitle" class="channel-title" />
               </div>
-              <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" style="width: 50%" class="mb-2" />
-              <Button :label="t('toPlug')" @click="createChannel" :disabled="!token.length || !channelTitle.length" style="width: 50%"></Button>
+              <InputText id="token" type="text" placeholder="tokken:telegrambota" v-model="token" style="width: 50%" class="mb-2 channel-title" />
+              <Button :label="t('toPlug')" @click="createChannel" :disabled="!token.length || !channelTitle.length" class="save-btn"></Button>
             </div>
           </div>
         </div>
@@ -54,3 +54,22 @@ const createChannel = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.save-btn {
+  width: 50%
+}
+
+.channel-title {
+  width: 50%
+}
+
+@media (max-width: 601px) {
+  .save-btn {
+    width: 100% !important;
+  }
+  .channel-title {
+    width: 100% !important;
+  }
+}
+</style>

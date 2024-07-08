@@ -30,7 +30,7 @@ const createAmoCrmChannel = async () => {
         <h5 class="font-bold">AmoCRM</h5>
         <div class="flex flex-column gap-2 mb-4">
           <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
-          <InputText id="channelTitle" type="text" v-model="channelTitle" style="width: 50%" />
+          <InputText id="channelTitle" type="text" v-model="channelTitle" />
         </div>
         <Button :label="t('connectAmoCRM')" @click="createAmoCrmChannel" :disabled="!channelTitle.length"></Button>
       </div>

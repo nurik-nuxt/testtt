@@ -40,13 +40,12 @@ const channels = ref([
 const channelStore = useChannelStore();
 
 const createChannel = (key: string) => {
-  return navigateTo({ name: `channels-create-${key}`})
+  return navigateTo({ name: `channels-create-${key}` })
 }
 
 const availableChannels = computed(() => {
   return channelStore.getChannels
 })
-
 
 const deleteChannel = async (id: string) => {
   await channelStore.deleteChannel(id).then(async (res) => {
@@ -83,16 +82,17 @@ onMounted(async () => {
               @click="createChannel(bot.key)"
           >{{ bot.title }}</button>
         </div>
-        <div class="chanel-list" v-if="availableChannels.length">
+        <div class="chanel-list mt-2" v-if="availableChannels.length">
           <h5 class="font-bold mb-2">{{ $t('connectedChannels') }}</h5>
           <span class="chanel-list__item" v-for="channel in availableChannels" :key="channel._id">
-                  {{ channel.title }}
-                  <span class="font-bold ml-2">({{ channel.type }})</span>
-                  <i style="cursor: pointer; margin-left: auto; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="deleteChannel(channel._id)"/>
-                  <i style="cursor: pointer" class="pi pi-cog" @click="openChannel(channel.type, channel._id)"/>
-                </span>
+            <div class="channel-info">
+              <span class="channel-title">{{ channel.title }}</span>
+              <span class="font-bold channel-type">({{ channel.type }})</span>
+            </div>
+            <i style="cursor: pointer; margin-left: auto; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="deleteChannel(channel._id)"/>
+            <i style="cursor: pointer" class="pi pi-cog" @click="openChannel(channel.type, channel._id)"/>
+          </span>
         </div>
-
       </div>
     </div>
   </div>
@@ -104,19 +104,49 @@ onMounted(async () => {
   gap: 16px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+.channel-type {
+  margin-left: 8px;
+}
 
-/* Media query for smaller screens (e.g., mobile devices) */
-@media (max-width: 600px) {
+
+@media (max-width: 601px) {
   .bot-list {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
+  .channel-type {
+    margin-left: 0;
+  }
+  .channel-title {
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
+
 .bot-item {
   background: #F0F4F9;
   border: 1px solid var(--surface-border);
   padding: 16px;
   box-shadow: var(--card-shadow);
-  border-radius: $borderRadius;
+  border-radius: var(--border-radius);
   cursor: pointer;
+}
+
+.chanel-list__item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.channel-info {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 601px) {
+  .channel-info {
+    flex-direction: row;
+  }
 }
 </style>
