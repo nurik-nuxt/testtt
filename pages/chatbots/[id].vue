@@ -744,7 +744,7 @@ function handleKeyDown(event) {
       </div>
 
 
-      <div v-if="!isMobileOrTablet && chatVisible" class="chat">
+      <div v-if="isMobileOrTablet && chatVisible" class="chat">
         <div class="layout-chat">
           <div class="card-chat h-full">
             <div class="flex justify-content-between align-items-center">
@@ -793,15 +793,20 @@ function handleKeyDown(event) {
     left: 0;
     bottom: 0;
     background: white;
-    z-index: 10;
+    z-index: 1000;
   }
   .layout-chat {
     width: 100% !important;
     min-width: 100% !important;
     left: 0;
-    //height: 100% !important;
     height: calc(100vh - 70px) !important;
   }
+}
+@supports (height: 100dvh) {
+  .layout-chat {
+    height: calc(100dvh - 70px) !important;
+  }
+
 }
 .layout-chat {
   width: 300px;
