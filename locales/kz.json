@@ -288,5 +288,6 @@
   "deleteUser": "Пайдаланушыны жою",
   "yes": "Иә",
   "telegramAlreadyRegistered": "Telegram боты қазірдің өзінде ағымдағы 7sales есептік жазбасында тіркелген.",
-  "selectChat": "Диалогты таңдаңыз"
+  "selectChat": "Диалогты таңдаңыз",
+  "reminders": "Еске салғыштар"
 }

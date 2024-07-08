@@ -131,7 +131,6 @@ onMounted(async () => {
         }))
         uploadFileStore.setFiles(files)
       }
-      console.log(editLeadCard);
       if (editLeadCard) {
         console.log(editLeadCard)
         fieldId.value = editLeadCard.custom_fields_values[0]?.field_id
@@ -250,6 +249,7 @@ const goBack = () => {
 <template>
   <Toast />
   <div class="grid">
+    <Button :label="t('knowledgeBase')" icon="pi pi-arrow-left" @click="goBack" text></Button>
     <div class="col-12">
       <div class="card h-full">
         <h5>{{ $t('editKnowledgeBaseFile') }} "{{ botName }}"</h5>
@@ -263,11 +263,11 @@ const goBack = () => {
 
         </div>
 
-        <div class="flex items-center gap-8 mb-5">
-          <span class="bot-card__activate">
-            {{ $t('useBase') }}
-            <InputSwitch v-model="usedValue" style="margin-left: 24px"/>
-          </span>
+        <div class="flex items-center gap-8 mb-5 switches">
+<!--          <span class="bot-card__activate">-->
+<!--            {{ $t('useBase') }}-->
+<!--            <InputSwitch v-model="usedValue" style="margin-left: 24px"/>-->
+<!--          </span>-->
           <span class="bot-card__activate">
             {{ $t('endDialogue') }}
             <InputSwitch v-model="interruptDialogue" style="margin-left: 24px"/>
@@ -395,9 +395,13 @@ const goBack = () => {
 }
 
 /* Media query for smaller screens (e.g., mobile devices) */
-@media (max-width: 600px) {
+@media (max-width: 601px) {
   .bot-list {
     grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .switches {
+    flex-direction: column;
+    gap: 8px !important;
   }
 }
 .image {

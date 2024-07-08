@@ -290,5 +290,6 @@
   "deleteUser": "مسح المستخدم",
   "yes": "نعم",
   "telegramAlreadyRegistered": "تم تسجيل روبوت Telegram بالفعل في حساب 7sales الحالي.",
-  "selectChat": "حدد الحوار"
+  "selectChat": "حدد الحوار",
+  "reminders": "تذكيرات"
 }

@@ -76,11 +76,9 @@ export const useKnowledgeStore = defineStore('knowledge', {
 
         async getKnowledgeFileById(botId: string, insertedId: string) {
             try {
-                const response = await useApi(`/bot/${botId}/file/${insertedId}`, {
+                return await useApi(`/bot/${botId}/file/${insertedId}`, {
                     method: 'GET'
-                })
-                console.log(response);
-                return response;
+                });
             } catch (e) {
                 console.log(e);
             }

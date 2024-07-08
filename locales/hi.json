@@ -290,5 +290,6 @@
   "deleteUser": "उपभोक्ता मिटायें",
   "yes": "हाँ",
   "telegramAlreadyRegistered": "टेलीग्राम बॉट मौजूदा 7सेल्स खाते में पहले से ही पंजीकृत है।",
-  "selectChat": "संवाद चुनें"
+  "selectChat": "संवाद चुनें",
+  "reminders": "अनुस्मारक"
 }

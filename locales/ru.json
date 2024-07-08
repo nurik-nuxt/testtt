@@ -290,5 +290,6 @@
   "deleteUser": "Удалить пользователя",
   "yes": "Да",
   "telegramAlreadyRegistered": "Telegram-бот уже зарегистрирован в текущем аккаунте 7sales.",
-  "selectChat": "Выберите диалог"
+  "selectChat": "Выберите диалог",
+  "reminders": "Напоминания"
 }

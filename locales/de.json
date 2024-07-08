@@ -290,5 +290,6 @@
   "deleteUser": "Benutzer löschen",
   "yes": "Ja",
   "telegramAlreadyRegistered": "Der Telegram-Bot ist bereits im aktuellen 7sales-Konto registriert.",
-  "selectChat": "Dialog auswählen"
+  "selectChat": "Dialog auswählen",
+  "reminders": "Erinnerungen"
 }

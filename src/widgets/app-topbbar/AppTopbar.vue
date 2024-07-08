@@ -20,7 +20,6 @@ onBeforeUnmount(() => {
   unbindOutsideClickListener();
 });
 
-console.log(route?.name);
 
 const onTopBarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
