@@ -28,7 +28,7 @@ export default defineNuxtConfig({
             },
         },
     },
-    modules: ['nuxt-primevue', '@nuxtjs/i18n', '@pinia/nuxt'],
+    modules: ['nuxt-primevue', '@nuxtjs/i18n', '@pinia/nuxt', '@nuxtjs/device'],
     i18n: {
         strategy: 'no_prefix',
         defaultLocale: 'ru',

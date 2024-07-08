@@ -10,6 +10,11 @@ import { useToast } from "primevue/usetoast";
 import { helpers, minLength, required, email, requiredIf } from "@vuelidate/validators";
 import useValidate from "@vuelidate/core/dist/index";
 import { socket, state } from "~/socket";
+import { useLayout } from '~/composable';
+const { isMobileOrTablet } = useDevice();
+
+const { chatVisible } = useLayout();
+
 
 const toast = useToast();
 interface BotItem {
@@ -408,7 +413,7 @@ function handleKeyDown(event) {
   </Dialog>
 
   <div class="grid">
-    <div class="flex gap-2 w-full gap-4">
+    <div class="app-wrapper">
       <div class="card h-full flex flex-column w-full">
         <div class="flex justify-content-between">
           <h5>{{ $t('edit') }} "{{ bot?.name }}"</h5>
@@ -739,7 +744,7 @@ function handleKeyDown(event) {
       </div>
 
 
-      <div style="min-width: 300px;">
+      <div v-if="!isMobileOrTablet && chatVisible" class="chat">
         <div class="layout-chat">
           <div class="card-chat h-full">
             <div class="flex justify-content-between align-items-center">
@@ -763,16 +768,39 @@ function handleKeyDown(event) {
 </template>
 
 <style scoped>
+.app-wrapper {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
 .bot-list {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-
+.chat {
+  min-width: 300px;
+}
 /* Media query for smaller screens (e.g., mobile devices) */
 @media (max-width: 600px) {
   .bot-list {
     grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .chat {
+    position: fixed;
+    top: 70px;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    background: white;
+    z-index: 10;
+  }
+  .layout-chat {
+    width: 100% !important;
+    min-width: 100% !important;
+    left: 0;
+    //height: 100% !important;
+    height: calc(100vh - 70px) !important;
   }
 }
 .layout-chat {
@@ -825,4 +853,5 @@ function handleKeyDown(event) {
   background-color: #fff;
   gap: 12px;
 }
+
 </style>

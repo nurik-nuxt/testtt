@@ -15,12 +15,17 @@ const layoutState = reactive({
     configSidebarVisible: false,
     staticMenuMobileActive: false,
     menuHoverActive: false,
-    languageDialog: false
+    languageDialog: false,
+    chatVisible: false
 });
 const languageDialog = ref(false);
+const chatVisible = ref(false)
 export const useLayout = () => {
     const setScale = (scale: number) => {
         layoutConfig.scale = scale;
+    };
+    const setToggleChat = (isVisible: boolean) => {
+        chatVisible.value = isVisible;
     };
     const showLanguageDialog = (show: boolean) => {
         languageDialog.value = show;
@@ -45,5 +50,5 @@ export const useLayout = () => {
 
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
 
-    return { layoutConfig: toRefs(layoutConfig), layoutState: toRefs(layoutState), setScale, onMenuToggle, showLanguageDialog, languageDialog, isSidebarActive, isDarkTheme, setActiveMenuItem };
+    return { layoutConfig: toRefs(layoutConfig), layoutState: toRefs(layoutState), setScale, onMenuToggle, showLanguageDialog, languageDialog, chatVisible, isSidebarActive, isDarkTheme, setActiveMenuItem, setToggleChat };
 }

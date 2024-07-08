@@ -3,7 +3,7 @@ import { useLayout } from '~/composable';
 import { useAuthStore } from "~/src/shared/store/auth";
 
 
-const { layoutConfig, onMenuToggle, showLanguageDialog } = useLayout();
+const { layoutConfig, onMenuToggle, showLanguageDialog, setToggleChat, chatVisible } = useLayout();
 const authStore = useAuthStore();
 
 const outsideClickListener = ref(null);
@@ -88,6 +88,12 @@ const applyImpersonate = async () => {
       <i class="pi pi-bars"></i>
     </button>
 
+    <button v-if="!chatVisible" style="margin-left: auto" class="mobile-chat-toggle p-link layout-topbar-menu-button layout-topbar-button" @click="setToggleChat(true)">
+      <i class="pi pi-comments"></i>
+    </button>
+    <button v-if="chatVisible" style="margin-left: auto" class="mobile-chat-toggle p-link layout-topbar-menu-button layout-topbar-button" @click="setToggleChat(false)">
+      <i style="color: #076AE1;" class="pi pi-comments"></i>
+    </button>
     <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
       <i class="pi pi-ellipsis-v"></i>
     </button>
@@ -99,3 +105,14 @@ const applyImpersonate = async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.mobile-chat-toggle {
+  display: none;
+}
+@media (max-width: 600px) {
+  .mobile-chat-toggle {
+    display: block;
+  }
+}
+</style>
