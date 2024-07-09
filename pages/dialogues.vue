@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useChatStore } from "~/src/shared/store/chat";
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { socket } from "~/super-chat";
@@ -18,6 +18,14 @@ function scrollToBottom() {
   if (chatContentRef.value) {
     chatContentRef.value.scrollTop = chatContentRef.value.scrollHeight;
   }
+}
+const opDeleteUser = ref();
+const selectedLeadId = ref<string | null>(null);
+
+const toggleDeleteUser = async (event, leadId) => {
+  selectedLeadId.value = leadId;
+  await nextTick();
+  opDeleteUser.value.toggle(event);
 }
 
 const items = ref([
@@ -73,22 +81,58 @@ const selectedChatId = ref<number | string | null>(null);
 async function handleChatSelection(chatId: string | number) {
   selectedChatId.value = chatId;
   await chatStore.getLeadMessagesById(chatId).then(async (res) => {
-    currentMessage.value = res
+    currentMessage.value = res;
     await nextTick(); // Wait for the DOM to update
     scrollToBottom();
   });
   if (chatId) {
-    socket.emit('joinedRoom')
+    socket.emit('joinedRoom');
   }
 }
 
 const chatLoading = computed(() => {
   return chatStore.getLoadingChat;
-})
+});
+
+const deleteLeadMessage = async () => {
+  if (selectedLeadId.value) {
+    await chatStore.deleteAllMessageLead(selectedLeadId.value).then(async (res) => {
+      if (res?.success) {
+        opDeleteUser?.value?.hide();
+        selectedLeadId.value = null
+        await fetchLeads();
+      }
+    })
+  }
+}
+
+const deleteMessage = async () => {
+  if (selectedLeadId.value) {
+    await chatStore.deleteLead(selectedLeadId.value).then(async (res) => {
+      if (res?.success) {
+        opDeleteUser?.value?.hide();
+        selectedLeadId.value = null
+        await fetchLeads();
+      }
+    })
+  }
+}
 </script>
 
 <template>
   <div class="grid">
+    <OverlayPanel ref="opDeleteUser">
+      <div class="flex flex-column gap-3">
+        <span @click="deleteLeadMessage" class="flex gap-3 align-items-center cursor-pointer" style="font-size: 16px;">
+          <i class="pi pi-eraser" style="font-size: 16px"></i>
+          {{ $t('cleanHistory')}}
+        </span>
+        <span @click="deleteMessage" class="flex gap-3 align-items-center cursor-pointer" style="font-size: 16px; color: #EF4444">
+          <i class="pi pi-trash" style="font-size: 16px"></i>
+          {{ $t('deleteFile')}}
+        </span>
+      </div>
+    </OverlayPanel>
     <div class="col-12">
       <div class="card dialogue-wrapper">
         <div class="flex w-full" style="height: calc(100vh - 9rem);">
@@ -112,7 +156,12 @@ const chatLoading = computed(() => {
                     <div style="color: #adadad" class="last-message">{{ lead?.lastMessage?.message?.text }}</div>
                   </div>
                 </div>
-                <div style="color: #2c2c2c" :class="{ 'active': selectedChatId === lead._id}">{{ formatDate(lead?.lastMessage?.message?.created_at)}}</div>
+                <div class="actions-container">
+                  <div class="date-hover" :class="{ 'active': selectedChatId === lead._id}">{{ formatDate(lead?.lastMessage?.message?.created_at) }}</div>
+                  <button class="p-link layout-topbar-menu-button layout-topbar-button" @click.stop="toggleDeleteUser($event, lead._id)">
+                    <i class="pi pi-ellipsis-h" style="font-size: 18px"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -141,9 +190,12 @@ const chatLoading = computed(() => {
                   <div style="font-size: 16px">{{ message?.message?.text }}</div>
                   <div style="font-size: 14px; color: #b3b3b6">{{ convertTimestampToReadableDate(message?.message?.created_at) }}</div>
                 </div>
-                <div v-if="message?.type === 'out'" class="message-me">
-                  <div style="font-size: 16px">{{ message?.message?.text }}</div>
-                  <div style="font-size: 14px; margin-left: auto">{{ convertTimestampToReadableDate(message?.message?.created_at) }}</div>
+                <div class="flex flex-column gap-4" v-if="message?.type === 'out'">
+                  <div class="message-me">
+                    <div style="font-size: 16px">{{ message?.message?.text }}</div>
+                    <div style="font-size: 14px; margin-left: auto">{{ convertTimestampToReadableDate(message?.message?.created_at) }}</div>
+                  </div>
+                  <i class="pi pi-trash" style="font-size: 16px; color: #EF4444; margin-left: auto; cursor: pointer;" @click="deleteMessage(message?._id)"></i>
                 </div>
               </div>
             </div>
@@ -215,9 +267,16 @@ const chatLoading = computed(() => {
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   cursor: pointer;
   &.active {
     background: #175cca;
+  }
+  &:hover .date-hover {
+    display: none;
+  }
+  &:hover .layout-topbar-button {
+    display: block;
   }
 }
 .user-card:hover {
@@ -308,5 +367,19 @@ const chatLoading = computed(() => {
   color: #fff !important;
   border-radius: 10px 0 10px 10px;
   align-self: flex-end; /* Align message-me to the right */
+}
+
+.date-hover {
+  color: #2c2c2c;
+}
+
+.actions-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.layout-topbar-button {
+  display: none;
 }
 </style>

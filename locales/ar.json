@@ -291,5 +291,6 @@
   "yes": "نعم",
   "telegramAlreadyRegistered": "تم تسجيل روبوت Telegram بالفعل في حساب 7sales الحالي.",
   "selectChat": "حدد الحوار",
-  "reminders": "تذكيرات"
+  "reminders": "تذكيرات",
+  "cleanHistory": "مسح التاريخ"
 }

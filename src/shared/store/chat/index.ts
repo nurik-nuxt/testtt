@@ -36,6 +36,32 @@ export const useChatStore = defineStore('chat', {
                 console.error(e)
             }
         },
+        async deleteAllMessageLead(id: string | number) {
+            this.isLoadingChat = true;
+            try {
+                const response = await useApi(`/chat/leads/${id}/messages`, {
+                    method: 'DELETE'
+                }, false)
+                this.isLoadingChat = false
+                return response;
+            } catch (e) {
+                this.isLoadingChat = false
+                console.error(e)
+            }
+        },
+        async deleteLead(id: string | number) {
+            this.isLoadingChat = true;
+            try {
+                const response = await useApi(`/chat/leads/${id}`, {
+                    method: 'DELETE'
+                }, false)
+                this.isLoadingChat = false
+                return response;
+            } catch (e) {
+                this.isLoadingChat = false
+                console.error(e)
+            }
+        },
         async getLeadMessagesById(id: string | number) {
             this.isLoadingChat = true;
             try {

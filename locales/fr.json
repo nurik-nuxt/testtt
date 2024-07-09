@@ -291,5 +291,6 @@
   "yes": "Oui",
   "telegramAlreadyRegistered": "Le bot Telegram est déjà enregistré dans le compte 7sales actuel.",
   "selectChat": "Sélectionner une boîte de dialogue",
-  "reminders": "Rappels"
+  "reminders": "Rappels",
+  "cleanHistory": "Effacer l'historique"
 }
