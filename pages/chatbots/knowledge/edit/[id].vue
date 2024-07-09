@@ -309,7 +309,7 @@ const goBack = () => {
             <TabPanel :header="t('sendFileInMessage')">
               <div class="mt-4 flex flex-column gap-4">
                 <span>{{ $t('fileSendingRestrictions') }}</span>
-                <div class="flex gap-3 align-items-center">
+                <div class="flex gap-3 align-items-center manage-files">
                   <Button :label="t('attachFile')" icon="pi pi-plus" @click="openFileUploader"></Button>
                   <input id="file-upload" hidden type="file" @input="addFile">
                   <Button :label="t('downloadFile')" icon="pi pi-upload"></Button>
@@ -335,7 +335,7 @@ const goBack = () => {
 
             <TabPanel :header="t('crmSystemManagement')">
               <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
-              <div class="mt-4 flex justify-content-between gap-4">
+              <div class="mt-4 flex justify-content-between gap-4 fields">
                 <div class="flex flex-column w-full gap-2">
                   <label for="funnel">{{ $t('choosePipeline') }}:</label>
                   <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
@@ -351,7 +351,7 @@ const goBack = () => {
               </div>
               <div class="flex flex-column mt-3">
                 <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>
-                <div class="flex align-items-center gap-4">
+                <div class="flex align-items-center gap-4 fields">
                   <div class="flex flex-column gap-2 w-full">
                     <label for="chooseField">{{ $t('chooseField') }}</label>
                     <Dropdown style="margin-top: 8px" id="funnel" v-model="fieldId" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
@@ -396,12 +396,16 @@ const goBack = () => {
 
 /* Media query for smaller screens (e.g., mobile devices) */
 @media (max-width: 601px) {
-  .bot-list {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+  .manage-files {
+    flex-direction: column;
+    align-items: flex-start !important;
   }
   .switches {
     flex-direction: column;
     gap: 8px !important;
+  }
+  .fields {
+    flex-direction: column;
   }
 }
 .image {

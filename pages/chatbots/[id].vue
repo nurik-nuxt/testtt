@@ -743,8 +743,8 @@ function handleKeyDown(event) {
                 <Button :label="t('uploadFail')"/>
                 <Button :label="t('delete')" :disabled="!knowledgeBaseSelectedKey" />
               </div>
-              <div>
-                <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="files" selectionMode="checkbox" class="w-full">
+              <div class="table-container">
+                <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="files" selectionMode="checkbox" tableStyle="min-width: 100rem">
                   <template #header>
                     <div class="text-left">
                       <InputText v-model="filters['global']" :placeholder="t('searchBase')" />
@@ -795,7 +795,7 @@ function handleKeyDown(event) {
                     <h5>{{ $t('telegram') }}</h5>
                     <span style="color: #0f172a;">{{ $t('subscribeBotLink') }}
                     </span>
-                    <Button severity="secondary" raised :label="t('subscribe')" style="width: 30%" class="mt-3" @click="openTelegram"/>
+                    <Button severity="secondary" raised :label="t('subscribe')" class="mt-3 connect-btn" @click="openTelegram"/>
                   </div>
                 </div>
                 <div class="notification-card">
@@ -806,7 +806,7 @@ function handleKeyDown(event) {
                   </div>
                 </div>
                 <div class="notification-card">
-                  <div class="flex align-items-end">
+                  <div class="flex align-items-end webhooks">
                     <div class="flex flex-column gap-2 w-3/4">
                       <h5>{{ $t('webhooks') }}</h5>
                       <span style="color: #0f172a;">{{ $t('webhookUrl') }}</span>
@@ -865,10 +865,16 @@ function handleKeyDown(event) {
 .chat {
   min-width: 300px;
 }
+.connect-btn {
+  width: 30%
+}
 /* Media query for smaller screens (e.g., mobile devices) */
 @media (max-width: 601px) {
   .bot-list {
     grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .connect-btn {
+    width: 100%
   }
   .chat {
     position: fixed;
@@ -884,6 +890,21 @@ function handleKeyDown(event) {
     min-width: 100% !important;
     left: 0;
     height: calc(100vh - 70px) !important;
+  }
+  .webhooks {
+    flex-direction: column !important;
+    gap: 16px;
+  }
+  .json-snippet {
+    width: 100% !important;
+  }
+  :deep(.p-treetable) {
+    width: 100%;
+    min-width: 800px; /* Adjust this to your needs */
+  }
+  .table-container {
+    width: 100%;
+    overflow-x: scroll;
   }
 }
 @supports (height: 100dvh) {
@@ -942,5 +963,7 @@ function handleKeyDown(event) {
   background-color: #fff;
   gap: 12px;
 }
-
+.table-container {
+  overflow-x: auto;
+}
 </style>
