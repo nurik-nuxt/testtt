@@ -13,8 +13,17 @@ import { socket, state } from "~/socket";
 import { useLayout } from '~/composable';
 const { isMobileOrTablet } = useDevice();
 
-const { chatVisible } = useLayout();
+const { chatVisible, setToggleChat } = useLayout();
 
+watch(
+    () => isMobileOrTablet,
+    (val) => {
+      if (!val) {
+        setToggleChat(true)
+      }
+    },
+    { deep: true, immediate: true }
+)
 
 const toast = useToast();
 interface BotItem {
@@ -827,8 +836,7 @@ function handleKeyDown(event) {
         </div>
       </div>
 
-
-      <div v-if="isMobileOrTablet && chatVisible" class="chat">
+      <div v-if="chatVisible" class="chat">
         <div class="layout-chat">
           <div class="card-chat h-full">
             <div class="flex justify-content-between align-items-center">

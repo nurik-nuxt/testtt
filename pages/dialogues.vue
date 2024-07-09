@@ -63,7 +63,6 @@ watch(
 const leads = computed(() => {
   return chatStore.allLeads.map(lead => ({
     ...lead,
-    color: getRandomColor()
   }));
 });
 
@@ -81,6 +80,7 @@ const selectedChatId = ref<number | string | null>(null);
 async function handleChatSelection(chatId: string | number) {
   selectedChatId.value = chatId;
   await chatStore.getLeadMessagesById(chatId).then(async (res) => {
+    chatStore.setUnreadMessageCountToZero(chatId as string);
     currentMessage.value = res;
     await nextTick(); // Wait for the DOM to update
     scrollToBottom();
@@ -157,7 +157,10 @@ const deleteMessage = async () => {
                   </div>
                 </div>
                 <div class="actions-container">
-                  <div class="date-hover" :class="{ 'active': selectedChatId === lead._id}">{{ formatDate(lead?.lastMessage?.message?.created_at) }}</div>
+                  <div class="flex flex-column gap-2 ali">
+                    <div class="date-hover" :class="{ 'active': selectedChatId === lead._id}">{{ formatDate(lead?.lastMessage?.message?.created_at) }}</div>
+                    <div class="badge ml-auto" v-if="lead?.messages?.unreadMessageCount">{{ lead?.messages?.unreadMessageCount }}</div>
+                  </div>
                   <button class="p-link layout-topbar-menu-button layout-topbar-button" @click.stop="toggleDeleteUser($event, lead._id)">
                     <i class="pi pi-ellipsis-h" style="font-size: 18px"></i>
                   </button>
@@ -195,7 +198,6 @@ const deleteMessage = async () => {
                     <div style="font-size: 16px">{{ message?.message?.text }}</div>
                     <div style="font-size: 14px; margin-left: auto">{{ convertTimestampToReadableDate(message?.message?.created_at) }}</div>
                   </div>
-                  <i class="pi pi-trash" style="font-size: 16px; color: #EF4444; margin-left: auto; cursor: pointer;" @click="deleteMessage(message?._id)"></i>
                 </div>
               </div>
             </div>
@@ -271,6 +273,9 @@ const deleteMessage = async () => {
   cursor: pointer;
   &.active {
     background: #175cca;
+    .badge {
+      background-color: #adadad;
+    }
   }
   &:hover .date-hover {
     display: none;
@@ -278,6 +283,7 @@ const deleteMessage = async () => {
   &:hover .layout-topbar-button {
     display: block;
   }
+
 }
 .user-card:hover {
   background: #175cca1f;
@@ -381,5 +387,15 @@ const deleteMessage = async () => {
 
 .layout-topbar-button {
   display: none;
+}
+.badge {
+  background-color: #175cca;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
