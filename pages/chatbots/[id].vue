@@ -899,6 +899,12 @@ function handleKeyDown(event) {
     left: 0;
     height: calc(100vh - 70px) !important;
   }
+  @supports (height: 100dvh) {
+    .layout-chat {
+      height: calc(100dvh - 70px) !important;
+    }
+
+  }
   .webhooks {
     flex-direction: column !important;
     gap: 16px;
@@ -914,12 +920,6 @@ function handleKeyDown(event) {
     width: 100%;
     overflow-x: scroll;
   }
-}
-@supports (height: 100dvh) {
-  .layout-chat {
-    height: calc(100dvh - 70px) !important;
-  }
-
 }
 .layout-chat {
   width: 300px;
