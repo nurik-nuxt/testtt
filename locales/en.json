@@ -291,5 +291,11 @@
   "telegramAlreadyRegistered": "The Telegram bot is already registered in the current 7sales account.",
   "selectChat": "Select dialogue",
   "reminders": "Reminders",
-  "cleanHistory": "Clear the history"
+  "cleanHistory": "Clear the history",
+  "prompt": "Prompt",
+  "addTask": "Add a task",
+  "botTask": "Bot task",
+  "actionsAfterTask": "Actions after completing a task",
+  "sendWebhook": "Send Webhook",
+  "notificationText": "Notification text"
 }

@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // @ts-ignore
 export default defineNuxtConfig({
-    ssr: true,
+    ssr: false,
     app: {
         head: {
             title: '7sales',

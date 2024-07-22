@@ -292,5 +292,10 @@
   "telegramAlreadyRegistered": "Der Telegram-Bot ist bereits im aktuellen 7sales-Konto registriert.",
   "selectChat": "Dialog auswählen",
   "reminders": "Erinnerungen",
-  "cleanHistory": "Löschen Sie den Verlauf"
+  "cleanHistory": "Löschen Sie den Verlauf",
+  "prompt": "Prompt",
+  "addTask": "Fügen Sie eine Aufgabe hinzu",
+  "actionsAfterTask": "Aktionen nach Abschluss einer Aufgabe",
+  "sendWebhook": "Webhook senden",
+  "notificationText": "Benachrichtigungstext"
 }

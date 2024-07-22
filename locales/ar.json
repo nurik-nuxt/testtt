@@ -292,5 +292,11 @@
   "telegramAlreadyRegistered": "تم تسجيل روبوت Telegram بالفعل في حساب 7sales الحالي.",
   "selectChat": "حدد الحوار",
   "reminders": "تذكيرات",
-  "cleanHistory": "مسح التاريخ"
+  "cleanHistory": "مسح التاريخ",
+  "prompt": "اِسْتَدْعَى",
+  "addTask": "أضف مهمة",
+  "botTask": "مهمة البوت",
+  "actionsAfterTask": "الإجراءات بعد الانتهاء من المهمة",
+  "sendWebhook": "إرسال خطاف ويب",
+  "notificationText": "نص الإخطار"
 }

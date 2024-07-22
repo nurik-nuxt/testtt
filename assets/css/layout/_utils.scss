@@ -151,6 +151,13 @@
     max-width: 450px;
 }
 
+.avatar-wrapper-mobile {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    //max-width: 150px;
+}
+
 .profile {
     display: flex;
     flex-direction: column;

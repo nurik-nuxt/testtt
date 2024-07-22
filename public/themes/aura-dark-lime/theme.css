@@ -6711,7 +6711,7 @@
   }
 
   .p-dialog {
-    max-height: 90%;
+    max-height: 100%;
     transform: scale(1);
   }
 

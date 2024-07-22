@@ -82,7 +82,7 @@ export const useChatStore = defineStore('chat', {
                     method: 'GET',
                 });
                 this.leads = (response as Lead[]).map(lead => {
-                    if (lead.messages.unreadMessageCount === undefined || lead.messages.unreadMessageCount === null) {
+                    if (lead.messages && (lead.messages.unreadMessageCount === undefined || lead.messages.unreadMessageCount === null)) {
                         lead.messages.unreadMessageCount = 0;
                     }
                     return lead;

@@ -23,6 +23,7 @@ socket.on("connect", () => {
 });
 
 socket.on("disconnect", () => {
+    console.log('disconnect')
     state.connected = false;
     state.messages = [];
 });
