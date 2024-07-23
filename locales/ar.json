@@ -298,5 +298,6 @@
   "botTask": "مهمة البوت",
   "actionsAfterTask": "الإجراءات بعد الانتهاء من المهمة",
   "sendWebhook": "إرسال خطاف ويب",
-  "notificationText": "نص الإخطار"
+  "notificationText": "نص الإخطار",
+  "text": "نص"
 }

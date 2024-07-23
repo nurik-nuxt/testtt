@@ -420,6 +420,9 @@ const fieldId = ref<string>('')
 const fieldValue = ref<string>('');
 
 const notificationText = ref<string>('');
+
+const webhookUrl = ref<string>('')
+const webhookText = ref<string>('')
 </script>
 
 <template>
@@ -670,10 +673,10 @@ const notificationText = ref<string>('');
                           <div class="mt-4 flex flex-column gap-4">
                             <span>{{ $t('fileSendingRestrictions') }}</span>
                             <div class="flex gap-3 align-items-center manage-files">
-                              <Button :label="t('attachFile')" icon="pi pi-plus"></Button>
+                              <Button :label="t('attachFile')" icon="pi pi-plus" class="file-btn"></Button>
                               <input id="file-upload" hidden type="file">
-                              <Button :label="t('downloadFile')" icon="pi pi-upload"></Button>
-                              <Button :label="t('deleteFile')" icon="pi pi-times"></Button>
+                              <Button :label="t('downloadFile')" icon="pi pi-upload" class="file-btn"></Button>
+                              <Button :label="t('deleteFile')" icon="pi pi-times" class="file-btn"></Button>
                               <span>{{ $t('maxFileSize5MB') }}</span>
                             </div>
                           </div>
@@ -714,7 +717,18 @@ const notificationText = ref<string>('');
                             <Textarea :autoResize="true" rows="3" cols="2" v-model="notificationText" />
                           </div>
                         </TabPanel>
-                        <TabPanel :header="t('sendWebhook')"></TabPanel>
+                        <TabPanel :header="t('sendWebhook')">
+                          <div class="flex flex-column gap-3">
+                            <div class="flex flex-column gap-2 mt-5">
+                              <span style="font-weight: 700">URL</span>
+                              <InputText style="margin-bottom: 8px" id="webhookUrl" type="text" v-model="webhookUrl" />
+                            </div>
+                            <div class="flex flex-column gap-2">
+                              <span style="font-weight: 700">{{ $t('text')}}</span>
+                              <Textarea rows="3" cols="30" v-model="webhookText" />
+                            </div>
+                          </div>
+                        </TabPanel>
                       </TabView>
                     </div>
                   </div>
@@ -1062,7 +1076,10 @@ const notificationText = ref<string>('');
   overflow-x: auto;
 }
 .add-btn {
-  width: 50%
+  width: 25%
+}
+.file-btn {
+  width: 25%
 }
 @media (max-width: 601px) {
   .add-btn {
@@ -1071,6 +1088,9 @@ const notificationText = ref<string>('');
   .manage-files {
     flex-direction: column;
     align-items: flex-start !important;
+  }
+  .file-btn {
+    width: 100% !important;
   }
 }
 </style>

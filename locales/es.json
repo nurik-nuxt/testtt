@@ -298,5 +298,6 @@
   "botTask": "Tarea de robot",
   "actionsAfterTask": "Acciones después de completar una tarea",
   "sendWebhook": "Enviar webhook",
-  "notificationText": "Texto de notificación"
+  "notificationText": "Texto de notificación",
+  "text": "Texto"
 }

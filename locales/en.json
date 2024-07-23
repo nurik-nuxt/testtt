@@ -297,5 +297,6 @@
   "botTask": "Bot task",
   "actionsAfterTask": "Actions after completing a task",
   "sendWebhook": "Send Webhook",
-  "notificationText": "Notification text"
+  "notificationText": "Notification text",
+  "text": "Text"
 }

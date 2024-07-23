@@ -297,5 +297,6 @@
   "addTask": "Fügen Sie eine Aufgabe hinzu",
   "actionsAfterTask": "Aktionen nach Abschluss einer Aufgabe",
   "sendWebhook": "Webhook senden",
-  "notificationText": "Benachrichtigungstext"
+  "notificationText": "Benachrichtigungstext",
+  "text": "Text"
 }

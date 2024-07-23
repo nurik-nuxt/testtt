@@ -298,5 +298,6 @@
   "botTask": "Задача бота",
   "actionsAfterTask": "Действия после выполнения задачи",
   "sendWebhook": "Отправить Webhook",
-  "notificationText": "Текст уведомления"
+  "notificationText": "Текст уведомления",
+  "text": "Текст"
 }

@@ -296,5 +296,6 @@
   "botTask": "Бот тапсырмасы",
   "actionsAfterTask": "Тапсырманы орындағаннан кейінгі әрекеттер",
   "sendWebhook": "Webhook жіберу",
-  "notificationText": "Хабарландыру мәтіні"
+  "notificationText": "Хабарландыру мәтіні",
+  "text": "Мәтін"
 }
