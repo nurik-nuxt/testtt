@@ -292,12 +292,5 @@
   "telegramAlreadyRegistered": "Telegram-бот уже зарегистрирован в текущем аккаунте 7sales.",
   "selectChat": "Выберите диалог",
   "reminders": "Напоминания",
-  "cleanHistory": "Очистить историю",
-  "prompt": "Промпт",
-  "addTask": "Добавить задачу",
-  "botTask": "Задача бота",
-  "actionsAfterTask": "Действия после выполнения задачи",
-  "sendWebhook": "Отправить Webhook",
-  "notificationText": "Текст уведомления",
-  "text": "Текст"
+  "cleanHistory": "Очистить историю"
 }

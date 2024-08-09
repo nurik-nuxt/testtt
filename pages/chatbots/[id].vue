@@ -411,18 +411,6 @@ function handleKeyDown(event) {
     sendMessage();
   }
 }
-
-const botTask = ref<string>('');
-const interruptDialogue = ref<boolean>(false);
-
-const fieldId = ref<string>('')
-
-const fieldValue = ref<string>('');
-
-const notificationText = ref<string>('');
-
-const webhookUrl = ref<string>('')
-const webhookText = ref<string>('')
 </script>
 
 <template>
@@ -455,13 +443,36 @@ const webhookText = ref<string>('')
                   <label for="name1" style="font-weight: 700">{{ $t('botName') }}</label>
                   <InputText id="botName" type="text" v-model="currentBot.name" :invalid="v$.$errors.find((el) => el.$property === 'name')?.$message" />
                 </div>
+
+                <!--Bot instructions-->
+                <div class="field">
+                  <div class="flex justify-content-between align-items-end">
+                    <div class="flex flex-column">
+                      <label style="font-weight: 700">{{ $t('botInstructionPrompt') }}</label>
+                      <span class="mb-2 mt-2">{{ $t('promptUsageTip') }}</span>
+                    </div>
+                    <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
+                  </div>
+                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="false" rows="25" cols="2" v-model="currentBot.instructions"/>
+                </div>
               </div>
 
-<!--              <span class="bot-card__activate" style="margin-top: 8px">-->
-<!--                {{ $t('settings') }}-->
-<!--                <InputSwitch v-model="extra" style="margin-left: 8px"/>-->
-<!--              </span>-->
-              <div class="card-form p-fluid" style="margin-top: 12px">
+              <!--Bot helloOnFirst-->
+              <span class="bot-card__activate">
+                {{ $t('welcomeMessageStart') }}
+                <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px"/>
+              </span>
+
+              <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
+                <div class="field" style="margin-top: 12px">
+                  <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" v-model="currentBot.helloMessage" />
+                </div>
+              </div>
+              <span class="bot-card__activate" style="margin-top: 8px">
+                {{ $t('settings') }}
+                <InputSwitch v-model="extra" style="margin-left: 8px"/>
+              </span>
+              <div v-if="extra" class="card-form p-fluid" style="margin-top: 12px">
 
                 <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
@@ -624,116 +635,6 @@ const webhookText = ref<string>('')
                 <Button :label="t('deleteBotButton')" severity="danger" class="mr-auto" @click="removeBot"></Button>
                 <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
                 <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
-              </div>
-            </TabPanel>
-
-            <TabPanel :header="t('prompt')">
-              <div class="card-form p-fluid" style="margin-top: 16px">
-                <!--Bot instructions-->
-                <div class="field">
-                  <div class="flex justify-content-between align-items-end">
-                    <div class="flex flex-column">
-                      <label style="font-weight: 700">{{ $t('botInstructionPrompt') }}</label>
-                      <span class="mb-2 mt-2">{{ $t('promptUsageTip') }}</span>
-                    </div>
-                    <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
-                  </div>
-                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="false" rows="25" cols="2" v-model="currentBot.instructions"/>
-                </div>
-
-                <!--Bot helloOnFirst-->
-                <span class="bot-card__activate">
-                  {{ $t('welcomeMessageStart') }}
-                  <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px"/>
-                </span>
-
-                <!--Bot helloOnFirst-->
-                <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
-                  <div class="field" style="margin-top: 12px">
-                    <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" v-model="currentBot.helloMessage" />
-                  </div>
-                </div>
-
-                <!--Bot Tasks-->
-                <div>
-                  <div>
-                    <Badge value="1" size="large" style="background-color: #F9753E; border: none;"></Badge>
-                    <div class="mt-3 flex flex-column gap-3">
-                      <div class="flex flex-column gap-2">
-                        <label style="font-weight: 700">{{ $t('botTask') }}</label>
-                        <Textarea rows="3" cols="30" v-model="botTask" />
-                      </div>
-                      <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
-                      <span class="bot-card__activate">
-                        {{ $t('endDialogue') }}
-                        <InputSwitch v-model="interruptDialogue" style="margin-left: 24px"/>
-                      </span>
-                      <TabView class="mb-5">
-                        <TabPanel :header="t('sendFileInMessage')">
-                          <div class="mt-4 flex flex-column gap-4">
-                            <span>{{ $t('fileSendingRestrictions') }}</span>
-                            <div class="flex gap-3 align-items-center manage-files">
-                              <Button :label="t('attachFile')" icon="pi pi-plus" class="file-btn"></Button>
-                              <input id="file-upload" hidden type="file">
-                              <Button :label="t('downloadFile')" icon="pi pi-upload" class="file-btn"></Button>
-                              <Button :label="t('deleteFile')" icon="pi pi-times" class="file-btn"></Button>
-                              <span>{{ $t('maxFileSize5MB') }}</span>
-                            </div>
-                          </div>
-                        </TabPanel>
-                        <TabPanel :header="t('crmSystemManagement')">
-                          <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
-                          <div class="mt-4 flex justify-content-between gap-4 fields">
-                            <div class="flex flex-column w-full gap-2">
-                              <label for="funnel">{{ $t('choosePipeline') }}:</label>
-                              <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
-                            </div>
-                            <div class="flex flex-column w-full gap-2">
-                              <label for="statusId">{{ $t('changeStatus') }}:</label>
-                              <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
-                            </div>
-                          </div>
-                          <div class="flex flex-column mt-3">
-                            <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">{{ $t('writeDealNote') }}</label>
-                            <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" v-model="writeDealNote" />
-                          </div>
-                          <div class="flex flex-column mt-3">
-                            <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>
-                            <div class="flex align-items-center gap-4 fields">
-                              <div class="flex flex-column gap-2 w-full">
-                                <label for="chooseField">{{ $t('chooseField') }}</label>
-                                <Dropdown id="funnel" v-model="fieldId" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
-                              </div>
-                              <div class="flex flex-column gap-2 w-full">
-                                <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
-                                <InputText id="enterFieldValue" type="text" v-model="fieldValue" />
-                              </div>
-                            </div>
-                          </div>
-                        </TabPanel>
-                        <TabPanel :header="t('sendNotification')">
-                          <div class="flex flex-column gap-3">
-                            <span style="font-weight: 700" class="mt-5">{{ $t('notificationText') }}</span>
-                            <Textarea :autoResize="true" rows="3" cols="2" v-model="notificationText" />
-                          </div>
-                        </TabPanel>
-                        <TabPanel :header="t('sendWebhook')">
-                          <div class="flex flex-column gap-3">
-                            <div class="flex flex-column gap-2 mt-5">
-                              <span style="font-weight: 700">URL</span>
-                              <InputText style="margin-bottom: 8px" id="webhookUrl" type="text" v-model="webhookUrl" />
-                            </div>
-                            <div class="flex flex-column gap-2">
-                              <span style="font-weight: 700">{{ $t('text')}}</span>
-                              <Textarea rows="3" cols="30" v-model="webhookText" />
-                            </div>
-                          </div>
-                        </TabPanel>
-                      </TabView>
-                    </div>
-                  </div>
-                  <Button :label="t('addTask')" style="background-color: #F9753E; border: none" class="add-btn" />
-                </div>
               </div>
             </TabPanel>
 
@@ -1074,23 +975,5 @@ const webhookText = ref<string>('')
 }
 .table-container {
   overflow-x: auto;
-}
-.add-btn {
-  width: 25%
-}
-.file-btn {
-  width: 25%
-}
-@media (max-width: 601px) {
-  .add-btn {
-    width: 100% !important;
-  }
-  .manage-files {
-    flex-direction: column;
-    align-items: flex-start !important;
-  }
-  .file-btn {
-    width: 100% !important;
-  }
 }
 </style>

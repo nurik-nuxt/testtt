@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // @ts-ignore
 export default defineNuxtConfig({
-    ssr: false,
+    ssr: true,
     app: {
         head: {
             title: '7sales',
@@ -77,7 +77,8 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            apiBaseUrl: process.env.BASE_URL
+            apiBaseUrl: process.env.BASE_URL,
+            adminBaseUrl: process.env.ADMIN_BASE_URL
         }
     }
 })

@@ -292,12 +292,5 @@
   "telegramAlreadyRegistered": "टेलीग्राम बॉट मौजूदा 7सेल्स खाते में पहले से ही पंजीकृत है।",
   "selectChat": "संवाद चुनें",
   "reminders": "अनुस्मारक",
-  "cleanHistory": "इतिहास साफ़ करें",
-  "prompt": "तत्पर",
-  "addTask": "कोई कार्य जोड़ें",
-  "botTask": "बॉट कार्य",
-  "actionsAfterTask": "किसी कार्य को पूरा करने के बाद की गतिविधियाँ",
-  "sendWebhook": "वेबहुक भेजें",
-  "notificationText": "अधिसूचना पाठ",
-  "text": "मूलपाठ"
+  "cleanHistory": "इतिहास साफ़ करें"
 }
