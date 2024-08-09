@@ -67,8 +67,8 @@ const signIn = async () => {
       console.log(e);
     }
   }
-  console.log(isFormCorrect);
-  console.log(form);
+  // console.log(isFormCorrect);
+  // console.log(form);
 }
 definePageMeta({
   layout: 'auth'
