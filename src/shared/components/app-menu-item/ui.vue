@@ -5,20 +5,12 @@ interface PropsItem {
   icon: string;
   url: string;
 }
-
-
-
 const props = withDefaults(defineProps<PropsItem>(), {});
 
-// const isActiveCurrentTab = (url: string) => {
-//   const [_, sub] = route.path.split('/');
-//   return sub === url;
-// };
-
 const isActiveCurrentTab = (url: string) => {
-  return route.path === `/${url}`;
+  const [_, sub] = route.path.split('/');
+  return sub === url;
 };
-
 </script>
 
 <template>

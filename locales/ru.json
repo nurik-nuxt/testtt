@@ -95,7 +95,7 @@
 "crmSystemManagement": "Управление CRM системой",
 "changeDealStage": "Изменить этап сделки в amoCRM",
 "choosePipeline": "Выберете воронку",
-"changeStatus": "Изменить статус на:",
+"changeStatus": "Изменить статус на",
 "writeDealNote": "Написать Примечание в Сделке",
 "dealNoteText": "Напишите текст Примечания",
 "setFieldValue": "Установить значение поля:",
@@ -292,5 +292,12 @@
   "telegramAlreadyRegistered": "Telegram-бот уже зарегистрирован в текущем аккаунте 7sales.",
   "selectChat": "Выберите диалог",
   "reminders": "Напоминания",
-  "cleanHistory": "Очистить историю"
+  "cleanHistory": "Очистить историю",
+  "prompt": "Промпт",
+  "addTask": "Добавить задачу",
+  "botTask": "Задача бота",
+  "actionsAfterTask": "Действия после выполнения задачи",
+  "sendWebhook": "Отправить Webhook",
+  "notificationText": "Текст уведомления",
+  "text": "Текст"
 }

@@ -29,8 +29,8 @@ export const useUploadFileStore = defineStore('uploadFile', {
                     method: 'POST',
                     body
                 }, true, false)
-                console.log(response)
                 this.files.push({ filename: response?.filename, mimeType: response?.mimeType, originalName: decodeURIComponent(escape(response?.originalName)), filePath: response?.filePath, filenameEncodeFull: response?.filenameEncodeFull })
+                return response;
             } catch (e) {
                 console.log(e);
             }

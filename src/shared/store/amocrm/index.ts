@@ -39,11 +39,8 @@ export const useAmoCrmStore = defineStore('amocrm', {
                 const response = await useApi(`/amocrm/active-pipelines/${idChannel}`,{
                     method: 'GET'
                 })
-                if (response) {
-                    this.activeFunnels = response;
-                } else {
-                    this.activeFunnels = []
-                }
+                console.log(response);
+                this.activeFunnels = response;
             } catch (e) {
                 console.log(e);
             }

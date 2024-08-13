@@ -8,10 +8,10 @@ interface ApiResponse<T = any> {
     data: T;
 }
 
-export const useApi = async (uri: string, options: FetchOptions = {}, isAdmin: boolean = false, isLoading: boolean = true, withContentType: boolean = true) => {
+export const useApi = async (uri: string, options: FetchOptions = {}, isLoading: boolean = true, withContentType: boolean = true) => {
     const loaderStore = useLoaderStore();
     const authStore = useAuthStore();
-    const { apiBaseUrl, adminBaseUrl } = useRuntimeConfig().public;
+    const { apiBaseUrl } = useRuntimeConfig().public;
 
     if (isLoading) {
         loaderStore.setLoader(true);
@@ -30,7 +30,7 @@ export const useApi = async (uri: string, options: FetchOptions = {}, isAdmin: b
     }
 
     try {
-        const response = await $fetch(`${isAdmin ? adminBaseUrl : apiBaseUrl}${uri}`, {
+        const response = await $fetch(apiBaseUrl + uri, {
             ...options,
             headers,
         });

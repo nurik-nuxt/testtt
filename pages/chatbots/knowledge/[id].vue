@@ -126,7 +126,6 @@ const files = computed(() => {
   return uploadFileStore.getFiles
 })
 
-const fileRef = ref();
 const openFileUploader = () => {
   const fileInput = document.getElementById('file-upload');
   if (fileInput) {

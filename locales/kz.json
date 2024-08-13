@@ -290,5 +290,12 @@
   "telegramAlreadyRegistered": "Telegram боты қазірдің өзінде ағымдағы 7sales есептік жазбасында тіркелген.",
   "selectChat": "Диалогты таңдаңыз",
   "reminders": "Еске салғыштар",
-  "cleanHistory": "Тарихты тазалаңыз"
+  "cleanHistory": "Тарихты тазалаңыз",
+  "prompt": "Шақыру",
+  "addTask": "Тапсырма қосыңыз",
+  "botTask": "Бот тапсырмасы",
+  "actionsAfterTask": "Тапсырманы орындағаннан кейінгі әрекеттер",
+  "sendWebhook": "Webhook жіберу",
+  "notificationText": "Хабарландыру мәтіні",
+  "text": "Мәтін"
 }

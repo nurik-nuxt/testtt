@@ -15,6 +15,7 @@ const fetchChannel = async () => {
   const res = await channelStore.getChannelById(<string>route.params.id);
   channelStatus.value = res.status;
   channelTitle.value = res.title;
+  console.log(res);
 };
 
 const fetchVoronki = async () => {
@@ -33,7 +34,7 @@ const activeFunnels = computed(() => {
 const changeChannelStatus = async (status: string) => {
   const res = await channelStore.changeStatusChannelById(<string>route.params.id, status);
   if (res.success) {
-    await fetchChannel();
+    fetchChannel();
   }
 };
 

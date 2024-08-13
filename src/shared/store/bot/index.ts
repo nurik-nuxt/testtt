@@ -107,6 +107,18 @@ export const useBotStore = defineStore('bot', {
             } catch (e) {
                 console.log(e)
             }
+        },
+
+        async saveFunctionById(id: string, botFunctions: any) {
+            try {
+                const response = await useApi(`/bot/${id}/functions_batch`, {
+                    method: 'POST',
+                    body: botFunctions
+                })
+                console.log(response);
+            } catch (e) {
+                console.error(e)
+            }
         }
     }
 })

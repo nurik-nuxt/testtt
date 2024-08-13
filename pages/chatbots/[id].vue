@@ -11,6 +11,8 @@ import { helpers, minLength, required, email, requiredIf } from "@vuelidate/vali
 import useValidate from "@vuelidate/core/dist/index";
 import { socket, state } from "~/socket";
 import { useLayout } from '~/composable';
+import {useUploadFileStore} from "~/src/shared/store/upload";
+import {useAmoCrmStore} from "~/src/shared/store/amocrm";
 const { isMobileOrTablet } = useDevice();
 
 const { chatVisible, setToggleChat } = useLayout();
@@ -45,6 +47,10 @@ const channelStore = useChannelStore();
 const knowledgeStore = useKnowledgeStore();
 const mainStore = useMainStore();
 const notificationStore = useNotificationStore();
+const uploadFileStore = useUploadFileStore();
+const amoCrmStore = useAmoCrmStore();
+
+
 const extra = ref<boolean>(true);
 
 
@@ -88,88 +94,6 @@ const createKnowledgeBase = (id: number) => {
   return navigateTo({ name: 'chatbots-knowledge-id', params: { id: id }})
 }
 
-const knowledgeBaseList = ref([
-  {
-    key: 'knowledgeBase1',
-    data: {
-      label: 'База Знаний 1',
-      notification: true,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase2',
-    data: {
-      label: 'База Знаний 2',
-      notification: false,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase3',
-    data: {
-      label: 'База Знаний 3',
-      notification: false,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase4',
-    data: {
-      label: 'База Знаний 4',
-      notification: true,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase5',
-    data: {
-      label: 'База Знаний 5',
-      notification: true,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase6',
-    data: {
-      label: 'База Знаний 6',
-      notification: true,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase7',
-    data: {
-      label: 'База Знаний 7',
-      notification: true,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase8',
-    data: {
-      label: 'База Знаний 8',
-      notification: false,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase0',
-    data: {
-      label: 'База Знаний 9',
-      notification: true,
-      active: true
-    }
-  },
-  {
-    key: 'knowledgeBase10',
-    data: {
-      label: 'База Знаний 10',
-      notification: false,
-      active: true
-    }
-  }
-]);
 const knowledgeBaseSelectedKey = ref(null);
 
 const fullTimeWork = ref<boolean>(false);
@@ -291,8 +215,76 @@ onUnmounted(() => {
 })
 onMounted(async () => {
   socket.connect();
+
   await Promise.all([
+    amoCrmStore.fetchVoronki(),
+    amoCrmStore.fetchAmoCrmFields(),
     botStore.getBot(<string>route.params.id).then((res) => {
+      if (res?.functions) {
+        const predefinedActions = [
+          {
+            name: 'send_file',
+            parameters: {
+              fileName: null,
+              type: null
+            }
+          },
+          {
+            name: 'send_webhook',
+            parameters: {
+              webhook_url: '',
+              webhook_text: ''
+            }
+          },
+          {
+            name: 'notify_operator',
+            parameters: {
+              text: ''
+            }
+          },
+          {
+            name: 'edit_lead_card',
+            parameters: {
+              custom_fields_values: [
+                {
+                  field_id: null,
+                  values: [
+                    {
+                      value: ''
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            name: 'add_note',
+            parameters: {
+              text: ''
+            }
+          },
+          {
+            name: 'move_in_pipeline',
+            parameters: {
+              pipeline_id: '',
+              status_id: ''
+            }
+          }
+        ];
+
+        botFunctions.value = res.functions.map(func => {
+          const updatedActions = predefinedActions.map(action => {
+            const existingAction = func.actions.find(a => a.name === action.name);
+            return existingAction ? existingAction : action;
+          });
+
+          return {
+            ...func,
+            actions: updatedActions
+          };
+        });
+      }
+
       Object.keys(currentBot.value).forEach(key => {
         if (key in res && res[key] !== null && res[key] !== undefined) {
           currentBot.value[key] = res[key];
@@ -300,13 +292,13 @@ onMounted(async () => {
       });
     }),
     channelStore.getAllChannels(),
-     knowledgeStore.getKnowledgeListByBot(<string>route.params.id),
-     notificationStore.getTelegramNotificationLink().then((res) => {
-      const response = JSON.parse(res)
-      telegramLink.value = response?.link
+    knowledgeStore.getKnowledgeListByBot(<string>route.params.id),
+    notificationStore.getTelegramNotificationLink().then((res) => {
+      const response = JSON.parse(res);
+      telegramLink.value = response?.link;
     })
-  ])
-})
+  ]);
+});
 
 const clearChat = () => {
   socket.disconnect();
@@ -354,6 +346,9 @@ const confirmBotMainSettings = async () => {
     await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
       toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
     })
+  }
+  if (countFunctionChanging.value > 1) {
+    await botStore.saveFunctionById(<string>route.params.id, botFunctions.value)
   }
 }
 
@@ -411,6 +406,269 @@ function handleKeyDown(event) {
     sendMessage();
   }
 }
+
+const botTask = ref<string>('');
+const interruptDialogue = ref<boolean>(false);
+
+
+
+const notificationText = ref<string>('');
+
+const webhookUrl = ref<string>('')
+
+const botFunctions = ref<any>([])
+
+const deleteFunctionSendFile = (file: any, functionIndex: number, fileIndex: number) => {
+  const action = botFunctions.value[functionIndex]?.actions;
+  console.log(action);
+  for (let i = 0; i < action.length; i++) {
+    if (action[i]?.name === 'send_file') {
+      delete action[i];
+      break;
+    }
+  }
+}
+
+const openFileUploader = (functionIndex: number) => {
+  const fileInput = document.getElementById(`file-upload-${functionIndex}`);
+  if (fileInput) {
+    fileInput.click();
+  }
+}
+
+const addFile = async (event: Event, functionIndex: number) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0] || null;
+  if (!file) return;
+  await uploadFileStore.loadFile(file).then((res) => {
+    botFunctions.value[functionIndex]?.actions?.push({
+      name: 'send_file',
+      parameters: {
+        fileName: res?.filename,
+        type: res?.mimeType === 'image/jpeg' ? 'picture' : 'file'
+      }
+    })
+  });
+}
+const addTask = () => {
+  botFunctions.value.push(
+      {
+        name: '',
+        prompt: '',
+        actions: [
+          {
+            name: 'send_file',
+            parameters: {
+              fileName: null,
+              type: null
+            }
+          },
+          {
+            name: 'send_webhook',
+            parameters: {
+              webhook_url: '',
+              webhook_text: ''
+            }
+          },
+          {
+            name: 'notify_operator',
+            parameters: {
+              text: ''
+            }
+          },
+          {
+            name: 'edit_lead_card',
+            parameters: {
+              custom_fields_values: [
+                {
+                  field_id: null,
+                  values: [
+                    {
+                      value: ''
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            name: 'add_note',
+            parameters: {
+              text: ''
+            }
+          },
+          {
+            name: 'move_in_pipeline',
+            parameters: {
+              pipeline_id: '',
+              status_id: ''
+            }
+          }
+        ]
+      }
+  )
+}
+
+const getNotifyOperatorText = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find((action) => action.name === 'notify_operator');
+      if (action && action.parameters) {
+        return action.parameters.text || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find((action) => action.name === 'notify_operator');
+      if (action && action.parameters) {
+        action.parameters.text = value;
+      }
+    }
+  });
+};
+
+const getWebhookUrl = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      if (action && action.parameters) {
+        return action.parameters.webhook_url || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      if (action && action.parameters) {
+        action.parameters.webhook_url = value;
+      }
+    }
+  });
+};
+
+const getWebhookText = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      if (action && action.parameters) {
+        return action.parameters.webhook_text || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      if (action && action.parameters) {
+        action.parameters.webhook_text = value;
+      }
+    }
+  });
+};
+
+const funnels = computed(() => {
+  return amoCrmStore.getAllFunnels
+})
+const getFunnelId = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      if (action && action.parameters) {
+        return action.parameters.pipeline_id || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      if (action && action.parameters) {
+        action.parameters.pipeline_id = value;
+      }
+    }
+  });
+};
+
+const getStatusId = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      if (action && action.parameters) {
+        return action.parameters.status_id || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      if (action && action.parameters) {
+        action.parameters.status_id = value;
+      }
+    }
+  });
+};
+
+const getDealNoteText = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'add_note');
+      if (action && action.parameters) {
+        return action.parameters.text || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'add_note');
+      if (action && action.parameters) {
+        action.parameters.text = value;
+      }
+    }
+  });
+};
+const fields = computed(() => {
+  return amoCrmStore.getFields
+})
+
+const getFieldId = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0]) {
+        return action.parameters.custom_fields_values[0].field_id || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0]) {
+        action.parameters.custom_fields_values[0].field_id = value;
+      }
+    }
+  });
+};
+
+const getFieldValue = (index: number) => {
+  return computed({
+    get() {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0] && action.parameters.custom_fields_values[0].values && action.parameters.custom_fields_values[0].values[0]) {
+        return action.parameters.custom_fields_values[0].values[0].value || '';
+      }
+      return '';
+    },
+    set(value) {
+      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0] && action.parameters.custom_fields_values[0].values && action.parameters.custom_fields_values[0].values[0]) {
+        action.parameters.custom_fields_values[0].values[0].value = value;
+      }
+    }
+  });
+};
+const countFunctionChanging = ref<number>(0);
+watch(
+    () => botFunctions.value,
+    () => {
+      countFunctionChanging.value ++
+    },
+    {
+      deep: true,
+      immediate: false
+    }
+)
 </script>
 
 <template>
@@ -443,36 +701,8 @@ function handleKeyDown(event) {
                   <label for="name1" style="font-weight: 700">{{ $t('botName') }}</label>
                   <InputText id="botName" type="text" v-model="currentBot.name" :invalid="v$.$errors.find((el) => el.$property === 'name')?.$message" />
                 </div>
-
-                <!--Bot instructions-->
-                <div class="field">
-                  <div class="flex justify-content-between align-items-end">
-                    <div class="flex flex-column">
-                      <label style="font-weight: 700">{{ $t('botInstructionPrompt') }}</label>
-                      <span class="mb-2 mt-2">{{ $t('promptUsageTip') }}</span>
-                    </div>
-                    <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
-                  </div>
-                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="false" rows="25" cols="2" v-model="currentBot.instructions"/>
-                </div>
               </div>
-
-              <!--Bot helloOnFirst-->
-              <span class="bot-card__activate">
-                {{ $t('welcomeMessageStart') }}
-                <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px"/>
-              </span>
-
-              <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
-                <div class="field" style="margin-top: 12px">
-                  <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" v-model="currentBot.helloMessage" />
-                </div>
-              </div>
-              <span class="bot-card__activate" style="margin-top: 8px">
-                {{ $t('settings') }}
-                <InputSwitch v-model="extra" style="margin-left: 8px"/>
-              </span>
-              <div v-if="extra" class="card-form p-fluid" style="margin-top: 12px">
+              <div class="card-form p-fluid" style="margin-top: 12px">
 
                 <!--Bot apiSecretKey-->
                 <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
@@ -635,6 +865,138 @@ function handleKeyDown(event) {
                 <Button :label="t('deleteBotButton')" severity="danger" class="mr-auto" @click="removeBot"></Button>
                 <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
                 <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
+              </div>
+            </TabPanel>
+
+            <TabPanel :header="t('prompt')">
+              <div class="card-form p-fluid" style="margin-top: 16px">
+                <!--Bot instructions-->
+                <div class="field">
+                  <div class="flex justify-content-between align-items-end">
+                    <div class="flex flex-column">
+                      <label style="font-weight: 700">{{ $t('botInstructionPrompt') }}</label>
+                      <span class="mb-2 mt-2">{{ $t('promptUsageTip') }}</span>
+                    </div>
+                    <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
+                  </div>
+                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="false" rows="25" cols="2" v-model="currentBot.instructions"/>
+                </div>
+
+                <!--Bot helloOnFirst-->
+                <span class="bot-card__activate">
+                  {{ $t('welcomeMessageStart') }}
+                  <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px"/>
+                </span>
+
+                <!--Bot helloOnFirst-->
+                <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
+                  <div class="field" style="margin-top: 12px">
+                    <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" v-model="currentBot.helloMessage" />
+                  </div>
+                </div>
+
+                <!--Bot Tasks-->
+                <div v-if="botFunctions" class="mt-5">
+                  <div v-for="(botFunction, index) in botFunctions" :key="index">
+                    <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
+                    <div class="mt-3 mb-4 flex flex-column gap-3">
+                      <div class="flex flex-column gap-2">
+                        <label style="font-weight: 700">{{ $t('botTask') }}</label>
+                        <Textarea rows="3" cols="30" v-model="botFunction.prompt" />
+                      </div>
+                      <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
+                      <span class="bot-card__activate">
+                        {{ $t('endDialogue') }}
+                        <InputSwitch v-model="interruptDialogue" style="margin-left: 24px"/>
+                      </span>
+                      <TabView class="mb-5">
+                        <!--Send FileInMessage-->
+                        <TabPanel :header="t('sendFileInMessage')">
+                          <div class="mt-4 flex flex-column gap-4">
+                            <span>{{ $t('fileSendingRestrictions') }}</span>
+                            <div class="flex gap-3 align-items-center manage-files">
+                              <Button :label="t('attachFile')" icon="pi pi-plus" class="file-btn" @click="openFileUploader(index)"></Button>
+                              <input :id="`file-upload-${index}`" hidden type="file" @input="addFile($event, index)">
+                              <Button :label="t('downloadFile')" icon="pi pi-upload" class="file-btn"></Button>
+                              <Button :label="t('deleteFile')" icon="pi pi-times" class="file-btn"></Button>
+                              <span>{{ $t('maxFileSize5MB') }}</span>
+                            </div>
+                            <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="flex flex-column gap-3">
+                              <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file')" :key="fileIndex">
+                                <div v-if="file?.parameters?.fileName">
+                                  <div class="flex gap-3 align-items-center" v-if="file?.parameters?.type?.includes('picture')">
+                                    <img :src="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" :alt="file?.parameters?.fileName" class="image">
+                                    <span class="text-base font-bold">{{ file?.parameters?.fileName }} image</span>
+                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFunctionSendFile(file, index, fileIndex)"></i>
+                                  </div>
+                                  <div class="flex gap-3 align-items-center" v-else>
+                                    <i class="pi pi-file" style="font-size: 60px"></i>
+                                    <span class="text-base font-bold">{{ file?.parameters?.fileName }}</span>
+                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px"></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </TabPanel>
+
+
+                        <TabPanel :header="t('crmSystemManagement')">
+                          <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
+
+                          <div class="mt-4 flex justify-content-between gap-4 fields">
+                            <div class="flex flex-column w-full gap-2">
+                              <label for="funnel">{{ $t('choosePipeline') }}:</label>
+                              <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
+                            </div>
+                            <div class="flex flex-column w-full gap-2">
+                              <label for="statusId">{{ $t('changeStatus') }}:</label>
+                              <Dropdown style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
+                            </div>
+                          </div>
+                          <div class="flex flex-column mt-3">
+                            <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">{{ $t('writeDealNote') }}</label>
+                            <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" :model-value="getDealNoteText(<number>index).value" @update:model-value="getDealNoteText(<number>index).value = $event" />
+                          </div>
+                          <div class="flex flex-column mt-3">
+                            <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>
+                            <div class="flex align-items-center gap-4 fields">
+                              <div class="flex flex-column gap-2 w-full">
+                                <label for="chooseField">{{ $t('chooseField') }}</label>
+                                <Dropdown id="funnel" :model-value="getFieldId(<number>index).value" @update:model-value="getFieldId(<number>index).value = $event" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
+                              </div>
+                              <div class="flex flex-column gap-2 w-full">
+                                <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
+                                <InputText id="enterFieldValue" type="text" :model-value="getFieldValue(<number>index).value" @update:model-value="getFieldValue(<number>index).value = $event"   />
+                              </div>
+                            </div>
+                          </div>
+                        </TabPanel>
+
+                        <TabPanel :header="t('sendNotification')">
+                          <div class="flex flex-column gap-3">
+                            <span style="font-weight: 700" class="mt-5">{{ $t('notificationText') }}</span>
+                            <Textarea :autoResize="true" rows="3" cols="2" :model-value="getNotifyOperatorText(<number>index).value" @update:model-value="getNotifyOperatorText(<number>index).value = $event" />
+                          </div>
+                        </TabPanel>
+
+                        <TabPanel :header="t('sendWebhook')">
+                          <div class="flex flex-column gap-3">
+                            <div class="flex flex-column gap-2 mt-5">
+                              <span style="font-weight: 700">URL</span>
+                              <InputText style="margin-bottom: 8px" id="webhookUrl" type="text" :model-value="getWebhookUrl(<number>index).value" @update:model-value="getWebhookUrl(<number>index).value = $event"  />
+                            </div>
+                            <div class="flex flex-column gap-2">
+                              <span style="font-weight: 700">{{ $t('text')}}</span>
+                              <Textarea rows="3" cols="30" :model-value="getWebhookText(<number>index).value" @update:model-value="getWebhookText(<number>index).value = $event" />
+                            </div>
+                          </div>
+                        </TabPanel>
+                      </TabView>
+                    </div>
+                  </div>
+                  <Button :label="t('addTask')" style="background-color: #F9753E; border: none" class="add-btn" @click="addTask"/>
+                </div>
               </div>
             </TabPanel>
 
@@ -975,5 +1337,28 @@ function handleKeyDown(event) {
 }
 .table-container {
   overflow-x: auto;
+}
+.add-btn {
+  width: 25%
+}
+.file-btn {
+  width: 25%
+}
+@media (max-width: 601px) {
+  .add-btn {
+    width: 100% !important;
+  }
+  .manage-files {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  .file-btn {
+    width: 100% !important;
+  }
+}
+.image {
+  width: 150px;
+  height: 100px;
+  object-fit: contain;
 }
 </style>
