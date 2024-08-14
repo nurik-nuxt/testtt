@@ -697,6 +697,19 @@ watch(
       immediate: false
     }
 )
+const deleteFunction = async (index: number) => {
+  botFunctions.value.splice(index, 1);
+  botFunctions.value = botFunctions.value.map((botFunction: any) => ({
+    ...botFunction,
+    actions: filterEmptyActions(botFunction.actions)
+  }));
+  try {
+    await botStore.saveFunctionById(<string>route.params.id, botFunctions.value);
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Function deleted and saved successfully', life: 3000 });
+  } catch (error) {
+    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save changes', life: 3000 });
+  }
+}
 </script>
 
 <template>
@@ -930,7 +943,10 @@ watch(
                     <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
                     <div class="mt-3 mb-4 flex flex-column gap-3">
                       <div class="flex flex-column gap-2">
-                        <label style="font-weight: 700">{{ $t('botTask') }}</label>
+                        <div class="flex justify-content-between w-full align-items-center mb-4">
+                          <label style="font-weight: 700">{{ $t('botTask') }}</label>
+                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteFunction(index)"></i>
+                        </div>
                         <Textarea rows="3" cols="30" v-model="botFunction.prompt" />
                       </div>
                       <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
