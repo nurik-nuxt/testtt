@@ -77,7 +77,8 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            apiBaseUrl: process.env.BASE_URL
+            apiBaseUrl: process.env.BASE_URL,
+            adminBaseUrl: process.env.ADMIN_BASE_URL
         }
     }
 })
