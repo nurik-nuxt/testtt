@@ -213,6 +213,68 @@ const joinToChat = () => {
 onUnmounted(() => {
   socket.disconnect();
 })
+function ensureAllActionsExist(botFunction: any) {
+  const requiredActions = [
+    {
+      name: 'send_file',
+      parameters: {
+        fileName: null,
+        type: null
+      }
+    },
+    {
+      name: 'send_webhook',
+      parameters: {
+        webhook_url: '',
+        webhook_text: ''
+      }
+    },
+    {
+      name: 'notify_operator',
+      parameters: {
+        text: ''
+      }
+    },
+    {
+      name: 'edit_lead_card',
+      parameters: {
+        custom_fields_values: [
+          {
+            field_id: null,
+            values: [
+              {
+                value: ''
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      name: 'add_note',
+      parameters: {
+        text: ''
+      }
+    },
+    {
+      name: 'move_in_pipeline',
+      parameters: {
+        pipeline_id: '',
+        status_id: ''
+      }
+    }
+  ];
+
+  requiredActions.forEach(requiredAction => {
+    const exists = botFunction.actions.some(action => action.name === requiredAction.name);
+    if (!exists) {
+      botFunction.actions.push({ ...requiredAction });
+    }
+  });
+
+  return botFunction;
+}
+
 onMounted(async () => {
   socket.connect();
 
@@ -221,68 +283,7 @@ onMounted(async () => {
     amoCrmStore.fetchAmoCrmFields(),
     botStore.getBot(<string>route.params.id).then((res) => {
       if (res?.functions) {
-        const predefinedActions = [
-          {
-            name: 'send_file',
-            parameters: {
-              fileName: null,
-              type: null
-            }
-          },
-          {
-            name: 'send_webhook',
-            parameters: {
-              webhook_url: '',
-              webhook_text: ''
-            }
-          },
-          {
-            name: 'notify_operator',
-            parameters: {
-              text: ''
-            }
-          },
-          {
-            name: 'edit_lead_card',
-            parameters: {
-              custom_fields_values: [
-                {
-                  field_id: null,
-                  values: [
-                    {
-                      value: ''
-                    }
-                  ]
-                }
-              ]
-            }
-          },
-          {
-            name: 'add_note',
-            parameters: {
-              text: ''
-            }
-          },
-          {
-            name: 'move_in_pipeline',
-            parameters: {
-              pipeline_id: '',
-              status_id: ''
-            }
-          }
-        ];
-
-        botFunctions.value = res.functions.map(func => {
-          const updatedActions = predefinedActions.map(action => {
-            const existingAction = func.actions.find(a => a.name === action.name);
-            return existingAction ? existingAction : action;
-          });
-
-          return {
-            ...func,
-            actions: updatedActions
-          };
-        });
+        botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
       }
 
       Object.keys(currentBot.value).forEach(key => {
@@ -340,8 +341,35 @@ const availableChannels = computed(() => {
 const connectedChannels = computed(() => {
   return channelStore.getChannels?.filter((channel) => channel?.connectedBotId === <string>route.params.id)
 })
+function filterEmptyActions(actions: any[]) {
+  return actions.filter(action => {
+    if (action.name === 'send_file' && (!action.parameters.fileName || !action.parameters.type)) {
+      return false;
+    }
+    if (action.name === 'send_webhook' && (!action.parameters.webhook_url || !action.parameters.webhook_text)) {
+      return false;
+    }
+    if (action.name === 'notify_operator' && !action.parameters.text) {
+      return false;
+    }
+    if (action.name === 'edit_lead_card' && (!action.parameters.custom_fields_values[0].field_id || !action.parameters.custom_fields_values[0].values[0].value)) {
+      return false;
+    }
+    if (action.name === 'add_note' && !action.parameters.text) {
+      return false;
+    }
+    return !(action.name === 'move_in_pipeline' && (!action.parameters.pipeline_id || !action.parameters.status_id));
+
+  });
+}
+
 const confirmBotMainSettings = async () => {
   const isFormCorrect = await v$.value.$validate();
+
+  botFunctions.value = botFunctions.value.map((botFunction: any) => ({
+    ...botFunction,
+    actions: filterEmptyActions(botFunction.actions)
+  }));
   if (isFormCorrect) {
     await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
       toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
@@ -445,7 +473,7 @@ const addFile = async (event: Event, functionIndex: number) => {
       name: 'send_file',
       parameters: {
         fileName: res?.filename,
-        type: res?.mimeType === 'image/jpeg' ? 'picture' : 'file'
+        type: res?.mimeType === 'image/jpeg' || 'image/png' || 'image/jpg' ? 'picture' : 'file'
       }
     })
   });
@@ -894,6 +922,7 @@ watch(
                     <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" v-model="currentBot.helloMessage" />
                   </div>
                 </div>
+
 
                 <!--Bot Tasks-->
                 <div v-if="botFunctions" class="mt-5">
