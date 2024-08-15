@@ -28,7 +28,7 @@ export const useUploadFileStore = defineStore('uploadFile', {
                 const response = await useApi('/upload', {
                     method: 'POST',
                     body
-                }, true, false)
+                }, false, true, false)
                 this.files.push({ filename: response?.filename, mimeType: response?.mimeType, originalName: decodeURIComponent(escape(response?.originalName)), filePath: response?.filePath, filenameEncodeFull: response?.filenameEncodeFull })
                 return response;
             } catch (e) {

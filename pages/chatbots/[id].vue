@@ -13,6 +13,8 @@ import { socket, state } from "~/socket";
 import { useLayout } from '~/composable';
 import {useUploadFileStore} from "~/src/shared/store/upload";
 import {useAmoCrmStore} from "~/src/shared/store/amocrm";
+import { useLoaderStore } from "~/src/shared/store/loader";
+
 const { isMobileOrTablet } = useDevice();
 
 const { chatVisible, setToggleChat } = useLayout();
@@ -49,6 +51,11 @@ const mainStore = useMainStore();
 const notificationStore = useNotificationStore();
 const uploadFileStore = useUploadFileStore();
 const amoCrmStore = useAmoCrmStore();
+const loaderStore = useLoaderStore();
+
+const loading = computed(() => {
+  return loaderStore.getLoading;
+})
 
 
 const extra = ref<boolean>(true);
@@ -699,16 +706,6 @@ watch(
 )
 const deleteFunction = async (index: number) => {
   botFunctions.value.splice(index, 1);
-  botFunctions.value = botFunctions.value.map((botFunction: any) => ({
-    ...botFunction,
-    actions: filterEmptyActions(botFunction.actions)
-  }));
-  try {
-    await botStore.saveFunctionById(<string>route.params.id, botFunctions.value);
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Function deleted and saved successfully', life: 3000 });
-  } catch (error) {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to save changes', life: 3000 });
-  }
 }
 </script>
 
@@ -729,7 +726,7 @@ const deleteFunction = async (index: number) => {
           <h5>{{ $t('edit') }} "{{ bot?.name }}"</h5>
           <div class="flex align-items-center gap-4">
             <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-            <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
+            <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading"></Button>
           </div>
         </div>
         <div>
