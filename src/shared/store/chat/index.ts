@@ -26,6 +26,7 @@ interface Lead {
     name?: string;
     username?: string;
     text?: string;
+    bot_stopped?: boolean;
     created_at: number;
     owner_id: string;
     channel: string;
@@ -70,12 +71,14 @@ export const useChatStore = defineStore('chat', {
                 this.leads.unshift(lead);
             }
         },
+
         setUnreadMessageCountToZero(id: string) {
             const lead = this.leads.find((lead) => lead._id === id);
             if (lead) {
                 lead.messages.unreadMessageCount = 0;
             }
         },
+
         async getLeads() {
             try {
                 const response = await useApi('/chat/leads_with_last', {
@@ -102,6 +105,7 @@ export const useChatStore = defineStore('chat', {
                 console.error(e);
             }
         },
+
         async deleteAllMessageLead(id: string | number) {
             this.isLoadingChat = true;
             try {
@@ -115,6 +119,7 @@ export const useChatStore = defineStore('chat', {
                 console.error(e);
             }
         },
+
         async deleteLead(id: string | number) {
             this.isLoadingChat = true;
             try {
@@ -128,17 +133,44 @@ export const useChatStore = defineStore('chat', {
                 console.error(e);
             }
         },
+
         async getLeadMessagesById(id: string | number) {
             this.isLoadingChat = true;
             try {
                 const response = await useApi(`/chat/leads/${id}/messages`, {
                     method: 'GET',
-                }, false);
+                }, false,false);
                 this.isLoadingChat = false;
                 return response;
             } catch (e) {
                 this.isLoadingChat = false;
                 console.error(e);
+            }
+        },
+
+        async startBot(id: string) {
+            try {
+                const response = await useApi(`/chat/leads/${id}/start`, {
+                    method: 'GET'
+                })
+                if (response?.success) {
+                    await this.getLeads()
+                }
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async stopBot(id: string) {
+            try {
+                const response = await useApi(`/chat/leads/${id}/stop`, {
+                    method: 'GET'
+                })
+                if (response?.success) {
+                    await this.getLeads()
+                }
+            } catch (e) {
+                console.error(e)
             }
         },
     },

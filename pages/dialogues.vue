@@ -180,6 +180,14 @@ function handleKeyDown(event: any, channel: string, leadId: string, type: string
     sendMessage(channel, leadId, type, role);
   }
 }
+
+const startBot = async (chatId: string) => {
+  await chatStore.startBot(chatId)
+}
+
+const pauseBot = async (chatId: string) => {
+  await chatStore.stopBot(chatId)
+}
 </script>
 <template>
   <div class="grid">
@@ -219,8 +227,8 @@ function handleKeyDown(event: any, channel: string, leadId: string, type: string
             </div>
           </div>
           <div class="text-lg">
-            <!-- {{ $t('pauseBot')}} -->
-            <i style="cursor: pointer; font-size: 18px; margin-left: 8px; color: #1E63CE" class="pi pi-pause" />
+            <i v-if="leads?.find((lead) => lead?._id === selectedChatId)?.bot_stopped" style="cursor: pointer; font-size: 18px; margin-left: 8px; color: #1E63CE" class="pi pi-play" @click="startBot(<string>selectedChatId)" />
+            <i v-else style="cursor: pointer; font-size: 18px; margin-left: 8px; color: #1E63CE" class="pi pi-pause" @click="pauseBot(<string>selectedChatId)" />
           </div>
         </div>
       </template>
@@ -346,7 +354,8 @@ function handleKeyDown(event: any, channel: string, leadId: string, type: string
               </div>
               <div class="text-lg">
                 <!-- {{ $t('pauseBot')}} -->
-                <i style="cursor: pointer; font-size: 18px; margin-left: 8px; color: #1E63CE" class="pi pi-pause" />
+                <i v-if="leads?.find((lead) => lead?._id === selectedChatId)?.bot_stopped" style="cursor: pointer; font-size: 18px; margin-left: 8px; color: #1E63CE" class="pi pi-play" @click="startBot(<string>selectedChatId)" />
+                <i v-else style="cursor: pointer; font-size: 18px; margin-left: 8px; color: #1E63CE" class="pi pi-pause" @click="pauseBot(<string>selectedChatId)" />
               </div>
             </div>
             <div class="chat-loading" v-if="chatLoading">
