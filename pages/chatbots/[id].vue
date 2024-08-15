@@ -476,11 +476,12 @@ const addFile = async (event: Event, functionIndex: number) => {
   const file = input.files?.[0] || null;
   if (!file) return;
   await uploadFileStore.loadFile(file).then((res) => {
+    console.log(res?.mimeType)
     botFunctions.value[functionIndex]?.actions?.push({
       name: 'send_file',
       parameters: {
         fileName: res?.filename,
-        type: res?.mimeType === 'image/jpeg' || 'image/png' || 'image/jpg' ? 'picture' : 'file'
+        type: res?.mimeType?.includes('image') ? 'picture' : 'file'
       }
     })
   });
@@ -935,6 +936,7 @@ const deleteFunction = async (index: number) => {
 
 
                 <!--Bot Tasks-->
+<!--                <pre>{{ botFunctions }}</pre>-->
                 <div v-if="botFunctions" class="mt-5">
                   <div v-for="(botFunction, index) in botFunctions" :key="index">
                     <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
@@ -969,12 +971,12 @@ const deleteFunction = async (index: number) => {
                                   <div class="flex gap-3 align-items-center" v-if="file?.parameters?.type?.includes('picture')">
                                     <img :src="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" :alt="file?.parameters?.fileName" class="image">
                                     <span class="text-base font-bold">{{ file?.parameters?.fileName }} image</span>
-                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFunctionSendFile(file, index, fileIndex)"></i>
+                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteFunctionSendFile(file, index, fileIndex)"></i>
                                   </div>
                                   <div class="flex gap-3 align-items-center" v-else>
                                     <i class="pi pi-file" style="font-size: 60px"></i>
                                     <span class="text-base font-bold">{{ file?.parameters?.fileName }}</span>
-                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px"></i>
+                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px"></i>
                                   </div>
                                 </div>
                               </div>
