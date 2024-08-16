@@ -43,8 +43,8 @@ const iconSize = computed(() => {
 
 const fileNameParts = computed(() => {
   const { fileName } = props;
-  const visiblePart = fileName.slice(0, -5);
-  const extension = fileName.slice(-5); // Last 5 characters
+  const visiblePart = fileName?.slice(0, -5);
+  const extension = fileName?.slice(-5); // Last 5 characters
   return { visiblePart, extension };
 });
 
