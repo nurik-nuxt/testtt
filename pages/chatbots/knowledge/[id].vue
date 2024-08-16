@@ -198,8 +198,9 @@ const saveKnowledge = async () => {
           files?.value?.forEach(file => {
             actions.value.push({
               parameters: {
-                fileName: file.filename,
-                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : 'docs',
+                fileName: file.originalName,
+                filename: file?.filename,
+                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : 'docs',
               },
               name: "send_file"
             });
@@ -250,9 +251,12 @@ watch(
     { deep: true }
 )
 const goBack = () => {
-  mainStore.setChatBotActiveTab(2)
+  mainStore.setChatBotActiveTab(3)
   return navigateTo(`/chatbots/${route.params.id}`)
 }
+onUnmounted(() => {
+  uploadFileStore.$reset();
+})
 </script>
 
 <template>

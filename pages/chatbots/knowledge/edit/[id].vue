@@ -127,15 +127,13 @@ onMounted(async () => {
       if (sendFile) {
         const files = res.actions?.filter((action) => action.name === 'send_file')?.map((item) => ({
           filenameEncodeFull: item.parameters.fileName,
-          mimeType: item?.parameters?.type?.includes('image') ? 'picture' : item?.parameters?.type?.includes('pdf') ? 'pdf' : item?.parameters?.type?.includes('spreadsheetml')  ? 'excel' : item?.parameters?.type?.includes('wordprocessingml') ? 'docs' : 'docs',
-
-          // mimeType: item.parameters.type === "picture" ? "image/png" : "application/pdf",
-          originalName: item.parameters.fileName
+          mimeType: item?.parameters?.mimeType?.includes('image') ? 'picture' : item?.parameters?.mimeType?.includes('pdf') ? 'pdf' : item?.parameters?.mimeType?.includes('spreadsheetml')  ? 'excel' : item?.parameters?.mimeType?.includes('wordprocessingml') ? 'docs' : item?.parameters?.mimeType?.includes('picture') ? 'picture' : item?.parameters?.mimeType?.includes('excel') ? 'excel' : 'docs',
+          originalName: item.parameters.fileName,
+          filename: item?.parameters?.filename
         }))
         uploadFileStore.setFiles(files)
       }
       if (editLeadCard) {
-        console.log(editLeadCard)
         fieldId.value = editLeadCard.custom_fields_values[0]?.field_id
         fieldValue.value = editLeadCard.custom_fields_values[0]?.values[0]?.value
       }
@@ -190,12 +188,12 @@ const saveKnowledge = async () => {
         }
         if (files.value.length) {
           files?.value?.forEach(file => {
+            console.log(file);
             actions.value.push({
               parameters: {
-                fileName: file.filename,
-                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : 'docs',
-
-                // type: file.mimeType.includes('image') ? 'picture' : 'document'
+                fileName: file.originalName,
+                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : file?.mimeType?.includes('excel') ? 'excel' : 'docs',
+                filename: file?.filename
               },
               name: "send_file"
             });
@@ -246,9 +244,13 @@ watch(
     { deep: true }
 )
 const goBack = () => {
-  mainStore.setChatBotActiveTab(2)
+  mainStore.setChatBotActiveTab(3)
   return navigateTo(`/chatbots/${route.params.id}`)
 }
+
+onUnmounted(() => {
+  uploadFileStore.$reset();
+})
 </script>
 
 <template>
@@ -323,6 +325,7 @@ const goBack = () => {
                 </div>
                 <div v-if="files.length" class="files">
                   <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
+<!--                    <pre>{{ file }}</pre>-->
                     <BaseFile :type="file?.mimeType" :file-name="file.originalName" :picture="`https://api.7sales.ai/public/${file?.filename}`" @delete="deleteFile(parseInt(<string>index))" />
                     <!--                    <div class="flex gap-3 align-items-center" v-if="file.mimeType.includes('image')">-->
 <!--                      <img :src="`https://api.7sales.ai/public/${file.filenameEncodeFull}`" :alt="file.originalName" class="image">-->
