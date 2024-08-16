@@ -14,6 +14,7 @@ import { useLayout } from '~/composable';
 import {useUploadFileStore} from "~/src/shared/store/upload";
 import {useAmoCrmStore} from "~/src/shared/store/amocrm";
 import { useLoaderStore } from "~/src/shared/store/loader";
+import { BaseFile } from "~/src/shared/components/base";
 
 const { isMobileOrTablet } = useDevice();
 
@@ -445,8 +446,6 @@ function handleKeyDown(event) {
 const botTask = ref<string>('');
 const interruptDialogue = ref<boolean>(false);
 
-
-
 const notificationText = ref<string>('');
 
 const webhookUrl = ref<string>('')
@@ -481,7 +480,7 @@ const addFile = async (event: Event, functionIndex: number) => {
       name: 'send_file',
       parameters: {
         fileName: res?.filename,
-        type: res?.mimeType?.includes('image') ? 'picture' : 'file'
+        type: res?.mimeType?.includes('image') ? 'picture' : res?.mimeType?.includes('pdf') ? 'pdf' : res?.mimeType?.includes('spreadsheetml')  ? 'excel' : res?.mimeType?.includes('wordprocessingml') ? 'docs' : 'docs'
       }
     })
   });
@@ -974,27 +973,18 @@ const showFuctionDeleteModal = ref<boolean>(false)
                               <input :id="`file-upload-${index}`" hidden type="file" @input="addFile($event, index)">
                               <span>{{ $t('maxFileSize5MB') }}</span>
                             </div>
-                            <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="flex flex-column gap-3">
+                            <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="files">
                               <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file')" :key="fileIndex">
                                 <div v-if="file?.parameters?.fileName">
-                                  <div class="flex gap-3 align-items-center" v-if="file?.parameters?.type?.includes('picture')">
-                                    <img :src="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" :alt="file?.parameters?.fileName" class="image">
-                                    <span class="text-base font-bold">{{ file?.parameters?.fileName }} image</span>
-                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showFileDeleteModal = true"></i>
-                                  </div>
-                                  <div class="flex gap-3 align-items-center" v-else>
-                                    <i class="pi pi-file" style="font-size: 60px"></i>
-                                    <span class="text-base font-bold">{{ file?.parameters?.fileName }}</span>
-                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showFileDeleteModal = true"></i>
-                                  </div>
-                                  <Dialog v-model:visible="showFileDeleteModal" :header="'Удалить файла'">
-                                    <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы точно хотите удалить этого файла?</span>
-                                    <div class="flex justify-content-center gap-2 w-full">
-                                      <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunctionSendFile(file, index, fileIndex)"></Button>
-                                      <Button type="button" :label="t('cancel')" @click="showFileDeleteModal = false"></Button>
-                                    </div>
-                                  </Dialog>
+                                  <BaseFile :type="file?.parameters?.type" :file-name="file?.parameters?.fileName" :picture="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" @delete="showFileDeleteModal = true" />
                                 </div>
+                                <Dialog v-model:visible="showFileDeleteModal" :header="'Удалить файла'">
+                                  <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы точно хотите удалить этого файла?</span>
+                                  <div class="flex justify-content-center gap-2 w-full">
+                                    <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunctionSendFile(file, index, fileIndex)"></Button>
+                                    <Button type="button" :label="t('cancel')" @click="showFileDeleteModal = false"></Button>
+                                  </div>
+                                </Dialog>
                               </div>
                             </div>
                           </div>
@@ -1421,5 +1411,11 @@ const showFuctionDeleteModal = ref<boolean>(false)
   width: 150px;
   height: 100px;
   object-fit: contain;
+}
+
+.files {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,150px));
+  gap: 16px;
 }
 </style>
