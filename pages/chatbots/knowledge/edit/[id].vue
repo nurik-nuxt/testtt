@@ -312,8 +312,8 @@ const goBack = () => {
                 <div class="flex gap-3 align-items-center manage-files">
                   <Button :label="t('attachFile')" icon="pi pi-plus" @click="openFileUploader"></Button>
                   <input id="file-upload" hidden type="file" @input="addFile">
-                  <Button :label="t('downloadFile')" icon="pi pi-upload"></Button>
-                  <Button :label="t('deleteFile')" icon="pi pi-times"></Button>
+<!--                  <Button :label="t('downloadFile')" icon="pi pi-upload"></Button>-->
+<!--                  <Button :label="t('deleteFile')" icon="pi pi-times"></Button>-->
                   <span>{{ $t('maxFileSize5MB') }}</span>
                 </div>
                 <div v-if="files.length" class="flex flex-column gap-3">

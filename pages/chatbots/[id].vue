@@ -273,7 +273,7 @@ function ensureAllActionsExist(botFunction: any) {
   ];
 
   requiredActions.forEach(requiredAction => {
-    const exists = botFunction.actions.some(action => action.name === requiredAction.name);
+    const exists = botFunction.actions.some(action => action?.name === requiredAction.name);
     if (!exists) {
       botFunction.actions.push({ ...requiredAction });
     }
@@ -455,13 +455,13 @@ const botFunctions = ref<any>([])
 
 const deleteFunctionSendFile = (file: any, functionIndex: number, fileIndex: number) => {
   const action = botFunctions.value[functionIndex]?.actions;
-  console.log(action);
   for (let i = 0; i < action.length; i++) {
     if (action[i]?.name === 'send_file') {
       delete action[i];
       break;
     }
-  }
+  };
+  showFileDeleteModal.value = false;
 }
 
 const openFileUploader = (functionIndex: number) => {
@@ -548,14 +548,14 @@ const addTask = () => {
 const getNotifyOperatorText = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find((action) => action.name === 'notify_operator');
+      const action = botFunctions.value[index]?.actions?.find((action) => action?.name === 'notify_operator');
       if (action && action.parameters) {
         return action.parameters.text || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find((action) => action.name === 'notify_operator');
+      const action = botFunctions.value[index]?.actions?.find((action) => action?.name === 'notify_operator');
       if (action && action.parameters) {
         action.parameters.text = value;
       }
@@ -566,14 +566,14 @@ const getNotifyOperatorText = (index: number) => {
 const getWebhookUrl = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
       if (action && action.parameters) {
         return action.parameters.webhook_url || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
       if (action && action.parameters) {
         action.parameters.webhook_url = value;
       }
@@ -584,14 +584,14 @@ const getWebhookUrl = (index: number) => {
 const getWebhookText = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
       if (action && action.parameters) {
         return action.parameters.webhook_text || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'send_webhook');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
       if (action && action.parameters) {
         action.parameters.webhook_text = value;
       }
@@ -605,14 +605,14 @@ const funnels = computed(() => {
 const getFunnelId = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
       if (action && action.parameters) {
         return action.parameters.pipeline_id || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
       if (action && action.parameters) {
         action.parameters.pipeline_id = value;
       }
@@ -623,14 +623,14 @@ const getFunnelId = (index: number) => {
 const getStatusId = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
       if (action && action.parameters) {
         return action.parameters.status_id || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'move_in_pipeline');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
       if (action && action.parameters) {
         action.parameters.status_id = value;
       }
@@ -641,14 +641,14 @@ const getStatusId = (index: number) => {
 const getDealNoteText = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'add_note');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'add_note');
       if (action && action.parameters) {
         return action.parameters.text || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'add_note');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'add_note');
       if (action && action.parameters) {
         action.parameters.text = value;
       }
@@ -662,14 +662,14 @@ const fields = computed(() => {
 const getFieldId = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
       if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0]) {
         return action.parameters.custom_fields_values[0].field_id || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
       if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0]) {
         action.parameters.custom_fields_values[0].field_id = value;
       }
@@ -680,14 +680,14 @@ const getFieldId = (index: number) => {
 const getFieldValue = (index: number) => {
   return computed({
     get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
       if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0] && action.parameters.custom_fields_values[0].values && action.parameters.custom_fields_values[0].values[0]) {
         return action.parameters.custom_fields_values[0].values[0].value || '';
       }
       return '';
     },
     set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action.name === 'edit_lead_card');
+      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
       if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0] && action.parameters.custom_fields_values[0].values && action.parameters.custom_fields_values[0].values[0]) {
         action.parameters.custom_fields_values[0].values[0].value = value;
       }
@@ -706,8 +706,12 @@ watch(
     }
 )
 const deleteFunction = async (index: number) => {
-  botFunctions.value.splice(index, 1);
+  botFunctions.value.splice(index-1, 1);
+  showFuctionDeleteModal.value = false;
 }
+
+const showFileDeleteModal = ref<boolean>(false);
+const showFuctionDeleteModal = ref<boolean>(false)
 </script>
 
 <template>
@@ -944,7 +948,14 @@ const deleteFunction = async (index: number) => {
                       <div class="flex flex-column gap-2">
                         <div class="flex justify-content-between w-full align-items-center mb-4">
                           <label style="font-weight: 700">{{ $t('botTask') }}</label>
-                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteFunction(index)"></i>
+                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showFuctionDeleteModal = true"></i>
+                          <Dialog v-model:visible="showFuctionDeleteModal" :header="'Удалить задачу бота?'">
+                            <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы действительно хотите удалить эту задачу?</span>
+                            <div class="flex justify-content-center gap-2 w-full">
+                              <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunction(index)"></Button>
+                              <Button type="button" :label="t('cancel')" @click="showFuctionDeleteModal = false"></Button>
+                            </div>
+                          </Dialog>
                         </div>
                         <Textarea rows="3" cols="30" v-model="botFunction.prompt" />
                       </div>
@@ -961,8 +972,6 @@ const deleteFunction = async (index: number) => {
                             <div class="flex gap-3 align-items-center manage-files">
                               <Button :label="t('attachFile')" icon="pi pi-plus" class="file-btn" @click="openFileUploader(index)"></Button>
                               <input :id="`file-upload-${index}`" hidden type="file" @input="addFile($event, index)">
-                              <Button :label="t('downloadFile')" icon="pi pi-upload" class="file-btn"></Button>
-                              <Button :label="t('deleteFile')" icon="pi pi-times" class="file-btn"></Button>
                               <span>{{ $t('maxFileSize5MB') }}</span>
                             </div>
                             <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="flex flex-column gap-3">
@@ -971,13 +980,20 @@ const deleteFunction = async (index: number) => {
                                   <div class="flex gap-3 align-items-center" v-if="file?.parameters?.type?.includes('picture')">
                                     <img :src="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" :alt="file?.parameters?.fileName" class="image">
                                     <span class="text-base font-bold">{{ file?.parameters?.fileName }} image</span>
-                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteFunctionSendFile(file, index, fileIndex)"></i>
+                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showFileDeleteModal = true"></i>
                                   </div>
                                   <div class="flex gap-3 align-items-center" v-else>
                                     <i class="pi pi-file" style="font-size: 60px"></i>
                                     <span class="text-base font-bold">{{ file?.parameters?.fileName }}</span>
-                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px"></i>
+                                    <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showFileDeleteModal = true"></i>
                                   </div>
+                                  <Dialog v-model:visible="showFileDeleteModal" :header="'Удалить файла'">
+                                    <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы точно хотите удалить этого файла?</span>
+                                    <div class="flex justify-content-center gap-2 w-full">
+                                      <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunctionSendFile(file, index, fileIndex)"></Button>
+                                      <Button type="button" :label="t('cancel')" @click="showFileDeleteModal = false"></Button>
+                                    </div>
+                                  </Dialog>
                                 </div>
                               </div>
                             </div>
@@ -995,7 +1011,7 @@ const deleteFunction = async (index: number) => {
                             </div>
                             <div class="flex flex-column w-full gap-2">
                               <label for="statusId">{{ $t('changeStatus') }}:</label>
-                              <Dropdown style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
+                              <Dropdown style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action?.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
                             </div>
                           </div>
                           <div class="flex flex-column mt-3">
@@ -1036,6 +1052,7 @@ const deleteFunction = async (index: number) => {
                             </div>
                           </div>
                         </TabPanel>
+
                       </TabView>
                     </div>
                   </div>
