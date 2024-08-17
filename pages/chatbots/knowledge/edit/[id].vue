@@ -192,7 +192,7 @@ const saveKnowledge = async () => {
             actions.value.push({
               parameters: {
                 fileName: file.originalName,
-                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : file?.mimeType?.includes('excel') ? 'excel' : 'ашду',
+                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : file?.mimeType?.includes('excel') ? 'excel' : 'file',
                 filename: file?.filename
               },
               name: "send_file"
@@ -327,16 +327,6 @@ onUnmounted(() => {
                   <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
 <!--                    <pre>{{ file }}</pre>-->
                     <BaseFile :type="file?.mimeType" :file-name="file.originalName" :picture="`https://api.7sales.ai/public/${file?.filename}`" @delete="deleteFile(parseInt(<string>index))" />
-                    <!--                    <div class="flex gap-3 align-items-center" v-if="file.mimeType.includes('image')">-->
-<!--                      <img :src="`https://api.7sales.ai/public/${file.filenameEncodeFull}`" :alt="file.originalName" class="image">-->
-<!--                      <span class="text-base font-bold">{{ file.originalName }} image</span>-->
-<!--                      <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>-->
-<!--                    </div>-->
-<!--                    <div class="flex gap-3 align-items-center" v-else>-->
-<!--                      <i class="pi pi-file" style="font-size: 60px" @click="deleteFile(parseInt(<string>index))"></i>-->
-<!--                      <span class="text-base font-bold">{{ file.originalName }}</span>-->
-<!--                      <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>-->
-<!--                    </div>-->
                   </div>
                 </div>
               </div>

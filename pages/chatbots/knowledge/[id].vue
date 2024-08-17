@@ -6,6 +6,7 @@ import { useAmoCrmStore } from "~/src/shared/store/amocrm";
 import { useMainStore } from "~/src/shared/store/main";
 import { useToast } from "primevue/usetoast";
 import {BaseFile} from "~/src/shared/components/base";
+import {fi} from "cronstrue/dist/i18n/locales/fi";
 
 const toast = useToast();
 const { t } = useI18n();
@@ -196,11 +197,12 @@ const saveKnowledge = async () => {
         }
         if (files.value.length) {
           files?.value?.forEach(file => {
+            console.log(file)
             actions.value.push({
               parameters: {
                 fileName: file.originalName,
                 filename: file?.filename,
-                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : 'file',
+                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : file?.mimeType?.includes('excel') ? 'excel' : 'file',
               },
               name: "send_file"
             });
@@ -329,17 +331,8 @@ onUnmounted(() => {
                 </div>
                 <div v-if="files.length" class="files">
                   <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
+<!--                    <pre>{{ file }}</pre>-->
                     <BaseFile :type="file?.mimeType" :file-name="file.originalName" :picture="`https://api.7sales.ai/public/${file?.filename}`" @delete="deleteFile(parseInt(<string>index))" />
-                    <!--                    <div class="flex gap-3 align-items-center" v-if="file.mimeType.includes('image')">-->
-<!--                      <img :src="`https://api.7sales.ai/public/${file.filenameEncodeFull}`" :alt="file.originalName" class="image">-->
-<!--                      <span class="text-base font-bold">{{ file.originalName }}</span>-->
-<!--                      <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>-->
-<!--                    </div>-->
-<!--                    <div class="flex gap-3 align-items-center" v-else>-->
-<!--                      <i class="pi pi-file" style="font-size: 60px" @click="deleteFile(parseInt(<string>index))"></i>-->
-<!--                      <span class="text-base font-bold">{{ file.originalName }}</span>-->
-<!--                      <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 24px" @click="deleteFile(parseInt(<string>index))"></i>-->
-<!--                    </div>-->
                   </div>
                 </div>
               </div>
