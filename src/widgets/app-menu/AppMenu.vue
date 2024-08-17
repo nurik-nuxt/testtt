@@ -133,6 +133,11 @@ const menuAdmin = computed(() => {
       url: 'admin/products'
     },
     {
+      label: 'Уведомление',
+      icon: 'pi pi-fw pi-bell',
+      url: 'admin/notification'
+    },
+    {
       label: 'База знаний',
       icon: 'pi pi-fw pi-database',
       url: 'admin/knowledge'

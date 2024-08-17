@@ -480,7 +480,7 @@ const addFile = async (event: Event, functionIndex: number) => {
       name: 'send_file',
       parameters: {
         fileName: res?.filename,
-        type: res?.mimeType?.includes('image') ? 'picture' : res?.mimeType?.includes('pdf') ? 'pdf' : res?.mimeType?.includes('spreadsheetml')  ? 'excel' : res?.mimeType?.includes('wordprocessingml') ? 'docs' : 'docs'
+        type: res?.mimeType?.includes('image') ? 'picture' : res?.mimeType?.includes('pdf') ? 'pdf' : res?.mimeType?.includes('spreadsheetml')  ? 'excel' : res?.mimeType?.includes('wordprocessingml') ? 'docs' : 'file'
       }
     })
   });

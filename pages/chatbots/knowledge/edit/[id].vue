@@ -127,7 +127,7 @@ onMounted(async () => {
       if (sendFile) {
         const files = res.actions?.filter((action) => action.name === 'send_file')?.map((item) => ({
           filenameEncodeFull: item.parameters.fileName,
-          mimeType: item?.parameters?.mimeType?.includes('image') ? 'picture' : item?.parameters?.mimeType?.includes('pdf') ? 'pdf' : item?.parameters?.mimeType?.includes('spreadsheetml')  ? 'excel' : item?.parameters?.mimeType?.includes('wordprocessingml') ? 'docs' : item?.parameters?.mimeType?.includes('picture') ? 'picture' : item?.parameters?.mimeType?.includes('excel') ? 'excel' : 'docs',
+          mimeType: item?.parameters?.mimeType?.includes('image') ? 'picture' : item?.parameters?.mimeType?.includes('pdf') ? 'pdf' : item?.parameters?.mimeType?.includes('spreadsheetml')  ? 'excel' : item?.parameters?.mimeType?.includes('wordprocessingml') ? 'docs' : item?.parameters?.mimeType?.includes('picture') ? 'picture' : item?.parameters?.mimeType?.includes('excel') ? 'excel' : 'file',
           originalName: item.parameters.fileName,
           filename: item?.parameters?.filename
         }))
@@ -192,7 +192,7 @@ const saveKnowledge = async () => {
             actions.value.push({
               parameters: {
                 fileName: file.originalName,
-                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : file?.mimeType?.includes('excel') ? 'excel' : 'docs',
+                mimeType: file?.mimeType?.includes('image') ? 'picture' : file?.mimeType?.includes('pdf') ? 'pdf' : file?.mimeType?.includes('spreadsheetml')  ? 'excel' : file?.mimeType?.includes('wordprocessingml') ? 'docs' : file?.mimeType?.includes('picture') ? 'picture' : file?.mimeType?.includes('excel') ? 'excel' : 'ашду',
                 filename: file?.filename
               },
               name: "send_file"

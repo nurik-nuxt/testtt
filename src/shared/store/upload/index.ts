@@ -29,7 +29,7 @@ export const useUploadFileStore = defineStore('uploadFile', {
                     method: 'POST',
                     body
                 }, false, true, false)
-                this.files.push({ filename: response?.filename, mimeType: response?.mimeType?.includes('image') ? 'picture' : response?.mimeType?.includes('pdf') ? 'pdf' : response?.mimeType?.includes('spreadsheetml')  ? 'excel' : response?.mimeType?.includes('wordprocessingml') ? 'docs' : 'docs', originalName: decodeURIComponent(escape(response?.originalName)), filePath: response?.filePath, filenameEncodeFull: response?.filenameEncodeFull })
+                this.files.push({ filename: response?.filename, mimeType: response?.mimeType?.includes('image') ? 'picture' : response?.mimeType?.includes('pdf') ? 'pdf' : response?.mimeType?.includes('spreadsheetml')  ? 'excel' : response?.mimeType?.includes('wordprocessingml') ? 'docs' : 'file', originalName: decodeURIComponent(escape(response?.originalName)), filePath: response?.filePath, filenameEncodeFull: response?.filenameEncodeFull })
                 return response;
             } catch (e) {
                 console.log(e);

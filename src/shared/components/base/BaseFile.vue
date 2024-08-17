@@ -3,10 +3,11 @@ import { computed } from 'vue';
 import pdfIcon from '@/assets/icons/pdf.svg';
 import docsIcon from '@/assets/icons/docs.svg';
 import excelIcon from '@/assets/icons/excel.svg';
+import fileIcon from '@/assets/icons/file.svg';
 
 
 interface PropsItem {
-  type: 'pdf' | 'docs' | 'excel' | 'picture';
+  type: 'pdf' | 'docs' | 'excel' | 'picture' | 'files';
   picture?: string;
   fileName: string;
 }
@@ -24,6 +25,7 @@ const svgIcons = {
   pdf: pdfIcon,
   docs: docsIcon,
   excel: excelIcon,
+  file: fileIcon,
   picture: '', // For pictures, we'll use the `picture` prop instead of an SVG
 };
 
