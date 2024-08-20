@@ -303,6 +303,7 @@ onMounted(async () => {
     channelStore.getAllChannels(),
     knowledgeStore.getKnowledgeListByBot(<string>route.params.id),
     notificationStore.getTelegramNotificationLink().then((res) => {
+      console.log(res);
       const response = JSON.parse(res);
       telegramLink.value = response?.link;
     })

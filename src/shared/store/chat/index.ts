@@ -45,7 +45,7 @@ export const useChatStore = defineStore('chat', {
     state: () => {
         return {
             leads: [] as Lead[],
-            isLoadingChat: false,
+            isLoadingChat: false
         };
     },
 

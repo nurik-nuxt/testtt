@@ -156,7 +156,6 @@ const sendMessage = (channel: string, leadId: string, type: string, role: string
     });
     messageText.value = '';
 
-    // Reassign the array to ensure reactivity
     currentMessage.value = [...currentMessage.value];
   }
 }
@@ -188,6 +187,12 @@ const startBot = async (chatId: string) => {
 const pauseBot = async (chatId: string) => {
   await chatStore.stopBot(chatId)
 }
+
+socket.on('message', async (message) => {
+  if (message?.lead?._id === selectedChatId.value) {
+    await handleChatSelection(message?.lead?._id, message?.lead?.channel)
+  }
+})
 </script>
 <template>
   <div class="grid">
@@ -271,7 +276,7 @@ const pauseBot = async (chatId: string) => {
               <SplitButton icon="pi pi-check" menuButtonIcon="pi pi-sliders-h" :model="items" />
             </div>
             <span>
-              {{ $t('dialogsFound') }}: {{ leads?.length }}
+              {{ $t('dialogsFound') }}: {{ leads?.length }} {{ selectedLeadId }}
             </span>
             <div class="user-list-scrollable">
               <div class="user-card mt-3" v-for="(lead, index) in leads" :key="index" @click="handleChatSelection(lead._id, lead.channel)" :class="{ 'active': selectedChatId === lead._id}">

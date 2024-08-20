@@ -1,4 +1,4 @@
-<script setup lang="ts">
+ок<script setup lang="ts">
 const { t } = useI18n();
 const channelStatus = ref('');
 const funnelInAmoCRM = ref(null);

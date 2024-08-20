@@ -23,13 +23,11 @@ socket.on("connect", () => {
 });
 
 socket.on("disconnect", () => {
-    console.log('disconnect')
     state.connected = false;
     state.messages = [];
 });
 
-socket.on('message', (message) => {
-    console.log(message);
+socket.on('message', async (message) => {
     const chatStore = useChatStore();
     if (message?.lead?._id) {
         chatStore.changeLeads(message?.lead?._id, message?.role, message?.type, message?.message?.text, message?.message?.created_at)
