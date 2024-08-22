@@ -279,10 +279,6 @@ onUnmounted(() => {
         </div>
 
         <div class="flex items-center gap-8 mb-5 switches">
-<!--          <span class="bot-card__activate">-->
-<!--            {{ $t('useBase') }}-->
-<!--            <InputSwitch v-model="usedValue" style="margin-left: 24px"/>-->
-<!--          </span>-->
           <span class="bot-card__activate">
             {{ $t('endDialogue') }}
             <InputSwitch v-model="interruptDialogue" style="margin-left: 24px"/>
@@ -325,13 +321,10 @@ onUnmounted(() => {
                 <div class="flex gap-3 align-items-center manage-files">
                   <Button :label="t('attachFile')" icon="pi pi-plus" @click="openFileUploader"></Button>
                   <input id="file-upload" hidden type="file" @input="addFile">
-<!--                  <Button :label="t('downloadFile')" icon="pi pi-upload"></Button>-->
-<!--                  <Button :label="t('deleteFile')" icon="pi pi-times"></Button>-->
                   <span>{{ $t('maxFileSize5MB') }}</span>
                 </div>
                 <div v-if="files.length" class="files">
                   <div class="flex flex-column gap-3" v-for="(file, index) in files" :key="index">
-<!--                    <pre>{{ file }}</pre>-->
                     <BaseFile :type="file?.mimeType" :file-name="file.originalName" :picture="`https://api.7sales.ai/public/${file?.filename}`" @delete="deleteFile(parseInt(<string>index))" />
                   </div>
                 </div>
@@ -367,18 +360,6 @@ onUnmounted(() => {
                 </div>
               </div>
             </TabPanel>
-<!--            <TabPanel header="Статус в Kommo">-->
-<!--              <div class="mt-4 flex justify-content-between gap-4">-->
-<!--                <div class="flex flex-column w-full gap-2">-->
-<!--                  <label for="funnel">Выберите воронку:</label>-->
-<!--                  <Dropdown style="margin-top: 8px" id="funnel" v-model="funnelId" :options="funnels" optionLabel="title" placeholder="Выберите один"></Dropdown>-->
-<!--                </div>-->
-<!--                <div class="flex flex-column w-full gap-2">-->
-<!--                  <label for="statusId">Изменить статус на:</label>-->
-<!--                  <Dropdown style="margin-top: 8px" id="statusId" v-model="statusId" :options="statuses" optionLabel="title" placeholder="Выберите один"></Dropdown>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </TabPanel>-->
           </TabView>
           <div class="mt-4 flex gap-4 justify-content-end align-items-center">
             <Button :label="t('goBack')" @click="goBack" severity="secondary" text></Button>

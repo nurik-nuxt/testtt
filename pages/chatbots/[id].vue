@@ -711,7 +711,11 @@ const deleteFunction = async (index: number) => {
 }
 
 const showFileDeleteModal = ref<boolean>(false);
-const showFuctionDeleteModal = ref<boolean>(false)
+const showFuctionDeleteModal = ref<boolean>(false);
+
+onMounted(() => {
+  mainStore.setChatBotActiveTab(1)
+})
 </script>
 
 <template>
@@ -736,7 +740,7 @@ const showFuctionDeleteModal = ref<boolean>(false)
         </div>
         <div>
           <TabView v-model:activeIndex="activeTab">
-            <TabPanel :header="t('general')">
+            <TabPanel :header="`1.${t('general')}`">
               <div class="card-form p-fluid" style="margin-top: 16px">
 
                 <!--Bot name-->
@@ -911,7 +915,7 @@ const showFuctionDeleteModal = ref<boolean>(false)
               </div>
             </TabPanel>
 
-            <TabPanel :header="t('prompt')">
+            <TabPanel :header="`2.${t('prompt')}`">
               <div class="card-form p-fluid" style="margin-top: 16px">
                 <!--Bot instructions-->
                 <div class="field">
@@ -1052,7 +1056,7 @@ const showFuctionDeleteModal = ref<boolean>(false)
               </div>
             </TabPanel>
 
-            <TabPanel :header="t('channels')">
+            <TabPanel :header="`3.${t('channels')}`">
               <div class="mt-3" v-if="!allChannels.length">
                 <Button :label="t('creatingChannel')" @click="createChannel"></Button>
               </div>
