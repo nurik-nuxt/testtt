@@ -205,7 +205,7 @@ const whatsAppChannelPrice = computed(() => {
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <div class="flex justify-content-between items-center mb-4">
+        <div class="flex justify-content-between items-center mb-4 align-items-center">
           <h5>{{ $t('myPlan') }}</h5>
           <SelectButton v-model="currencyValue" :options="currencyList" aria-labelledby="basic" option-label="title" option-value="value" />
         </div>
@@ -250,9 +250,9 @@ const whatsAppChannelPrice = computed(() => {
           <BlockViewer header="Pricing" free>
             <div>
               <div class="flex align-items-center mb-4">
-                <h5 class="mb-0 mr-4">{{ $t('activatePlan') }}</h5>
+                <h5 class="mb-0 mr-4 mobile-header">{{ $t('activatePlan') }}</h5>
                 <SelectButton v-model="totalTariffTime" :options="tariffTimeList" aria-labelledby="basic" option-label="title" option-value="value" />
-                <span class="ml-2" style="color: #ef4444; font-weight: 600">-16%</span>
+                <span class="ml-2 mobile-dis" style="color: #ef4444; font-weight: 600">-16%</span>
               </div>
               <div class="grid">
                 <!-- Start Plan -->
@@ -398,9 +398,9 @@ const whatsAppChannelPrice = computed(() => {
           <BlockViewer header="analytics" free>
             <div>
               <div class="flex align-items-center mb-4">
-                <h5 class="mb-0 mr-4">{{ $t('callAnalytics') }}</h5>
+                <h5 class="mb-0 mr-4 mobile-header">{{ $t('callAnalytics') }}</h5>
                 <SelectButton v-model="totalAnalyticsTariffTime" :options="tariffAnalyticsTimeList" aria-labelledby="basic" option-label="title" option-value="value" />
-                <span class="ml-2" style="color: #ef4444; font-weight: 600">-16%</span>
+                <span class="ml-2 mobile-dis" style="color: #ef4444; font-weight: 600">-16%</span>
               </div>
               <div class="grid">
                 <div class="col-12 lg:col-3">
@@ -425,10 +425,12 @@ const whatsAppChannelPrice = computed(() => {
 
           <BlockViewer header="whatsApp" free>
             <div>
-              <div class="flex align-items-center mb-4">
+              <div class="flex align-items-center mb-4 mobile">
                 <h5 class="mb-0 mr-4">Оплатить канал WhatsApp</h5>
-                <SelectButton v-model="totalWhatsAppTariffTime" :options="tariffWhatsAppTimeList" aria-labelledby="basic" option-label="title" option-value="value" />
-                <span class="ml-2" style="color: #ef4444; font-weight: 600">-16%</span>
+                <div class="flex align-items-center gap-2">
+                  <SelectButton v-model="totalWhatsAppTariffTime" :options="tariffWhatsAppTimeList" aria-labelledby="basic" option-label="title" option-value="value" />
+                  <span style="color: #ef4444; font-weight: 600">-16%</span>
+                </div>
               </div>
               <div class="grid">
                 <div class="col-12 lg:col-3">
@@ -452,3 +454,27 @@ const whatsAppChannelPrice = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.mobile-header {
+  @media (max-width: 601px) {
+    margin-right: 4px !important;
+    font-size: 16px !important;
+  }
+}
+
+.mobile-dis {
+  @media (max-width: 601px) {
+    margin-left: 4px !important;
+  }
+}
+
+.mobile {
+  @media (max-width: 601px) {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    gap: 8px
+  }
+}
+</style>
