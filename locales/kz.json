@@ -297,5 +297,6 @@
   "actionsAfterTask": "Тапсырманы орындағаннан кейінгі әрекеттер",
   "sendWebhook": "Webhook жіберу",
   "notificationText": "Хабарландыру мәтіні",
-  "text": "Мәтін"
+  "text": "Мәтін",
+  "selectEmployees": "Қызметкерлерді таңдаңыз"
 }

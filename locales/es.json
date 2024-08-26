@@ -299,5 +299,6 @@
   "actionsAfterTask": "Acciones después de completar una tarea",
   "sendWebhook": "Enviar webhook",
   "notificationText": "Texto de notificación",
-  "text": "Texto"
+  "text": "Texto",
+  "selectEmployees": "Seleccionar empleados"
 }

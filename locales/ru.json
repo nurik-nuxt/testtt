@@ -299,5 +299,6 @@
   "actionsAfterTask": "Действия после выполнения задачи",
   "sendWebhook": "Отправить Webhook",
   "notificationText": "Текст уведомления",
-  "text": "Текст"
+  "text": "Текст",
+  "selectEmployees": "Выберете сотрудников"
 }

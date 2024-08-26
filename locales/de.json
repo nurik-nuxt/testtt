@@ -298,5 +298,6 @@
   "actionsAfterTask": "Aktionen nach Abschluss einer Aufgabe",
   "sendWebhook": "Webhook senden",
   "notificationText": "Benachrichtigungstext",
-  "text": "Text"
+  "text": "Text",
+  "selectEmployees": "Wählen Sie Mitarbeiter aus"
 }

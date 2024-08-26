@@ -50,12 +50,10 @@ export const useChannelStore = defineStore('channel', {
 
         async createNewChannel(channel: ChannelRequestItem) {
             try {
-                const response = await useApi('/user/source', {
+                return await useApi('/user/source', {
                     method: 'POST',
                     body: channel
-                })
-                console.log(response);
-                return response;
+                });
             } catch (e) {
                 console.log(e)
             }
@@ -63,11 +61,9 @@ export const useChannelStore = defineStore('channel', {
 
         async deleteChannel(id: string) {
             try {
-                const response = await useApi(`/user/source/${id}`, {
+                return await useApi(`/user/source/${id}`, {
                     method: 'DELETE'
-                })
-                console.log(response);
-                return response;
+                });
             } catch (e) {
                 console.log(e)
             }
@@ -85,16 +81,14 @@ export const useChannelStore = defineStore('channel', {
 
         async changeStatusChannelById(id: string, status?: string, title?: string, token?: string) {
             try {
-                const response = await useApi(`/user/source/${id}`, {
+                return await useApi(`/user/source/${id}`, {
                     method: 'PATCH',
                     body: {
                         status: status,
                         title: title,
                         token: token
                     }
-                })
-                console.log(response);
-                return response;
+                });
             } catch (e) {
                 console.log(e);
             }

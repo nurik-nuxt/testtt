@@ -299,5 +299,6 @@
   "actionsAfterTask": "الإجراءات بعد الانتهاء من المهمة",
   "sendWebhook": "إرسال خطاف ويب",
   "notificationText": "نص الإخطار",
-  "text": "نص"
+  "text": "نص",
+  "selectEmployees": "حدد الموظفين"
 }

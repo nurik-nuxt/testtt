@@ -1,88 +1,79 @@
-ок<script setup lang="ts">
+<script setup lang="ts">
+import { useChannelStore } from "~/src/shared/store/channel";
+import { useAnalyticsStore } from "~/src/shared/store/analytics";
+
+const channelStore = useChannelStore();
+const analyticsStore = useAnalyticsStore();
+
 const { t } = useI18n();
 const channelStatus = ref('');
 const funnelInAmoCRM = ref(null);
-const callSource = ref(null)
-const mondayActive = ref(true);
-const funnelsInAmoCRM = ref([
-  {
-    id: 1,
-    title: 'Воронка AMO 1'
-  },
-  {
-    id: 2,
-    title: 'Воронка AMO 2'
-  },
-  {
-    id: 3,
-    title: 'Воронка AMO 3'
-  },
-  {
-    id: 4,
-    title: 'Воронка AMO 4'
-  },
-  {
-    id: 5,
-    title: 'Воронка AMO 5'
-  }
-])
-const amoStatuses = ref([
-  {
-    id: 1,
-    title: 'Неразобранное',
-    active: true
-  },
-  {
-    id: 2,
-    title: 'GPT',
-    active: true
-  },
-  {
-    id: 3,
-    title: 'Отправил ссылку',
-    active: true
-  },
-  {
-    id: 4,
-    title: 'Телефон',
-    active: true
-  },
-  {
-    id: 5,
-    title: 'Заполнил анкету',
-    active: true
-  },
-  {
-    id: 6,
-    title: 'Оплатил мини курс',
-    active: true
-  },
-  {
-    id: 7,
-    title: 'Созвон + КП',
-    active: true
-  }
-])
-const callSources = ref([
-  {
-    id: 1,
-    title: 'KCell IP telefonia'
-  },
-  {
-    id: 2,
-    title: 'KCell IP telefonia'
-  },
-  {
-    id: 3,
-    title: 'KCell IP telefonia'
-  }
-])
-const messages = ref<{ id: number }[]>([]);
-const addMessage = () => {
-  messages.value.push({ id: messages.value.length + 1})
+
+onMounted(async () => {
+  await Promise.all([
+    channelStore.getAllChannels(),
+    analyticsStore.loadAnalyzers(),
+  ])
+})
+
+const channels = computed(() => {
+  return channelStore.getChannels
+})
+
+const isAmoExist = computed(() => {
+  return channels.value.some((item) => item.type === 'amocrm')
+})
+
+const isBitrixExist = computed(() => {
+  return channels.value.some((item) => item.type === 'bitrix')
+})
+
+const goToChannels = () => {
+  return navigateTo({ name: 'channels' })
 }
-const deleteMessage = (id: number) => {
-  messages.value = messages.value.filter(message => message.id !== id);
+const channelType = ref('')
+const channelTypes = ref([
+  {
+    title: 'amoCRM',
+    value: 'amocrm'
+  },
+  {
+    title: 'Bitrix24',
+    value: 'bitrix24'
+  }
+])
+
+const visibleModalScript = ref<boolean>(false);
+const prompt = ref<string>('')
+const addScript = async () => {
+  await analyticsStore.addAnalyzer('Text', channelType.value, 'on').then(async (res) => {
+    if (res?.success) {
+      visibleModalScript.value = false;
+      await analyticsStore.loadAnalyzers();
+    }
+  })
+}
+
+const analyzers = computed(() => {
+  return analyticsStore.getAnalyzers
+})
+
+const switcher = ref(true);
+
+const deleteAnalyzer = async (id: string) => {
+  await analyticsStore.deleteAnalyzer(id).then(async (res) => {
+    if (res?.success) {
+      await analyticsStore.loadAnalyzers()
+    }
+  })
+}
+
+const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', id: string) => {
+  await analyticsStore.editAnalyzer(prompt,type,status,id).then(async (res) => {
+    if (res?.success) {
+      await analyticsStore.loadAnalyzers()
+    }
+  })
 }
 </script>
 
@@ -94,67 +85,109 @@ const deleteMessage = (id: number) => {
         <span>{{ $t('analyzeEmployees') }}</span>
         <div class="flex flex-column mt-5">
           <span>{{ $t('connectCRMsystem') }}</span>
-          <span class="chanel-list__item align-items-center mt-2" style="width: 50%">
+          <span class="chanel-list__item align-items-center mt-2 channel-item">
             amoCRM
-            <Button :label="t('toPlug')" />
+            <div v-if="channels.length">
+              <Button v-if="!isAmoExist" :label="t('toPlug')" @click="goToChannels" />
+              <span v-else style="color: #39b54a">Подключен...</span>
+            </div>
           </span>
-          <span class="chanel-list__item align-items-center mt-2" style="width: 50%">
+          <span class="chanel-list__item align-items-center mt-2 channel-item">
             Bitrix24
-            <Button :label="t('toPlug')" />
+            <div v-if="channels.length">
+              <Button v-if="!isBitrixExist" :label="t('toPlug')" @click="goToChannels" />
+              <span v-else style="color: #39b54a">Подключен...</span>
+            </div>
           </span>
         </div>
-        <div v-if="messages?.length">
-          <div v-for="(message) in messages" :key="message.id" class="flex flex-column mt-5">
-            <h5 class="mt-4">AmoCRM</h5>
-            <div class="flex w-full gap-8">
-              <div class="flex flex-column gap-4" style="width: 50%">
-                <Button :label="t('disableAmoCRM')" severity="danger"></Button>
-                <div class="flex gap-3 align-items-center">
-                  <div>{{ $t('channelStatus') }}</div>
-                  <div class="flex flex-wrap gap-3">
-                    <div class="flex align-items-center">
-                      <RadioButton v-model="channelStatus" inputId="included" name="included" value="included" />
-                      <label for="ingredient1" class="ml-2">{{ $t('included') }}</label>
-                    </div>
-                    <div class="flex align-items-center">
-                      <RadioButton v-model="channelStatus" inputId="switchedOff" name="switchedOff" value="switchedOff" />
-                      <label for="ingredient2" class="ml-2">{{ $t('switchedOff') }}</label>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-column">
-                  <span>{{ $t('funnelInAmoCRM') }}</span>
-                  <Dropdown style="margin-top: 8px" id="funnelsInAmoCRM" v-model="funnelInAmoCRM" :options="funnelsInAmoCRM" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
-                </div>
+        <Dialog v-model:visible="visibleModalScript" modal :header="t('addScript')" :style="{ width: '50rem' }">
+          <div class="flex flex-column w-full mb-2">
+            <h5 class="mb-0" style="font-size: 16px">Выберите тип канала</h5>
+            <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="channelType" :options="channelTypes" optionLabel="title" option-value="value" :placeholder="t('chooseOption')"></Dropdown>
+          </div>
+          <div class="flex w-full justify-content-end mt-4">
+            <Button label="Добавить" @click="addScript" />
+          </div>
+        </Dialog>
+        <Button :label="t('addScript')" class="mt-4 mb-4 add-btn" @click="visibleModalScript = true" :disabled="!(isAmoExist || isBitrixExist)"/>
+        <div v-if="analyzers.length" class="flex flex-column gap-6 mt-8">
+          <div v-for="analyzer in analyzers" :key="analyzer._id" class="flex flex-column gap-3">
+            <div class="flex gap-5 analyzer-mobile">
+              <div class="flex flex-column channel-mobile">
+                <h5>{{ analyzer.type }}</h5>
+                <Button :label="t('updateDataCRM')"/>
+                <span class="mt-4 mb-2 font-bold">{{ $t('selectEmployees') }}</span>
                 <div class="flex flex-column gap-2">
-                  <span>{{ $t('stageAmo') }}</span>
-                  <div class="flex align-items-center justify-content-between" v-for="(amoStatus, index) in amoStatuses" :key="index">
-                    <span>{{ amoStatus.title }}</span>
-                    <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>
+                  <div class="flex justify-content-between align-items-center">
+                    <div class="font-bold">Сотрудник 1</div>
+                    <InputSwitch v-model="switcher" />
                   </div>
-                </div>
-                <div class="flex flex-column">
-                  <span>{{ $t('selectCallSource') }}</span>
-                  <Dropdown style="margin-top: 8px" id="funnelsInAmoCRM" v-model="callSource" :options="callSources" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
+                  <div class="flex justify-content-between align-items-center">
+                    <div class="font-bold">Сотрудник 1</div>
+                    <InputSwitch v-model="switcher" />
+                  </div>
+                  <div class="flex justify-content-between align-items-center">
+                    <div class="font-bold">Сотрудник 1</div>
+                    <InputSwitch v-model="switcher" />
+                  </div>
+                  <div class="flex justify-content-between align-items-center">
+                    <div class="font-bold">Сотрудник 1</div>
+                    <InputSwitch v-model="switcher" />
+                  </div>
+                  <div class="flex justify-content-between align-items-center">
+                    <div class="font-bold">Сотрудник 1</div>
+                    <InputSwitch v-model="switcher" />
+                  </div>
                 </div>
               </div>
-              <div class="flex flex-column gap-2 w-full">
+              <div class="flex flex-column gap-2 prompt-mobile">
                 <div class="flex align-items-center justify-content-between">
-                  <h5 class="mb-0">{{ $t('conversationAnalysis') }}</h5>
+                  <h5 class="mb-0" style="font-size: 16px">{{ $t('conversationAnalysis') }}</h5>
                   <a target="_blank" href="https://docs.google.com/spreadsheets/d/1u4kbwdyoU_LT0hpP99gj-vAGxo9w1ggP_Bi93GznO64/edit#gid=0" style="color: #076AE1;">({{ $t('templates') }})</a>
                 </div>
-                <Textarea type="text" id="script" class="w-full" :autoResize="true" :placeholder="t('writeScript')" rows="20" cols="2" />
-                <i style="cursor: pointer; color: #EE9186; font-size: 24px; margin-left: auto; margin-top: 8px" class="pi pi-trash" @click="deleteMessage(message.id)"/>
+                <Textarea v-model="analyzer.prompt" type="text" id="script" class="w-full" :autoResize="true" :placeholder="t('writeScript')" rows="20" cols="2" />
               </div>
             </div>
+            <div class="flex align-items-center gap-4 justify-content-end">
+              <i style="cursor: pointer; color: #EE9186; font-size: 24px; margin-left: auto;" class="pi pi-trash" @click="deleteAnalyzer(analyzer._id)"/>
+              <Button :label="t('save')" @click="saveAnalyzer(analyzer.prompt, analyzer.type, 'on', analyzer._id)"/>
+            </div>
           </div>
-        </div>
-        <Button :label="t('addScript')" style="width: 30%" class="mt-4" @click="addMessage"/>
-        <div class="mt-3 flex align-items-center justify-content-end">
-          <Button style="color: #334155" :label="t('goBack')" link />
-          <Button :label="t('save')" />
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.channel-item {
+  width: 100% ;
+  @media (min-width: 601px) {
+    width: 50% !important;
+  }
+}
+
+.add-btn {
+  width: 100% ;
+  @media (min-width: 601px) {
+    width: 30% !important;
+  }
+}
+.prompt-mobile {
+  width: 100% ;
+  @media (min-width: 601px) {
+    width: 60% !important;
+  }
+}
+.channel-mobile {
+  width: 100% ;
+  @media (min-width: 601px) {
+    width: 40% !important;
+  }
+}
+.analyzer-mobile {
+  @media (max-width: 601px) {
+    flex-direction: column;
+  }
+}
+</style>

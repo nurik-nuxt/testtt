@@ -298,5 +298,6 @@
   "actionsAfterTask": "Actions after completing a task",
   "sendWebhook": "Send Webhook",
   "notificationText": "Notification text",
-  "text": "Text"
+  "text": "Text",
+  "selectEmployees": "Select employees"
 }
