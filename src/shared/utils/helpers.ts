@@ -22,5 +22,8 @@ function convertTimestampToReadableDate(unixTimestamp: number) {
     // Format the date and time
     return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
+const thousandSeparator = (number: number) => {
+    return number.toLocaleString('en-US').replace(/,/g, ' ');
+}
 
-export { formatDate, convertTimestampToReadableDate };
+export { formatDate, convertTimestampToReadableDate, thousandSeparator };
