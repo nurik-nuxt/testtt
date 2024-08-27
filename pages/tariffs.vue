@@ -199,6 +199,10 @@ const whatsAppChannelPrice = computed(() => {
     return whatsAppChannelCount.value * 19900
   }
 })
+
+const changeCurrency = (event: any) => {
+  console.log(event);
+}
 </script>
 
 <template>
@@ -207,7 +211,7 @@ const whatsAppChannelPrice = computed(() => {
       <div class="card h-full">
         <div class="flex justify-content-between items-center mb-4 align-items-center">
           <h5 class="mb-0">{{ $t('myPlan') }}</h5>
-          <SelectButton v-model="currencyValue" :options="currencyList" aria-labelledby="basic" option-label="title" option-value="value" />
+          <SelectButton v-model="currencyValue" :options="currencyList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false" />
         </div>
         <div class="flex flex-column gap-8">
           <div class="flex md:flex-row flex-column align-items-center gap-5">
@@ -252,7 +256,7 @@ const whatsAppChannelPrice = computed(() => {
               <div class="flex align-items-center mb-4 gap-4 mobile">
                 <h5 class="mb-0">{{ $t('activatePlan') }}</h5>
                 <div class="flex align-items-center gap-2">
-                  <SelectButton v-model="totalTariffTime" :options="tariffTimeList" aria-labelledby="basic" option-label="title" option-value="value" />
+                  <SelectButton v-model="totalTariffTime" :options="tariffTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false" />
                   <span class="ml-2 mobile-dis" style="color: #ef4444; font-weight: 600">-16%</span>
                 </div>
               </div>
@@ -290,7 +294,7 @@ const whatsAppChannelPrice = computed(() => {
                           <span>{{ $t('uniqueClients') }}</span>
                         </li>
                         <div class="mb-4">
-                          <SelectButton v-model="basicClientCount" :options="basicClientCountList" aria-labelledby="basic" option-label="title" option-value="value" />
+                          <SelectButton v-model="basicClientCount" :options="basicClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                         </div>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
@@ -326,7 +330,7 @@ const whatsAppChannelPrice = computed(() => {
                           <span>{{ $t('uniqueClients') }}</span>
                         </li>
                         <div class="mb-4">
-                          <SelectButton v-model="proClientCount" :options="proClientCountList" aria-labelledby="basic" option-label="title" option-value="value" />
+                          <SelectButton v-model="proClientCount" :options="proClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                         </div>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
@@ -366,7 +370,7 @@ const whatsAppChannelPrice = computed(() => {
                           <span>{{ $t('uniqueClients') }}</span>
                         </li>
                         <div class="mb-4">
-                          <SelectButton v-model="premiumClientCount" :options="premiumClientCountList" aria-labelledby="basic" option-label="title" option-value="value" />
+                          <SelectButton v-model="premiumClientCount" :options="premiumClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                         </div>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
@@ -402,7 +406,7 @@ const whatsAppChannelPrice = computed(() => {
               <div class="flex align-items-center mb-4 gap-4 mobile">
                 <h5 class="mb-0">{{ $t('callAnalytics') }}</h5>
                 <div class="flex align-items-center gap-2">
-                  <SelectButton v-model="totalAnalyticsTariffTime" :options="tariffAnalyticsTimeList" aria-labelledby="basic" option-label="title" option-value="value" />
+                  <SelectButton v-model="totalAnalyticsTariffTime" :options="tariffAnalyticsTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                   <span class="ml-2" style="color: #ef4444; font-weight: 600">-16%</span>
                 </div>
               </div>
@@ -412,7 +416,7 @@ const whatsAppChannelPrice = computed(() => {
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
                       <div class="text-900 font-medium text-xl mb-2">Количество звонков в мес.</div>
                       <div class="mb-2 mt-2">
-                        <SelectButton v-model="analyticsPrice" :options="analyticsPriceList" aria-labelledby="basic" option-label="title" option-value="value" />
+                        <SelectButton v-model="analyticsPrice" :options="analyticsPriceList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                       </div>
                       <div class="text-900 font-medium mb-5">Доступно только для amoCRM и Bitrix24</div>
                       <div class="flex flex-column gap-1 mb-4">
@@ -432,7 +436,7 @@ const whatsAppChannelPrice = computed(() => {
               <div class="flex align-items-center mb-4 mobile">
                 <h5 class="mb-0 mr-4">Оплатить канал WhatsApp</h5>
                 <div class="flex align-items-center gap-2">
-                  <SelectButton v-model="totalWhatsAppTariffTime" :options="tariffWhatsAppTimeList" aria-labelledby="basic" option-label="title" option-value="value" />
+                  <SelectButton v-model="totalWhatsAppTariffTime" :options="tariffWhatsAppTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                   <span style="color: #ef4444; font-weight: 600">-16%</span>
                 </div>
               </div>
@@ -480,5 +484,11 @@ const whatsAppChannelPrice = computed(() => {
     justify-content: flex-start;
     gap: 8px
   }
+}
+:deep(.p-selectbutton .p-button.p-highlight::before) {
+  background: #076AE1;
+}
+:deep(.p-selectbutton .p-button.p-highlight) {
+  color: white;
 }
 </style>

@@ -89,7 +89,7 @@ const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', 
             amoCRM
             <div v-if="channels.length">
               <Button v-if="!isAmoExist" :label="t('toPlug')" @click="goToChannels" />
-              <span v-else style="color: #39b54a">Подключен...</span>
+              <span v-else style="color: #39b54a; font-size: 16px" class="font-bold">Подключен</span>
             </div>
           </span>
           <span class="chanel-list__item align-items-center mt-2 channel-item">
@@ -114,28 +114,28 @@ const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', 
           <div v-for="analyzer in analyzers" :key="analyzer._id" class="flex flex-column gap-3">
             <div class="flex gap-5 analyzer-mobile">
               <div class="flex flex-column channel-mobile">
-                <h5>{{ analyzer.type }}</h5>
+                <h5>{{ analyzer.type === 'amocrm' ? 'amoCRM' : 'Bitrix24' }}</h5>
                 <Button :label="t('updateDataCRM')"/>
                 <span class="mt-4 mb-2 font-bold">{{ $t('selectEmployees') }}</span>
-                <div class="flex flex-column gap-2">
+                <div class="flex flex-column gap-3">
                   <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold">Сотрудник 1</div>
+                    <div class="font-bold text-xl">Сотрудник 1</div>
                     <InputSwitch v-model="switcher" />
                   </div>
                   <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold">Сотрудник 1</div>
+                    <div class="font-bold text-xl">Сотрудник 1</div>
                     <InputSwitch v-model="switcher" />
                   </div>
                   <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold">Сотрудник 1</div>
+                    <div class="font-bold text-xl">Сотрудник 1</div>
                     <InputSwitch v-model="switcher" />
                   </div>
                   <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold">Сотрудник 1</div>
+                    <div class="font-bold text-xl">Сотрудник 1</div>
                     <InputSwitch v-model="switcher" />
                   </div>
                   <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold">Сотрудник 1</div>
+                    <div class="font-bold text-xl">Сотрудник 1</div>
                     <InputSwitch v-model="switcher" />
                   </div>
                 </div>
@@ -149,7 +149,7 @@ const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', 
               </div>
             </div>
             <div class="flex align-items-center gap-4 justify-content-end">
-              <i style="cursor: pointer; color: #EE9186; font-size: 24px; margin-left: auto;" class="pi pi-trash" @click="deleteAnalyzer(analyzer._id)"/>
+              <i style="cursor: pointer; color: #EE9186; font-size: 18px; margin-left: auto;" class="pi pi-trash" @click="deleteAnalyzer(analyzer._id)"/>
               <Button :label="t('save')" @click="saveAnalyzer(analyzer.prompt, analyzer.type, 'on', analyzer._id)"/>
             </div>
           </div>
@@ -176,7 +176,7 @@ const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', 
 .prompt-mobile {
   width: 100% ;
   @media (min-width: 601px) {
-    width: 60% !important;
+    width: 80% !important;
   }
 }
 .channel-mobile {
