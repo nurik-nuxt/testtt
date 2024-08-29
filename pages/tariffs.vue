@@ -257,7 +257,7 @@ const changeCurrency = (event: any) => {
                 <h5 class="mb-0">{{ $t('activatePlan') }}</h5>
                 <div class="flex align-items-center gap-2">
                   <SelectButton v-model="totalTariffTime" :options="tariffTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false" />
-                  <span class="ml-2 mobile-dis" style="color: #ef4444; font-weight: 600">-16%</span>
+                  <span class="ml-2 mobile-dis" style="color: #ef4444; font-weight: 600">-20%</span>
                 </div>
               </div>
               <div class="grid">
@@ -407,7 +407,7 @@ const changeCurrency = (event: any) => {
                 <h5 class="mb-0">{{ $t('callAnalytics') }}</h5>
                 <div class="flex align-items-center gap-2">
                   <SelectButton v-model="totalAnalyticsTariffTime" :options="tariffAnalyticsTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
-                  <span class="ml-2" style="color: #ef4444; font-weight: 600">-16%</span>
+                  <span class="ml-2" style="color: #ef4444; font-weight: 600">-20%</span>
                 </div>
               </div>
               <div class="grid">
@@ -437,7 +437,7 @@ const changeCurrency = (event: any) => {
                 <h5 class="mb-0 mr-4">Оплатить канал WhatsApp</h5>
                 <div class="flex align-items-center gap-2">
                   <SelectButton v-model="totalWhatsAppTariffTime" :options="tariffWhatsAppTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
-                  <span style="color: #ef4444; font-weight: 600">-16%</span>
+                  <span style="color: #ef4444; font-weight: 600">-20%</span>
                 </div>
               </div>
               <div class="grid">
