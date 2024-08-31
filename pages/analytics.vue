@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useChannelStore } from "~/src/shared/store/channel";
 import { useAnalyticsStore } from "~/src/shared/store/analytics";
+import {queryGetModelList} from "~/src/shared/repository/dictionaries";
 
 const channelStore = useChannelStore();
 const analyticsStore = useAnalyticsStore();
@@ -75,30 +76,65 @@ const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', 
     }
   })
 }
+const apiKeyTypes = ref([
+  {
+    title: t('useSeparateToken'),
+    code: 'own',
+    disabled: false,
+  },
+  {
+    title: t('use7sTokens'),
+    code: 'shared',
+    disabled: true,
+  }
+]);
+const apiKeyType = ref('own');
+const model = ref('gpt-4o');
+const apiKey = ref('')
+
+const { data: models, suspense: suspenseModels } = queryGetModelList();
+
+await suspenseModels();
+
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
       <div class="card h-full">
-        <h5>{{ $t('transcriptionCalls') }}</h5>
-        <span>{{ $t('analyzeEmployees') }}</span>
-        <div class="flex flex-column mt-5">
-          <span>{{ $t('connectCRMsystem') }}</span>
-          <span class="chanel-list__item align-items-center mt-2 channel-item">
+        <div class="wrapper">
+          <div>
+            <h5>{{ $t('transcriptionCalls') }}</h5>
+            <span>{{ $t('analyzeEmployees') }}</span>
+            <div class="flex flex-column mt-5">
+              <span>{{ $t('connectCRMsystem') }}</span>
+              <span class="chanel-list__item align-items-center mt-2 channel-item">
             amoCRM
             <div v-if="channels.length">
               <Button v-if="!isAmoExist" :label="t('toPlug')" @click="goToChannels" />
               <span v-else style="color: #39b54a; font-size: 16px" class="font-bold">Подключен</span>
             </div>
           </span>
-          <span class="chanel-list__item align-items-center mt-2 channel-item">
+              <span class="chanel-list__item align-items-center mt-2 channel-item">
             Bitrix24
             <div v-if="channels.length">
               <Button v-if="!isBitrixExist" :label="t('toPlug')" @click="goToChannels" />
               <span v-else style="color: #39b54a">Подключен...</span>
             </div>
           </span>
+            </div>
+          </div>
+          <div class="flex flex-column" style="margin-top: 12px; width: 100%">
+            <!--Bot apiSecretKey-->
+            <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
+            <Dropdown class="mb-2" style="margin-top: 8px" id="apiKey" v-model="apiKeyType" :options="apiKeyTypes" optionLabel="title" option-value="code" :placeholder="t('chooseOption')" option-disabled="disabled"></Dropdown>
+            <InputText v-if="apiKeyType === 'own'" style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="apiKey" :placeholder="t('apiKey')" />
+
+            <!--Bot model-->
+            <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>
+            <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="model" :options="models" optionLabel="name" option-value="name" :placeholder="t('chooseOption')"></Dropdown>
+            <span style="color: #64748b">{{ $t('modelChoice') }}</span>
+          </div>
         </div>
         <Dialog v-model:visible="visibleModalScript" modal :header="t('addScript')" :style="{ width: '50rem' }">
           <div class="flex flex-column w-full mb-2">
@@ -161,10 +197,7 @@ const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', 
 
 <style scoped>
 .channel-item {
-  width: 100% ;
-  @media (min-width: 601px) {
-    width: 50% !important;
-  }
+  width: 100% !important;
 }
 
 .add-btn {
@@ -186,6 +219,14 @@ const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', 
   }
 }
 .analyzer-mobile {
+  @media (max-width: 601px) {
+    flex-direction: column;
+  }
+}
+.wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
   @media (max-width: 601px) {
     flex-direction: column;
   }
