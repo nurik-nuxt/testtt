@@ -14,12 +14,14 @@ export const useAnalyticsStore = defineStore('analytics', {
 
     state: () => {
         return {
-            analyzers: [] as Analyzer[]
+            analyzers: [] as Analyzer[],
+            responsibleUsers: [] as any
         }
     },
 
     getters: {
-        getAnalyzers: (state) => state.analyzers
+        getAnalyzers: (state) => state.analyzers,
+        getResponsibleUsers: (state) => state.responsibleUsers
     },
 
     actions: {
@@ -30,7 +32,8 @@ export const useAnalyticsStore = defineStore('analytics', {
                     body: {
                         prompt,
                         type,
-                        status
+                        status,
+                        responsible_users: []
                     }
                 });
             } catch (e) {
@@ -38,14 +41,15 @@ export const useAnalyticsStore = defineStore('analytics', {
             }
         },
 
-        async editAnalyzer(prompt: string, type: string, status: 'on' | 'off', id: string) {
+        async editAnalyzer(prompt: string, type: string, status: 'on' | 'off', id: string, responsible_users?: number[]) {
             try {
                 return await useApi(`/analyzer/${id}`, {
                     method: 'PATCH',
                     body: {
                         prompt,
                         type,
-                        status
+                        status,
+                        responsible_users
                     }
                 });
             } catch (e) {
@@ -56,9 +60,11 @@ export const useAnalyticsStore = defineStore('analytics', {
 
         async loadAnalyzers () {
             try {
-                this.analyzers = await useApi(`/analyzer`, {
+                const response = await useApi(`/analyzer`, {
                     method: 'GET'
                 });
+                this.analyzers = response;
+                return response
             } catch (e) {
                 console.log(e)
             }
@@ -69,6 +75,40 @@ export const useAnalyticsStore = defineStore('analytics', {
                 return await useApi(`/analyzer/${id}`, {
                     method: 'DELETE'
                 });
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async getGeneralSettings() {
+            try {
+                return await useApi(`/analyzer/general-settings`, {
+                    method: 'GET'
+                });
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async editGeneralSettings(model: string, apiKey: { type: string; value: string }) {
+            try {
+                return await useApi(`/analyzer/general-settings`, {
+                    method: 'POST',
+                    body: {
+                        model,
+                        apiKey
+                    }
+                });
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async loadResponsibleUsers() {
+            try {
+                this.responsibleUsers = await useApi(`/analyzer/responsible-users`, {
+                    method: 'GET'
+                })
             } catch (e) {
                 console.error(e)
             }

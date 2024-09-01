@@ -10,10 +10,31 @@ const { t } = useI18n();
 const channelStatus = ref('');
 const funnelInAmoCRM = ref(null);
 
+const apiKeyType = ref('own');
+const model = ref('gpt-4o');
+const apiKey = ref('');
+const localAnalyzers = ref([])
+
+const isSaveDisabled = computed(() => {
+  return !apiKeyType.value || !model.value || !apiKey.value;
+});
+
 onMounted(async () => {
   await Promise.all([
     channelStore.getAllChannels(),
-    analyticsStore.loadAnalyzers(),
+    analyticsStore.loadAnalyzers().then((res) => {
+      if (res?.length) {
+        localAnalyzers.value = res
+      }
+    }),
+    analyticsStore.getGeneralSettings().then((res) => {
+      if (res?.settings) {
+        model.value = res?.settings?.model;
+        apiKey.value = res?.settings?.apiKey?.value;
+        apiKeyType.value = res?.settings?.apiKey?.type;
+      }
+    }),
+    analyticsStore.loadResponsibleUsers()
   ])
 })
 
@@ -50,7 +71,11 @@ const addScript = async () => {
   await analyticsStore.addAnalyzer('Text', channelType.value, 'on').then(async (res) => {
     if (res?.success) {
       visibleModalScript.value = false;
-      await analyticsStore.loadAnalyzers();
+      await analyticsStore.loadAnalyzers().then((res) => {
+        if (res?.length) {
+          localAnalyzers.value = res
+        }
+      });
     }
   })
 }
@@ -64,15 +89,23 @@ const switcher = ref(true);
 const deleteAnalyzer = async (id: string) => {
   await analyticsStore.deleteAnalyzer(id).then(async (res) => {
     if (res?.success) {
-      await analyticsStore.loadAnalyzers()
+      await analyticsStore.loadAnalyzers().then((res) => {
+        if (res?.length) {
+          localAnalyzers.value = res
+        }
+      });
     }
   })
 }
 
-const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', id: string) => {
-  await analyticsStore.editAnalyzer(prompt,type,status,id).then(async (res) => {
+const saveAnalyzer = async (prompt: string, type: string, status: 'on' | 'off', id: string, responsible_users?: number[]) => {
+  await analyticsStore.editAnalyzer(prompt,type,status,id, responsible_users).then(async (res) => {
     if (res?.success) {
-      await analyticsStore.loadAnalyzers()
+      await analyticsStore.loadAnalyzers().then((res) => {
+        if (res?.length) {
+          localAnalyzers.value = res
+        }
+      });
     }
   })
 }
@@ -88,14 +121,42 @@ const apiKeyTypes = ref([
     disabled: true,
   }
 ]);
-const apiKeyType = ref('own');
-const model = ref('gpt-4o');
-const apiKey = ref('')
 
 const { data: models, suspense: suspenseModels } = queryGetModelList();
 
 await suspenseModels();
 
+const saveGeneralSettings = async () => {
+  await analyticsStore.editGeneralSettings(model.value,{ type: apiKeyType.value, value: apiKey.value })
+}
+
+const responsibleUsers = computed(() => {
+  return analyticsStore.getResponsibleUsers;
+})
+
+
+const updateActiveUsers = (analyzerId: string, userId: number, isActive: boolean) => {
+  const analyzerIndex = localAnalyzers.value.findIndex(a => a._id === analyzerId);
+  if (analyzerIndex !== -1) {
+    const userIndex = localAnalyzers.value[analyzerIndex].responsible_users.indexOf(userId);
+    if (isActive && userIndex === -1) {
+      localAnalyzers.value[analyzerIndex].responsible_users.push(userId);
+    } else if (!isActive && userIndex !== -1) {
+      localAnalyzers.value[analyzerIndex].responsible_users.splice(userIndex, 1);
+    }
+  }
+};
+
+const isUserActive = (analyzerId: string, userId: number) => {
+  const analyzer = localAnalyzers?.value?.find(a => a._id === analyzerId);
+  return analyzer ? analyzer?.responsible_users?.includes(userId) : false;
+};
+
+const getActiveResponsibleUsers = (activeUsers: number[]) => {
+  return responsibleUsers.value
+      .filter((user: any) => activeUsers[user.id])
+      .map((user: any) => user.id);
+};
 </script>
 
 <template>
@@ -134,6 +195,7 @@ await suspenseModels();
             <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>
             <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="model" :options="models" optionLabel="name" option-value="name" :placeholder="t('chooseOption')"></Dropdown>
             <span style="color: #64748b">{{ $t('modelChoice') }}</span>
+            <Button :label="t('save')" class="mt-5" @click="saveGeneralSettings" :disabled="isSaveDisabled"></Button>
           </div>
         </div>
         <Dialog v-model:visible="visibleModalScript" modal :header="t('addScript')" :style="{ width: '50rem' }">
@@ -147,32 +209,16 @@ await suspenseModels();
         </Dialog>
         <Button :label="t('addScript')" class="mt-4 mb-4 add-btn" @click="visibleModalScript = true" :disabled="!(isAmoExist || isBitrixExist)"/>
         <div v-if="analyzers.length" class="flex flex-column gap-6 mt-8">
-          <div v-for="analyzer in analyzers" :key="analyzer._id" class="flex flex-column gap-3">
+          <div v-for="analyzer in localAnalyzers" :key="analyzer._id" class="flex flex-column gap-3">
             <div class="flex gap-5 analyzer-mobile">
               <div class="flex flex-column channel-mobile">
                 <h5>{{ analyzer.type === 'amocrm' ? 'amoCRM' : 'Bitrix24' }}</h5>
                 <Button :label="t('updateDataCRM')"/>
                 <span class="mt-4 mb-2 font-bold">{{ $t('selectEmployees') }}</span>
                 <div class="flex flex-column gap-3">
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold text-xl">Сотрудник 1</div>
-                    <InputSwitch v-model="switcher" />
-                  </div>
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold text-xl">Сотрудник 1</div>
-                    <InputSwitch v-model="switcher" />
-                  </div>
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold text-xl">Сотрудник 1</div>
-                    <InputSwitch v-model="switcher" />
-                  </div>
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold text-xl">Сотрудник 1</div>
-                    <InputSwitch v-model="switcher" />
-                  </div>
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="font-bold text-xl">Сотрудник 1</div>
-                    <InputSwitch v-model="switcher" />
+                  <div class="flex justify-content-between align-items-center" v-for="user in responsibleUsers" :key="user.id">
+                    <div class="font-bold text-xl">{{ user?.name }}</div>
+                    <InputSwitch :model-value="isUserActive(analyzer._id, user.id)" @update:model-value="newValue => updateActiveUsers(analyzer._id, user.id, newValue)" />
                   </div>
                 </div>
               </div>
@@ -186,7 +232,7 @@ await suspenseModels();
             </div>
             <div class="flex align-items-center gap-4 justify-content-end">
               <i style="cursor: pointer; color: #EE9186; font-size: 18px; margin-left: auto;" class="pi pi-trash" @click="deleteAnalyzer(analyzer._id)"/>
-              <Button :label="t('save')" @click="saveAnalyzer(analyzer.prompt, analyzer.type, 'on', analyzer._id)"/>
+              <Button :label="t('save')" @click="saveAnalyzer(analyzer.prompt, analyzer.type, 'on', analyzer._id, localAnalyzers?.find((item) => item?._id === analyzer._id)?.responsible_users)"/>
             </div>
           </div>
         </div>
