@@ -299,5 +299,6 @@
   "sendWebhook": "Send Webhook",
   "notificationText": "Notification text",
   "text": "Text",
-  "selectEmployees": "Select employees"
+  "selectEmployees": "Select employees",
+  "connectSeparateKey": "Connect a separate APi Secret Key for the speech analytics bot"
 }

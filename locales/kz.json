@@ -298,5 +298,6 @@
   "sendWebhook": "Webhook жіберу",
   "notificationText": "Хабарландыру мәтіні",
   "text": "Мәтін",
-  "selectEmployees": "Қызметкерлерді таңдаңыз"
+  "selectEmployees": "Қызметкерлерді таңдаңыз",
+  "connectSeparateKey": "Сөйлеу аналитикасы боты үшін бөлек API құпия кілтін қосыңыз"
 }

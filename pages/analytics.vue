@@ -173,7 +173,7 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
             amoCRM
             <div v-if="channels.length">
               <Button v-if="!isAmoExist" :label="t('toPlug')" @click="goToChannels" />
-              <span v-else style="color: #39b54a; font-size: 16px" class="font-bold">Подключен</span>
+              <span v-else style="color: #39b54a; font-size: 16px;" class="font-bold connected">Подключен</span>
             </div>
           </span>
               <span class="chanel-list__item align-items-center mt-2 channel-item">
@@ -186,6 +186,7 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
             </div>
           </div>
           <div class="flex flex-column" style="margin-top: 12px; width: 100%">
+            <h5>{{ $t('connectSeparateKey') }}</h5>
             <!--Bot apiSecretKey-->
             <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
             <Dropdown class="mb-2" style="margin-top: 8px" id="apiKey" v-model="apiKeyType" :options="apiKeyTypes" optionLabel="title" option-value="code" :placeholder="t('chooseOption')" option-disabled="disabled"></Dropdown>
@@ -207,17 +208,16 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
             <Button label="Добавить" @click="addScript" />
           </div>
         </Dialog>
-        <Button :label="t('addScript')" class="mt-4 mb-4 add-btn" @click="visibleModalScript = true" :disabled="!(isAmoExist || isBitrixExist)"/>
         <div v-if="analyzers.length" class="flex flex-column gap-6 mt-8">
-          <div v-for="analyzer in localAnalyzers" :key="analyzer._id" class="flex flex-column gap-3">
+          <div v-for="analyzer in localAnalyzers" :key="analyzer._id" class="flex flex-column gap-3 analyzer-box">
             <div class="flex gap-5 analyzer-mobile">
               <div class="flex flex-column channel-mobile">
                 <h5>{{ analyzer.type === 'amocrm' ? 'amoCRM' : 'Bitrix24' }}</h5>
                 <Button :label="t('updateDataCRM')"/>
-                <span class="mt-4 mb-2 font-bold">{{ $t('selectEmployees') }}</span>
+                <span class="mt-4 mb-2 font-bold text-xl">{{ $t('selectEmployees') }}</span>
                 <div class="flex flex-column gap-3">
                   <div class="flex justify-content-between align-items-center" v-for="user in responsibleUsers" :key="user.id">
-                    <div class="font-bold text-xl">{{ user?.name }}</div>
+                    <div >{{ user?.name }}</div>
                     <InputSwitch :model-value="isUserActive(analyzer._id, user.id)" @update:model-value="newValue => updateActiveUsers(analyzer._id, user.id, newValue)" />
                   </div>
                 </div>
@@ -225,7 +225,7 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
               <div class="flex flex-column gap-2 prompt-mobile">
                 <div class="flex align-items-center justify-content-between">
                   <h5 class="mb-0" style="font-size: 16px">{{ $t('conversationAnalysis') }}</h5>
-                  <a target="_blank" href="https://docs.google.com/spreadsheets/d/1u4kbwdyoU_LT0hpP99gj-vAGxo9w1ggP_Bi93GznO64/edit#gid=0" style="color: #076AE1;">({{ $t('templates') }})</a>
+                  <a target="_blank" href="https://docs.google.com/spreadsheets/d/1d9bDF0LtqPgvE01qGO9jroUbrwda-HGd2QKBNsj1smM/edit?usp=sharing" style="color: #076AE1;">({{ $t('templates') }})</a>
                 </div>
                 <Textarea v-model="analyzer.prompt" type="text" id="script" class="w-full" :autoResize="true" :placeholder="t('writeScript')" rows="20" cols="2" />
               </div>
@@ -236,6 +236,7 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
             </div>
           </div>
         </div>
+        <Button :label="t('addScript')" style="background-color: #F9753E; border: none" class="mt-4 mb-4 add-btn" @click="visibleModalScript = true" :disabled="!(isAmoExist || isBitrixExist)"/>
       </div>
     </div>
   </div>
@@ -264,10 +265,20 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
     width: 40% !important;
   }
 }
+
+.analyzer-box {
+  border: 1px solid #0f172a;
+  border-radius: 6px;
+  padding: 16px;
+}
+
 .analyzer-mobile {
   @media (max-width: 601px) {
     flex-direction: column;
   }
+}
+.connected {
+  margin-right: 14px;
 }
 .wrapper {
   display: flex;

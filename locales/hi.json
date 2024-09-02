@@ -300,5 +300,6 @@
   "sendWebhook": "वेबहुक भेजें",
   "notificationText": "अधिसूचना पाठ",
   "text": "मूलपाठ",
-  "selectEmployees": "कर्मचारियों का चयन करें"
+  "selectEmployees": "कर्मचारियों का चयन करें",
+  "connectSeparateKey": "स्पीच एनालिटिक्स बॉट के लिए एक अलग एपीआई सीक्रेट कुंजी कनेक्ट करें"
 }

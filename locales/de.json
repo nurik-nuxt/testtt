@@ -299,5 +299,6 @@
   "sendWebhook": "Webhook senden",
   "notificationText": "Benachrichtigungstext",
   "text": "Text",
-  "selectEmployees": "Wählen Sie Mitarbeiter aus"
+  "selectEmployees": "Wählen Sie Mitarbeiter aus",
+  "connectSeparateKey": "Verbinden Sie einen separaten APi Secret Key für den Sprachanalyse-Bot"
 }

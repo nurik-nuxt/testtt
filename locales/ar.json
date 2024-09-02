@@ -300,5 +300,6 @@
   "sendWebhook": "إرسال خطاف ويب",
   "notificationText": "نص الإخطار",
   "text": "نص",
-  "selectEmployees": "حدد الموظفين"
+  "selectEmployees": "حدد الموظفين",
+  "connectSeparateKey": "قم بتوصيل مفتاح سري منفصل لواجهة برمجة التطبيقات (APi) لروبوت تحليلات الكلام"
 }

@@ -300,5 +300,6 @@
   "sendWebhook": "Envoyer un webhook",
   "notificationText": "Texte de notification",
   "text": "Texte",
-  "selectEmployees": "Sélectionnez les employés"
+  "selectEmployees": "Sélectionnez les employés",
+  "connectSeparateKey": "Connectez une clé secrète APi distincte pour le robot d'analyse vocale"
 }
