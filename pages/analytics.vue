@@ -209,15 +209,18 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
           </div>
         </Dialog>
         <div v-if="analyzers.length" class="flex flex-column gap-6 mt-8">
-          <div v-for="analyzer in localAnalyzers" :key="analyzer._id" class="flex flex-column gap-3 analyzer-box">
+          <div v-for="(analyzer, index) in localAnalyzers" :key="analyzer._id" class="flex flex-column gap-3 analyzer-box">
             <div class="flex gap-5 analyzer-mobile">
               <div class="flex flex-column channel-mobile">
-                <h5>{{ analyzer.type === 'amocrm' ? 'amoCRM' : 'Bitrix24' }}</h5>
+                <div class="flex align-items-center gap-3 mb-4">
+                  <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
+                  <h5 class="m-0">{{ analyzer.type === 'amocrm' ? 'amoCRM' : 'Bitrix24' }}</h5>
+                </div>
                 <Button :label="t('updateDataCRM')"/>
                 <span class="mt-4 mb-2 font-bold text-xl">{{ $t('selectEmployees') }}</span>
                 <div class="flex flex-column gap-3">
                   <div class="flex justify-content-between align-items-center" v-for="user in responsibleUsers" :key="user.id">
-                    <div >{{ user?.name }}</div>
+                    <div>{{ user?.name }}</div>
                     <InputSwitch :model-value="isUserActive(analyzer._id, user.id)" @update:model-value="newValue => updateActiveUsers(analyzer._id, user.id, newValue)" />
                   </div>
                 </div>
@@ -236,7 +239,7 @@ const getActiveResponsibleUsers = (activeUsers: number[]) => {
             </div>
           </div>
         </div>
-        <Button :label="t('addScript')" style="background-color: #F9753E; border: none" class="mt-4 mb-4 add-btn" @click="visibleModalScript = true" :disabled="!(isAmoExist || isBitrixExist)"/>
+        <Button :label="t('addScript')"  style="background-color: #F9753E; border: none" class="mt-4 mb-4 add-btn" @click="visibleModalScript = true" :disabled="!(isAmoExist || isBitrixExist) || isSaveDisabled"/>
       </div>
     </div>
   </div>

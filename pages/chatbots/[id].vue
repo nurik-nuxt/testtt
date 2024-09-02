@@ -945,13 +945,15 @@ onMounted(() => {
 
                 <!--Bot Tasks-->
 <!--                <pre>{{ botFunctions }}</pre>-->
-                <div v-if="botFunctions" class="mt-5">
-                  <div v-for="(botFunction, index) in botFunctions" :key="index">
-                    <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
+                <div v-if="botFunctions" class="mt-5 flex flex-column gap-4">
+                  <div v-for="(botFunction, index) in botFunctions" :key="index" class="task-wrapper">
                     <div class="mt-3 mb-4 flex flex-column gap-3">
                       <div class="flex flex-column gap-2">
                         <div class="flex justify-content-between w-full align-items-center mb-4">
-                          <label style="font-weight: 700">{{ $t('botTask') }}</label>
+                          <div class="flex gap-3 align-items-center">
+                            <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
+                            <label style="font-weight: 700">{{ $t('botTask') }}</label>
+                          </div>
                           <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showFuctionDeleteModal = true"></i>
                           <Dialog v-model:visible="showFuctionDeleteModal" :header="'Удалить задачу бота?'">
                             <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы действительно хотите удалить эту задачу?</span>
@@ -1422,5 +1424,11 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(5, minmax(0,150px));
   gap: 16px;
+}
+
+.task-wrapper {
+  border: 1px solid #0f172a;
+  border-radius: 6px;
+  padding: 16px;
 }
 </style>
