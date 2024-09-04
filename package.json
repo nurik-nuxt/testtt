@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "0.5.1",
+    "@primevue/core": "^4.0.5",
     "@tanstack/vue-query": "5.18.1",
     "@types/js-cookie": "^3.0.4",
     "@vuelidate/core": "^2.0.0",
@@ -37,9 +38,9 @@
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
+    "@nuxtjs/device": "^3.1.1",
     "@nuxtjs/i18n": "^8.0.2",
     "nuxt": "^3.10.3",
-    "nuxt-primevue": "^0.3.1",
-    "@nuxtjs/device": "^3.1.1"
+    "nuxt-primevue": "^0.3.1"
   }
 }

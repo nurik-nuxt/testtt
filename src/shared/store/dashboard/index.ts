@@ -17,14 +17,16 @@ export const useDashboardStore = defineStore('dashboard', {
             leadsStatistics: {
                 totalLeadsCount: 0 as number,
                 totalAssistantMessagesCount: 0 as number
-            }
+            },
+            users: [] as any
         }
     },
 
     getters: {
         getUserStatistics: (state) => state.userStatistics,
         getBotsStatistics: (state) => state.botsStatistics,
-        getLeadsStatistics: (state) => state.leadsStatistics
+        getLeadsStatistics: (state) => state.leadsStatistics,
+        getUsers: (state) => state.users
     },
 
     actions: {
@@ -62,6 +64,29 @@ export const useDashboardStore = defineStore('dashboard', {
                 if (response?.success) {
                     this.leadsStatistics = response?.data?.leads
                 }
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async loadUsers(){
+            try {
+                const response = await useApi(`/user-list`, {
+                    method: 'GET'
+                },true)
+                if (response?.data?.users?.length) {
+                    this.users = response?.data?.users
+                }
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async deleteUser(userId: string) {
+            try {
+                return await useApi(`/user/${userId}`, {
+                    method: 'DELETE'
+                }, true);
             } catch (e) {
                 console.error(e)
             }

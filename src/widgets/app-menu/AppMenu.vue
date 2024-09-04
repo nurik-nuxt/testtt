@@ -152,6 +152,11 @@ const menuAdmin = computed(() => {
       icon: 'pi pi-fw pi-cog',
       url: 'admin/settings'
     },
+    {
+      label: 'Пользователи',
+      icon: 'pi pi-fw pi-users',
+      url: 'admin/users'
+    }
   ]
 })
 const op = ref();
