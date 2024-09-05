@@ -84,7 +84,8 @@ export const useChatStore = defineStore('chat', {
                 const response = await useApi('/chat/leads_with_last', {
                     method: 'GET',
                 });
-                this.leads = (response as Lead[]).map(lead => {
+                console.log(response);
+                this.leads = (response?.data as Lead[]).map(lead => {
                     if (lead.messages && (lead.messages.unreadMessageCount === undefined || lead.messages.unreadMessageCount === null)) {
                         lead.messages.unreadMessageCount = 0;
                     }

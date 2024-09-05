@@ -208,11 +208,12 @@ const logout = async () => {
       </div>
     </template>
     <template v-else>
+<!--      <pre>{{ menu }}</pre>-->
       <template v-for="(item, i) in menu.slice(0,6)" :key="i">
         <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
       </template>
       <div style="margin-top: auto;">
-        <template v-for="(item, i) in menu.slice(6,8)" :key="i">
+        <template v-for="(item, i) in menu.slice(6,7)" :key="i">
           <app-menu-item :icon="item.icon" :label="item.label" :url="item.url" />
         </template>
         <span class="help-btn" @click="toggle">

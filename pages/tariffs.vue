@@ -285,7 +285,7 @@ const changeCurrency = (event: any) => {
                 <div class="col-12 lg:col-3">
                   <div class="h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
-                      <div class="text-900 font-medium text-xl mb-2">Старт</div>
+                      <div class="text-900 font-medium text-xl mb-2">Start</div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <ul class="list-none p-0 m-0 flex-grow-1">
                         <li class="flex align-items-center mb-3">
@@ -306,10 +306,10 @@ const changeCurrency = (event: any) => {
                 </div>
 
                 <!-- Basic Plan -->
-                <div class="col-12 lg:col-3">
+                <div class="col-12 lg:col-5">
                   <div class="h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
-                      <div class="text-900 font-medium text-xl mb-2">{{ $t('basicPlan') }}</div>
+                      <div class="text-900 font-medium text-xl mb-2">Base</div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <ul class="list-none p-0 m-0 flex-grow-1">
                         <li class="flex align-items-center mb-3">
@@ -342,10 +342,10 @@ const changeCurrency = (event: any) => {
                 </div>
 
                 <!-- Pro Plan -->
-                <div class="col-12 lg:col-3">
+                <div class="col-12 lg:col-4">
                   <div class="h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background-color: #e7f9e7;">
-                      <div class="text-900 font-medium text-xl mb-2">{{ $t('proPlan') }}</div>
+                      <div class="text-900 font-medium text-xl mb-2">Pro</div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <ul class="list-none p-0 m-0 flex-grow-1">
                         <li class="flex align-items-center mb-3">
@@ -382,44 +382,44 @@ const changeCurrency = (event: any) => {
                 </div>
 
                 <!-- Premium Plan -->
-                <div class="col-12 lg:col-3">
-                  <div class="h-full">
-                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
-                      <div class="text-900 font-medium text-xl mb-2">{{ $t('premiumPlan') }}</div>
-                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
-                      <ul class="list-none p-0 m-0 flex-grow-1">
-                        <li class="flex align-items-center mb-3">
-                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('uniqueClients') }}</span>
-                        </li>
-                        <div class="mb-4">
-                          <SelectButton v-model="premiumClientCount" :options="premiumClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
-                        </div>
-                        <li class="flex align-items-center mb-3">
-                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('onlineChat') }} {{ $t('freePlan') }}</span>
-                        </li>
-                        <li class="flex align-items-center mb-3">
-                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('crmIntegrations') }}</span>
-                        </li>
-                        <li class="flex align-items-center mb-3">
-                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('supportTarif247') }}</span>
-                        </li>
-                        <li class="flex align-items-center mb-3">
-                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('callAnalytics') }}<span style="font-weight: 700; margin-left: 5px">∞</span></span>
-                        </li>
-                      </ul>
-                      <div class="flex flex-column gap-1 mb-4">
-                        <span>К оплате</span>
-                        <span class="font-bold text-2xl">{{ thousandSeparator(premiumTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
-                      </div>
-                      <Button label="Оплатить" class="p-3 w-full mt-auto"></Button>
-                    </div>
-                  </div>
-                </div>
+<!--                <div class="col-12 lg:col-3">-->
+<!--                  <div class="h-full">-->
+<!--                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">-->
+<!--                      <div class="text-900 font-medium text-xl mb-2">{{ $t('premiumPlan') }}</div>-->
+<!--                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />-->
+<!--                      <ul class="list-none p-0 m-0 flex-grow-1">-->
+<!--                        <li class="flex align-items-center mb-3">-->
+<!--                          <i class="pi pi-check-circle text-green-500 mr-2"></i>-->
+<!--                          <span>{{ $t('uniqueClients') }}</span>-->
+<!--                        </li>-->
+<!--                        <div class="mb-4">-->
+<!--                          <SelectButton v-model="premiumClientCount" :options="premiumClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>-->
+<!--                        </div>-->
+<!--                        <li class="flex align-items-center mb-3">-->
+<!--                          <i class="pi pi-check-circle text-green-500 mr-2"></i>-->
+<!--                          <span>{{ $t('onlineChat') }} {{ $t('freePlan') }}</span>-->
+<!--                        </li>-->
+<!--                        <li class="flex align-items-center mb-3">-->
+<!--                          <i class="pi pi-check-circle text-green-500 mr-2"></i>-->
+<!--                          <span>{{ $t('crmIntegrations') }}</span>-->
+<!--                        </li>-->
+<!--                        <li class="flex align-items-center mb-3">-->
+<!--                          <i class="pi pi-check-circle text-green-500 mr-2"></i>-->
+<!--                          <span>{{ $t('supportTarif247') }}</span>-->
+<!--                        </li>-->
+<!--                        <li class="flex align-items-center mb-3">-->
+<!--                          <i class="pi pi-check-circle text-green-500 mr-2"></i>-->
+<!--                          <span>{{ $t('callAnalytics') }}<span style="font-weight: 700; margin-left: 5px">∞</span></span>-->
+<!--                        </li>-->
+<!--                      </ul>-->
+<!--                      <div class="flex flex-column gap-1 mb-4">-->
+<!--                        <span>К оплате</span>-->
+<!--                        <span class="font-bold text-2xl">{{ thousandSeparator(premiumTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>-->
+<!--                      </div>-->
+<!--                      <Button label="Оплатить" class="p-3 w-full mt-auto"></Button>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
               </div>
             </div>
           </BlockViewer>
@@ -434,7 +434,7 @@ const changeCurrency = (event: any) => {
                 </div>
               </div>
               <div class="grid">
-                <div class="col-12 lg:col-3">
+                <div class="col-12 lg:col-4">
                   <div class="h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
                       <div class="text-900 font-medium text-xl mb-2">Количество звонков в мес.</div>

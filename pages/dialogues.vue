@@ -503,7 +503,7 @@ socket.on('message', async (message) => {
   text-overflow: ellipsis;
   overflow: hidden;
   word-break: break-word;
-  width: 300px;
+  width: 240px;
 }
 
 .selected-user-name {
