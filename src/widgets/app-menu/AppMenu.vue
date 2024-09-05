@@ -54,11 +54,11 @@ const menu = computed(() => {
       icon: 'pi pi-fw pi-prime',
       url: 'logs'
     },
-    {
-      label: t('partnerAccount'),
-      icon: 'pi pi-fw pi-id-card',
-      url: 'partner-cabinet'
-    },
+    // {
+    //   label: t('partnerAccount'),
+    //   icon: 'pi pi-fw pi-id-card',
+    //   url: 'partner-cabinet'
+    // },
     {
       label: t('profile'),
       icon: 'pi pi-fw pi-user',
@@ -103,11 +103,11 @@ const menuSupport = computed(() => {
       icon: 'pi pi-fw pi-prime',
       url: 'supports/logs'
     },
-    {
-      label: t('partnerAccount'),
-      icon: 'pi pi-fw pi-id-card',
-      url: 'supports/partner-cabinet'
-    },
+    // {
+    //   label: t('partnerAccount'),
+    //   icon: 'pi pi-fw pi-id-card',
+    //   url: 'supports/partner-cabinet'
+    // },
     {
       label: t('profile'),
       icon: 'pi pi-fw pi-user',

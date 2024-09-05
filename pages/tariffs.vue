@@ -70,20 +70,7 @@ const basicClientCountList = ref<{ title: string; value: number; priceInMonth: n
         value: 600,
         priceInMonth: 3990,
         priceInYear: 39900,
-      }
-    ]
-)
-
-const basicTariffSum = computed(() => {
-  if (totalTariffTime.value === 'month') {
-    return basicClientCountList.value?.find((item) => item.value === basicClientCount.value)?.priceInMonth
-  } else {
-    return basicClientCountList.value?.find((item) => item.value === basicClientCount.value)?.priceInYear
-  }
-})
-const proClientCount = ref<number>(2000)
-const proClientCountList = ref<{ title: string; value: number; priceInMonth: number; priceInYear: number }[]>(
-    [
+      },
       {
         title: '2000',
         value: 2000,
@@ -96,6 +83,31 @@ const proClientCountList = ref<{ title: string; value: number; priceInMonth: num
         priceInMonth: 7990,
         priceInYear: 79900,
       }
+    ]
+)
+
+const basicTariffSum = computed(() => {
+  if (totalTariffTime.value === 'month') {
+    return basicClientCountList.value?.find((item) => item.value === basicClientCount.value)?.priceInMonth
+  } else {
+    return basicClientCountList.value?.find((item) => item.value === basicClientCount.value)?.priceInYear
+  }
+})
+const proClientCount = ref<number>(20000)
+const proClientCountList = ref<{ title: string; value: number; priceInMonth: number; priceInYear: number }[]>(
+    [
+      {
+        title: '20000',
+        value: 20000,
+        priceInMonth: 15990,
+        priceInYear: 159900,
+      },
+      // {
+      //   title: '5000',
+      //   value: 5000,
+      //   priceInMonth: 7990,
+      //   priceInYear: 79900,
+      // }
     ]
 )
 const proTariffSum = computed(() => {
@@ -116,6 +128,14 @@ const premiumClientCountList = ref<{ title: string; value: string; priceInMonth:
       }
     ]
 )
+
+const startClientCount = ref<string>('20')
+const startClientCountList = ref<{ title: string; value: string }[]>([
+  {
+    title: '20',
+    value: '20'
+  }
+])
 
 const premiumTariffSum = computed(() => {
   if (totalTariffTime.value === 'month') {
@@ -270,8 +290,11 @@ const changeCurrency = (event: any) => {
                       <ul class="list-none p-0 m-0 flex-grow-1">
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('uniqueClients') }} <span style="font-weight: 700; margin-left: 5px">20</span></span>
+                          <span>{{ $t('uniqueClients') }}</span>
                         </li>
+                        <div class="mb-4">
+                          <SelectButton v-model="startClientCount" :options="startClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
+                        </div>
                         <li class="flex align-items-center mb-3">
                           <i class="pi pi-check-circle text-green-500 mr-2"></i>
                           <span>{{ $t('crmIntegrations') }}</span>
