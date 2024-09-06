@@ -252,11 +252,11 @@ const goSupportOperatorChat = () => {
             </div>
             <div class="flex flex-column gap-2">
               <div class="font-bold">{{ $t('connectWithUs') }}</div>
-              <span @click="goSupportOperatorChat" class="flex align-items-center gap-1 cursor-pointer">
+              <span @click="goSupportOperatorChat" class="flex align-items-center gap-1 cursor-pointer guide-item">
               <i class="pi pi-fw pi-question-circle"></i>
               {{ $t('supportOperatorChat') }}
             </span>
-              <span class="flex align-items-center gap-1">
+              <span class="flex align-items-center gap-1 cursor-pointer guide-item">
               <i class="pi pi-fw pi-users"></i>
               {{ $t('partnerSupportChat') }}
             </span>
@@ -264,19 +264,19 @@ const goSupportOperatorChat = () => {
             <Divider />
             <div class="flex flex-column gap-2">
               <div class="font-bold">{{ $t('usefulMaterials') }}</div>
-              <span class="flex align-items-center gap-1">
+              <span class="flex align-items-center gap-1 cursor-pointer guide-item">
               <i class="pi pi-fw pi-database"></i>
               {{ $t('knowledgeBase') }}
             </span>
-            <span @click="goTelegramChannelNews" class="flex align-items-center gap-1 cursor-pointer">
+            <span @click="goTelegramChannelNews" class="flex align-items-center gap-1 cursor-pointer guide-item">
               <i class="pi pi-fw pi-telegram"></i>
               {{ $t('telegramChannelNews') }}
             </span>
-              <span @click="becomePartner" class="flex align-items-center gap-1 cursor-pointer">
+              <span @click="becomePartner" class="flex align-items-center gap-1 cursor-pointer guide-item">
               <i class="pi pi-fw pi-user-plus"></i>
               {{ $t('becomePartner') }}
             </span>
-              <span @click="becomeInvestor" class="flex align-items-center gap-1 cursor-pointer">
+              <span @click="becomeInvestor" class="flex align-items-center gap-1 cursor-pointer guide-item">
               <i class="pi pi-fw pi-dollar"></i>
                 Инвесторам
 <!--              {{ $t('becomePartner') }}-->
@@ -301,5 +301,9 @@ const goSupportOperatorChat = () => {
 }
 .logout {
   padding: 0.75rem 1rem;
+}
+
+.guide-item:hover {
+  font-weight: 700
 }
 </style>
