@@ -185,6 +185,23 @@ const logout = async () => {
   }
 }
 
+const goTelegramChannelNews = () => {
+  window.open('https://t.me/news7sales', '_blank');
+}
+
+const becomePartner = () => {
+  window.open('https://7sales.ai/partners', '_blank');
+}
+
+const becomeInvestor = () => {
+  window.open('https://t.me/kozzloff', '_blank');
+}
+
+const goSupportOperatorChat = () => {
+  window.open('https://t.me/+YjHVwEmFHEEzNGYy', '_blank');
+}
+
+
 </script>
 
 <template>
@@ -235,7 +252,7 @@ const logout = async () => {
             </div>
             <div class="flex flex-column gap-2">
               <div class="font-bold">{{ $t('connectWithUs') }}</div>
-              <span class="flex align-items-center gap-1">
+              <span @click="goSupportOperatorChat" class="flex align-items-center gap-1 cursor-pointer">
               <i class="pi pi-fw pi-question-circle"></i>
               {{ $t('supportOperatorChat') }}
             </span>
@@ -251,13 +268,18 @@ const logout = async () => {
               <i class="pi pi-fw pi-database"></i>
               {{ $t('knowledgeBase') }}
             </span>
-              <span class="flex align-items-center gap-1">
+            <span @click="goTelegramChannelNews" class="flex align-items-center gap-1 cursor-pointer">
               <i class="pi pi-fw pi-telegram"></i>
               {{ $t('telegramChannelNews') }}
             </span>
-              <span class="flex align-items-center gap-1">
+              <span @click="becomePartner" class="flex align-items-center gap-1 cursor-pointer">
               <i class="pi pi-fw pi-user-plus"></i>
               {{ $t('becomePartner') }}
+            </span>
+              <span @click="becomeInvestor" class="flex align-items-center gap-1 cursor-pointer">
+              <i class="pi pi-fw pi-dollar"></i>
+                Инвесторам
+<!--              {{ $t('becomePartner') }}-->
             </span>
             </div>
           </div>
