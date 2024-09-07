@@ -380,8 +380,21 @@ const confirmBotMainSettings = async () => {
     actions: filterEmptyActions(botFunction.actions)
   }));
   if (isFormCorrect) {
-    await botStore.editBot(<string>route.params.id, currentBot.value).then((res) => {
+    await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
       toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
+      if (res?.success) {
+        await botStore.getBot(<string>route.params.id).then((res) => {
+          if (res?.functions) {
+            botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
+          }
+
+          Object.keys(currentBot.value).forEach(key => {
+            if (key in res && res[key] !== null && res[key] !== undefined) {
+              currentBot.value[key] = res[key];
+            }
+          });
+        })
+      }
     })
   }
   if (countFunctionChanging.value > 1) {
@@ -444,10 +457,37 @@ function handleKeyDown(event) {
   }
 }
 
-const botTask = ref<string>('');
-const interruptDialogue = ref<boolean>(false);
+// const interruptDialogue = ref<boolean>(false);
 
-const notificationText = ref<string>('');
+const getInterruptDialogue = (functionIndex: number) => {
+  return computed({
+    get() {
+      // Check if the botFunction has the 'stop_dialogue' action
+      const action = botFunctions.value[functionIndex]?.actions?.find(
+          (action: any) => action.name === 'stop_dialogue'
+      );
+      return action ? false : true; // Return false if the action exists, otherwise true
+    },
+    set(value: any) {
+      // If the value is set to false, ensure the 'stop_dialogue' action exists
+      if (!value) {
+        const exists = botFunctions.value[functionIndex]?.actions?.some(
+            (action: any) => action.name === 'stop_dialogue'
+        );
+        if (!exists) {
+          botFunctions.value[functionIndex]?.actions.push({ name: 'stop_dialogue' });
+        }
+      } else {
+        // If the value is set to true, remove the 'stop_dialogue' action
+        botFunctions.value[functionIndex].actions = botFunctions.value[functionIndex].actions.filter(
+            (action: any) => action.name !== 'stop_dialogue'
+        );
+      }
+    },
+  });
+};
+
+
 
 const webhookUrl = ref<string>('')
 
@@ -539,6 +579,9 @@ const addTask = () => {
               pipeline_id: '',
               status_id: ''
             }
+          },
+          {
+            name: 'stop_dialogue'
           }
         ]
       }
@@ -968,89 +1011,91 @@ onMounted(() => {
                       <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
                       <span class="bot-card__activate">
                         {{ $t('endDialogue') }}
-                        <InputSwitch v-model="interruptDialogue" style="margin-left: 24px"/>
+                          <InputSwitch v-model="getInterruptDialogue(index).value" style="margin-left: 24px"/>
                       </span>
-                      <TabView class="mb-5">
-                        <!--Send FileInMessage-->
-                        <TabPanel :header="t('sendFileInMessage')">
-                          <div class="mt-4 flex flex-column gap-4">
-                            <span>{{ $t('fileSendingRestrictions') }}</span>
-                            <div class="flex gap-3 align-items-center manage-files">
-                              <Button :label="t('attachFile')" icon="pi pi-plus" class="file-btn" @click="openFileUploader(index)"></Button>
-                              <input :id="`file-upload-${index}`" hidden type="file" @input="addFile($event, index)">
-                              <span>{{ $t('maxFileSize5MB') }}</span>
-                            </div>
-                            <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="files">
-                              <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file')" :key="fileIndex">
-                                <div v-if="file?.parameters?.fileName">
-                                  <BaseFile :type="file?.parameters?.type" :file-name="file?.parameters?.fileName" :picture="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" @delete="showFileDeleteModal = true" />
-                                </div>
-                                <Dialog v-model:visible="showFileDeleteModal" :header="'Удалить файла'">
-                                  <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы точно хотите удалить этого файла?</span>
-                                  <div class="flex justify-content-center gap-2 w-full">
-                                    <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunctionSendFile(file, index, fileIndex)"></Button>
-                                    <Button type="button" :label="t('cancel')" @click="showFileDeleteModal = false"></Button>
+                      <div class="task-panel">
+                        <TabView class="mb-5" :scrollable="true">
+                          <!--Send FileInMessage-->
+                          <TabPanel :header="t('sendFileInMessage')">
+                            <div class="mt-4 flex flex-column gap-4">
+                              <span>{{ $t('fileSendingRestrictions') }}</span>
+                              <div class="flex w-full gap-3 align-items-center manage-files">
+                                <Button :label="t('attachFile')" icon="pi pi-plus" class="file-btn" @click="openFileUploader(index)"></Button>
+                                <input :id="`file-upload-${index}`" hidden type="file" @input="addFile($event, index)">
+                                <span>{{ $t('maxFileSize5MB') }}</span>
+                              </div>
+                              <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="files">
+                                <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file')" :key="fileIndex">
+                                  <div v-if="file?.parameters?.fileName">
+                                    <BaseFile :type="file?.parameters?.type" :file-name="file?.parameters?.fileName" :picture="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" @delete="showFileDeleteModal = true" />
                                   </div>
-                                </Dialog>
+                                  <Dialog v-model:visible="showFileDeleteModal" :header="'Удалить файла'">
+                                    <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы точно хотите удалить этого файла?</span>
+                                    <div class="flex justify-content-center gap-2 w-full">
+                                      <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunctionSendFile(file, index, fileIndex)"></Button>
+                                      <Button type="button" :label="t('cancel')" @click="showFileDeleteModal = false"></Button>
+                                    </div>
+                                  </Dialog>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </TabPanel>
+                          </TabPanel>
 
 
-                        <TabPanel :header="t('crmSystemManagement')">
-                          <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
+                          <TabPanel :header="t('crmSystemManagement')">
+                            <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
 
-                          <div class="mt-4 flex justify-content-between gap-4 fields">
-                            <div class="flex flex-column w-full gap-2">
-                              <label for="funnel">{{ $t('choosePipeline') }}:</label>
-                              <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
-                            </div>
-                            <div class="flex flex-column w-full gap-2">
-                              <label for="statusId">{{ $t('changeStatus') }}:</label>
-                              <Dropdown style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action?.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
-                            </div>
-                          </div>
-                          <div class="flex flex-column mt-3">
-                            <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">{{ $t('writeDealNote') }}</label>
-                            <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" :model-value="getDealNoteText(<number>index).value" @update:model-value="getDealNoteText(<number>index).value = $event" />
-                          </div>
-                          <div class="flex flex-column mt-3">
-                            <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>
-                            <div class="flex align-items-center gap-4 fields">
-                              <div class="flex flex-column gap-2 w-full">
-                                <label for="chooseField">{{ $t('chooseField') }}</label>
-                                <Dropdown id="funnel" :model-value="getFieldId(<number>index).value" @update:model-value="getFieldId(<number>index).value = $event" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
+                            <div class="mt-4 flex justify-content-between gap-4 fields">
+                              <div class="flex flex-column w-full gap-2">
+                                <label for="funnel">{{ $t('choosePipeline') }}:</label>
+                                <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
                               </div>
-                              <div class="flex flex-column gap-2 w-full">
-                                <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
-                                <InputText id="enterFieldValue" type="text" :model-value="getFieldValue(<number>index).value" @update:model-value="getFieldValue(<number>index).value = $event"   />
+                              <div class="flex flex-column w-full gap-2">
+                                <label for="statusId">{{ $t('changeStatus') }}:</label>
+                                <Dropdown style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action?.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
                               </div>
                             </div>
-                          </div>
-                        </TabPanel>
-
-                        <TabPanel :header="t('sendNotification')">
-                          <div class="flex flex-column gap-3">
-                            <span style="font-weight: 700" class="mt-5">{{ $t('notificationText') }}</span>
-                            <Textarea :autoResize="true" rows="3" cols="2" :model-value="getNotifyOperatorText(<number>index).value" @update:model-value="getNotifyOperatorText(<number>index).value = $event" />
-                          </div>
-                        </TabPanel>
-
-                        <TabPanel :header="t('sendWebhook')">
-                          <div class="flex flex-column gap-3">
-                            <div class="flex flex-column gap-2 mt-5">
-                              <span style="font-weight: 700">URL</span>
-                              <InputText style="margin-bottom: 8px" id="webhookUrl" type="text" :model-value="getWebhookUrl(<number>index).value" @update:model-value="getWebhookUrl(<number>index).value = $event"  />
+                            <div class="flex flex-column mt-3">
+                              <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">{{ $t('writeDealNote') }}</label>
+                              <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" :model-value="getDealNoteText(<number>index).value" @update:model-value="getDealNoteText(<number>index).value = $event" />
                             </div>
-                            <div class="flex flex-column gap-2">
-                              <span style="font-weight: 700">{{ $t('text')}}</span>
-                              <Textarea rows="3" cols="30" :model-value="getWebhookText(<number>index).value" @update:model-value="getWebhookText(<number>index).value = $event" />
+                            <div class="flex flex-column mt-3">
+                              <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>
+                              <div class="flex align-items-center gap-4 fields">
+                                <div class="flex flex-column gap-2 w-full">
+                                  <label for="chooseField">{{ $t('chooseField') }}</label>
+                                  <Dropdown id="funnel" :model-value="getFieldId(<number>index).value" @update:model-value="getFieldId(<number>index).value = $event" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
+                                </div>
+                                <div class="flex flex-column gap-2 w-full">
+                                  <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
+                                  <InputText id="enterFieldValue" type="text" :model-value="getFieldValue(<number>index).value" @update:model-value="getFieldValue(<number>index).value = $event"   />
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </TabPanel>
+                          </TabPanel>
 
-                      </TabView>
+                          <TabPanel :header="t('sendNotification')">
+                            <div class="flex flex-column gap-3">
+                              <span style="font-weight: 700" class="mt-5">{{ $t('notificationText') }}</span>
+                              <Textarea :autoResize="true" rows="3" cols="2" :model-value="getNotifyOperatorText(<number>index).value" @update:model-value="getNotifyOperatorText(<number>index).value = $event" />
+                            </div>
+                          </TabPanel>
+
+                          <TabPanel :header="t('sendWebhook')">
+                            <div class="flex flex-column gap-3">
+                              <div class="flex flex-column gap-2 mt-5">
+                                <span style="font-weight: 700">URL</span>
+                                <InputText style="margin-bottom: 8px" id="webhookUrl" type="text" :model-value="getWebhookUrl(<number>index).value" @update:model-value="getWebhookUrl(<number>index).value = $event"  />
+                              </div>
+                              <div class="flex flex-column gap-2">
+                                <span style="font-weight: 700">{{ $t('text')}}</span>
+                                <Textarea rows="3" cols="30" :model-value="getWebhookText(<number>index).value" @update:model-value="getWebhookText(<number>index).value = $event" />
+                              </div>
+                            </div>
+                          </TabPanel>
+
+                        </TabView>
+                      </div>
                     </div>
                   </div>
                   <Button :label="t('addTask')" style="background-color: #F9753E; border: none" class="add-btn" @click="addTask"/>
@@ -1261,16 +1306,16 @@ onMounted(() => {
       <div v-if="chatVisible" class="chat">
         <div class="layout-chat">
           <div class="card-chat h-full">
-            <div class="flex justify-content-between align-items-center">
-              <div>{{ $t('chatWithBot') }} <br>"{{ bot?.name }}"</div>
-              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-trash" @click="clearChat" />
+            <div class="flex justify-content-between align-items-center chat-header">
+              <div>{{ $t('chatWithBot') }} <br>"<span style="font-weight: 500">{{ bot?.name }}</span>"</div>
+              <i style="cursor: pointer; font-size: 18px;" class="pi pi-trash" @click="clearChat" />
             </div>
             <div class="chat-messages h-full">
               <div v-for="(message, index) in state.messages" :key="index" :class="{'user-message': message.sender === 'Me', 'bot-message': message.sender === 'Bot'}">
                 {{ message.message }}
               </div>
             </div>
-            <div class="mt-auto flex justify-content-between align-items-center gap-3">
+            <div class="mt-auto flex justify-content-between align-items-center gap-3 pb-3 px-2">
               <Textarea style="max-height: 80px" type="text" id="message" class="w-full" maxlength="1000" :autoResize="true" rows="1" cols="2" v-model="message" @keydown="handleKeyDown" />
               <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" @click="sendMessage" />
             </div>
@@ -1400,8 +1445,13 @@ onMounted(() => {
   width: 25%
 }
 .file-btn {
-  width: 25%
+  width: 25%;
+  @media (max-width: 1530px) {
+    width: 30% !important;
+  }
+
 }
+
 @media (max-width: 601px) {
   .add-btn {
     width: 100% !important;
@@ -1424,11 +1474,31 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(5, minmax(0,150px));
   gap: 16px;
+  @media (max-width: 601px) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  @media (max-width: 1530px) {
+    grid-template-columns: repeat(3, minmax(0,150px));
+  }
 }
 
 .task-wrapper {
   border: 1px solid #0f172a;
   border-radius: 6px;
   padding: 16px;
+}
+.task-panel {
+  @media (max-width: 1530px) {
+    width: 585px !important;
+  }
+  @media (max-width: 601px) {
+    width: 100% !important;
+  }
+}
+.chat-header {
+  border-bottom: 1px solid var(--surface-border);
+  padding: 12px 8px 8px 8px;
 }
 </style>

@@ -86,14 +86,13 @@ export const useBotStore = defineStore('bot', {
                 console.log(e)
             }
         },
-        
+
         async editBot(id: string, botItem: Bot) {
             try {
-                const response = await useApi(`/bot/${id}`, {
+                return await useApi(`/bot/${id}`, {
                     method: 'PATCH',
                     body: botItem
                 })
-                console.log(response);
             } catch (e) {
                 console.log(e)
             }
