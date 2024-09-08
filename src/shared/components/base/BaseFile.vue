@@ -107,7 +107,7 @@ const fileNameParts = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .delete-button:hover {

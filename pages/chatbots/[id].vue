@@ -826,11 +826,11 @@ onMounted(() => {
                 </div>
 
                 <!--Bot bigTimeout-->
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('responseTimeout') }}</label>
-                  <InputText style="margin-bottom: 8px" id="bigTimeout" type="number" min="1" v-model="currentBot.bigTimeout"/>
-                  <span style="color: #64748b">{{ $t('conversationHistoryTimeout') }}</span>
-                </div>
+<!--                <div class="field" style="margin-top: 12px">-->
+<!--                  <label for="name1" style="font-weight: 700">{{ $t('responseTimeout') }}</label>-->
+<!--                  <InputText style="margin-bottom: 8px" id="bigTimeout" type="number" min="1" v-model="currentBot.bigTimeout"/>-->
+<!--                  <span style="color: #64748b">{{ $t('conversationHistoryTimeout') }}</span>-->
+<!--                </div>-->
 
                 <!--Bot operatorStopTime-->
                 <div class="field" style="margin-top: 12px">
@@ -1491,7 +1491,7 @@ onMounted(() => {
 }
 .task-panel {
   @media (max-width: 1530px) {
-    width: 585px !important;
+    width: 640px !important;
   }
   @media (max-width: 601px) {
     width: 100% !important;
