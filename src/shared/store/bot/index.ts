@@ -2,47 +2,6 @@ import { defineStore } from "pinia";
 import { useApi } from "~/composable";
 
 
-const test = [
-    {
-      name: 'edit_lead_card',
-      parametres: {
-          custom_fields_values: [
-              {
-                  field_id: null,
-                  values: [
-                      {
-                          vallue: ''
-                      }
-                  ]
-              }
-          ]
-      }
-    },
-    {
-        name: 'send_file',
-        parametres: {
-            file: ''
-        }
-    },
-    {
-        name: 'crm',
-        parametres: {
-            url: 'sdfsdf'
-        }
-    },
-    {
-        name: 'send_file',
-        parametres: {
-            file: 'dffdgdf'
-        }
-    },
-    {
-        name: 'send_file',
-        parametres: {
-            file: 'dffdgfsdifhsuhdf'
-        }
-    }
-]
 interface Bot {
     _id: string;
     user_id: string;
