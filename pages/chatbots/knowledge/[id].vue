@@ -92,27 +92,27 @@ const timeList = ref([
 ]);
 
 
-const messages = ref<{ id: number, quantity: number, message: string, timeframe: string, type: string }[]>([]);
+// const messages = ref<{ id: number, quantity: number, message: string, timeframe: string, type: string }[]>([]);
 
-const addMessage = () => {
-  messages.value.push({ id: messages.value.length + 1, quantity: 10, message: '', timeframe: 'seconds', type: 'message'})
-}
-
-const messageTypes = ref([
-  {
-    id: 'message',
-    title: t('sendMyMessage')
-  },
-  {
-    id: 'prompt',
-    title: t('generateUsingAI')
-  }
-])
-const messageType = ref(null);
-
-const deleteMessage = (id: number) => {
-  messages.value = messages.value.filter(message => message.id !== id);
-}
+// const addMessage = () => {
+//   messages.value.push({ id: messages.value.length + 1, quantity: 10, message: '', timeframe: 'seconds', type: 'message'})
+// }
+//
+// const messageTypes = ref([
+//   {
+//     id: 'message',
+//     title: t('sendMyMessage')
+//   },
+//   {
+//     id: 'prompt',
+//     title: t('generateUsingAI')
+//   }
+// ])
+// const messageType = ref(null);
+//
+// const deleteMessage = (id: number) => {
+//   messages.value = messages.value.filter(message => message.id !== id);
+// }
 
 const botStore = useBotStore();
 const uploadFileStore = useUploadFileStore();
@@ -186,15 +186,15 @@ const saveKnowledge = async () => {
       content: content.value
     }).then(async (res) => {
       if (res.success) {
-        if (messages?.value?.length) {
-          const delay = {
-            parameters: {
-              timers: messages.value
-            },
-            name: 'delay'
-          }
-          actions.value.push(delay)
-        }
+        // if (messages?.value?.length) {
+        //   const delay = {
+        //     parameters: {
+        //       timers: messages.value
+        //     },
+        //     name: 'delay'
+        //   }
+        //   actions.value.push(delay)
+        // }
         if (files.value.length) {
           files?.value?.forEach(file => {
             console.log(file)
@@ -293,27 +293,27 @@ onUnmounted(() => {
             <TabPanel :header="t('fileContent')">
               <Textarea class="mt-4 w-full" :autoResize="true" rows="5" cols="30" :placeholder="t('botResponseInstructions')" v-model="content" />
             </TabPanel>
-            <TabPanel :header="t('clientReminders')">
-              <div v-if="messages?.length">
-                <div v-for="(message, i) in messages" :key="i" class="mt-4 flex align-items-center gap-8">
-                  <div class="flex flex-column" style="width: 700px">
-                    <div>
-                      <div class="text-xl">{{ message.id }}. {{ $t('clientMessage')}}</div>
-                    </div>
-                    <div class="flex align-items-center gap-3 ml-4 mt-4">
-                      <span>{{ $t('clientNoResponseTime') }}</span>
-                      <InputText id="quantity" type="number" min="1" style="max-width: 70px" v-model="message.quantity"/>
-                      <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="message.timeframe" :options="timeList" optionLabel="title" option-value="id"></Dropdown>
-                    </div>
-                    <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="message.type" :options="messageTypes" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
-                    <InputText v-if="message.type ==='message'" class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" v-model="message.message" />
-                    <Textarea v-if="message.type ==='prompt'" class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />
-                    <i class="pi pi-trash ml-auto mt-3" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>
-                  </div>
-                </div>
-              </div>
-              <Button :label="t('addMessage')" class="mt-4" @click="addMessage"/>
-            </TabPanel>
+<!--            <TabPanel :header="t('clientReminders')">-->
+<!--              <div v-if="messages?.length">-->
+<!--                <div v-for="(message, i) in messages" :key="i" class="mt-4 flex align-items-center gap-8">-->
+<!--                  <div class="flex flex-column" style="width: 700px">-->
+<!--                    <div>-->
+<!--                      <div class="text-xl">{{ message.id }}. {{ $t('clientMessage')}}</div>-->
+<!--                    </div>-->
+<!--                    <div class="flex align-items-center gap-3 ml-4 mt-4">-->
+<!--                      <span>{{ $t('clientNoResponseTime') }}</span>-->
+<!--                      <InputText id="quantity" type="number" min="1" style="max-width: 70px" v-model="message.quantity"/>-->
+<!--                      <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="message.timeframe" :options="timeList" optionLabel="title" option-value="id"></Dropdown>-->
+<!--                    </div>-->
+<!--                    <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="message.type" :options="messageTypes" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>-->
+<!--                    <InputText v-if="message.type ==='message'" class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" v-model="message.message" />-->
+<!--                    <Textarea v-if="message.type ==='prompt'" class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />-->
+<!--                    <i class="pi pi-trash ml-auto mt-3" style="cursor: pointer; color: #EE9186;" @click="deleteMessage(message.id)"></i>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <Button :label="t('addMessage')" class="mt-4" @click="addMessage"/>-->
+<!--            </TabPanel>-->
 
             <TabPanel :header="t('sendFileInMessage')">
               <div class="mt-4 flex flex-column gap-4">

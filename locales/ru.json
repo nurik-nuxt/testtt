@@ -301,6 +301,5 @@
   "notificationText": "Текст уведомления",
   "text": "Текст",
   "selectEmployees": "Выберете сотрудников",
-  "connectSeparateKey": "Подключите отдельный APi Secret Key для бота речевой аналитики",
-  "crm": "Управление CRM"
+  "connectSeparateKey": "Подключите отдельный APi Secret Key для бота речевой аналитики"
 }
