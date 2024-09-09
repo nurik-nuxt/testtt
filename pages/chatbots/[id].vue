@@ -379,9 +379,15 @@ const confirmBotMainSettings = async () => {
     ...botFunction,
     actions: filterEmptyActions(botFunction.actions)
   }));
+  console.log(botFunctions.value);
   if (isFormCorrect) {
     await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
       toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
+      if (countFunctionChanging.value > 1) {
+        console.log('has change');
+        console.log(botFunctions.value);
+        await botStore.saveFunctionById(<string>route.params.id, botFunctions.value)
+      }
       if (res?.success) {
         await botStore.getBot(<string>route.params.id).then((res) => {
           if (res?.functions) {
@@ -396,9 +402,6 @@ const confirmBotMainSettings = async () => {
         })
       }
     })
-  }
-  if (countFunctionChanging.value > 1) {
-    await botStore.saveFunctionById(<string>route.params.id, botFunctions.value)
   }
 }
 
@@ -759,6 +762,7 @@ const showFuctionDeleteModal = ref<boolean>(false);
 onMounted(() => {
   mainStore.setChatBotActiveTab(1)
 })
+
 </script>
 
 <template>
@@ -1006,7 +1010,7 @@ onMounted(() => {
                             </div>
                           </Dialog>
                         </div>
-                        <Textarea rows="3" cols="30" v-model="botFunction.prompt" />
+                        <Textarea rows="1" cols="30" v-model="botFunction.prompt" />
                       </div>
                       <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
                       <span class="bot-card__activate">
@@ -1014,9 +1018,12 @@ onMounted(() => {
                           <InputSwitch v-model="getInterruptDialogue(index).value" style="margin-left: 24px"/>
                       </span>
                       <div class="task-panel">
-                        <TabView class="mb-5" :scrollable="true">
+                        <TabView :scrollable="true">
                           <!--Send FileInMessage-->
-                          <TabPanel :header="t('sendFileInMessage')">
+                          <TabPanel>
+                            <template #header>
+                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'send_file' && item?.parameters?.fileName)}">{{ $t('sendFileInMessage')}}</span>
+                            </template>
                             <div class="mt-4 flex flex-column gap-4">
                               <span>{{ $t('fileSendingRestrictions') }}</span>
                               <div class="flex w-full gap-3 align-items-center manage-files">
@@ -1025,7 +1032,7 @@ onMounted(() => {
                                 <span>{{ $t('maxFileSize5MB') }}</span>
                               </div>
                               <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="files">
-                                <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file')" :key="fileIndex">
+                                <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file' && action?.parameters?.fileName)" :key="fileIndex">
                                   <div v-if="file?.parameters?.fileName">
                                     <BaseFile :type="file?.parameters?.type" :file-name="file?.parameters?.fileName" :picture="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" @delete="showFileDeleteModal = true" />
                                   </div>
@@ -1041,8 +1048,10 @@ onMounted(() => {
                             </div>
                           </TabPanel>
 
-
-                          <TabPanel :header="t('crmSystemManagement')">
+                          <TabPanel>
+                            <template #header>
+                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'add_note' && item?.parameters?.text && botFunction?.actions?.some((item) => item?.name === 'edit_lead_card' && item?.parameters?.custom_fields_values?.some(field => field?.field_id && field.values.some((val) => val.value)))) }">{{ $t('crmSystemManagement')}}</span>
+                            </template>
                             <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
 
                             <div class="mt-4 flex justify-content-between gap-4 fields">
@@ -1074,14 +1083,20 @@ onMounted(() => {
                             </div>
                           </TabPanel>
 
-                          <TabPanel :header="t('sendNotification')">
+                          <TabPanel>
+                            <template #header>
+                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'notify_operator' && item?.parameters?.text ) }">{{ $t('sendNotification')}}</span>
+                            </template>
                             <div class="flex flex-column gap-3">
                               <span style="font-weight: 700" class="mt-5">{{ $t('notificationText') }}</span>
                               <Textarea :autoResize="true" rows="3" cols="2" :model-value="getNotifyOperatorText(<number>index).value" @update:model-value="getNotifyOperatorText(<number>index).value = $event" />
                             </div>
                           </TabPanel>
 
-                          <TabPanel :header="t('sendWebhook')">
+                          <TabPanel>
+                            <template #header>
+                              <span class="white-space-nowrap" :class="{'success-tab-title' : botFunction?.actions?.some((item) => item?.name === 'send_webhook' && item?.parameters?.webhook_url && item?.parameters?.webhook_text) }">{{ $t('sendWebhook')}}</span>
+                            </template>
                             <div class="flex flex-column gap-3">
                               <div class="flex flex-column gap-2 mt-5">
                                 <span style="font-weight: 700">URL</span>
@@ -1487,11 +1502,12 @@ onMounted(() => {
 .task-wrapper {
   border: 1px solid #0f172a;
   border-radius: 6px;
-  padding: 16px;
+  padding: 8px 16px;
 }
 .task-panel {
   @media (max-width: 1530px) {
-    width: 640px !important;
+    width: 100% !important;
+    max-width: 640px;
   }
   @media (max-width: 601px) {
     width: 100% !important;
@@ -1500,5 +1516,13 @@ onMounted(() => {
 .chat-header {
   border-bottom: 1px solid var(--surface-border);
   padding: 12px 8px 8px 8px;
+}
+
+.success-tab-title {
+  color: #11B981;
+}
+
+.blue-tab-title {
+  color: #0769E1;
 }
 </style>
