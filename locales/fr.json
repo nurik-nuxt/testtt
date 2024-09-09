@@ -301,5 +301,6 @@
   "notificationText": "Texte de notification",
   "text": "Texte",
   "selectEmployees": "Sélectionnez les employés",
-  "connectSeparateKey": "Connectez une clé secrète APi distincte pour le robot d'analyse vocale"
+  "connectSeparateKey": "Connectez une clé secrète APi distincte pour le robot d'analyse vocale",
+  "crm": "Gestion CRM"
 }

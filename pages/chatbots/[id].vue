@@ -1050,7 +1050,7 @@ onMounted(() => {
 
                           <TabPanel>
                             <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'add_note' && item?.parameters?.text && botFunction?.actions?.some((item) => item?.name === 'edit_lead_card' && item?.parameters?.custom_fields_values?.some(field => field?.field_id && field.values.some((val) => val.value)))) }">{{ $t('crmSystemManagement')}}</span>
+                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'add_note' && item?.parameters?.text || botFunction?.actions?.some((item) => item?.name === 'edit_lead_card' && item?.parameters?.custom_fields_values?.some(field => field?.field_id || field.values.some((val) => val.value)))) }">{{ $t('crm')}}</span>
                             </template>
                             <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
 
@@ -1085,7 +1085,7 @@ onMounted(() => {
 
                           <TabPanel>
                             <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'notify_operator' && item?.parameters?.text ) }">{{ $t('sendNotification')}}</span>
+                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'notify_operator' && item?.parameters?.text ) }">{{ $t('notification')}}</span>
                             </template>
                             <div class="flex flex-column gap-3">
                               <span style="font-weight: 700" class="mt-5">{{ $t('notificationText') }}</span>
@@ -1095,7 +1095,7 @@ onMounted(() => {
 
                           <TabPanel>
                             <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title' : botFunction?.actions?.some((item) => item?.name === 'send_webhook' && item?.parameters?.webhook_url && item?.parameters?.webhook_text) }">{{ $t('sendWebhook')}}</span>
+                              <span class="white-space-nowrap" :class="{'success-tab-title' : botFunction?.actions?.some((item) => item?.name === 'send_webhook' && item?.parameters?.webhook_url && item?.parameters?.webhook_text) }">Webhook</span>
                             </template>
                             <div class="flex flex-column gap-3">
                               <div class="flex flex-column gap-2 mt-5">
