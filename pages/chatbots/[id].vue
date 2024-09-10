@@ -7,7 +7,7 @@ import { useNotificationStore } from "~/src/shared/store/notification";
 import { queryGetModelList } from "~/src/shared/repository/dictionaries";
 import jsCookie from "js-cookie";
 import { useToast } from "primevue/usetoast";
-import { helpers, minLength, required, email, requiredIf } from "@vuelidate/validators";
+import { helpers, required, requiredIf } from "@vuelidate/validators";
 import useValidate from "@vuelidate/core/dist/index";
 import { socket, state } from "~/socket";
 import { useLayout } from '~/composable';
@@ -144,13 +144,9 @@ const filters = ref({});
 
 const message = ref<string>('')
 
-
-
 const channelStatus = ref('');
 
-
 const funnelInAmoCRM = ref(null);
-
 
 const currentBot = ref({
   _id: '',
@@ -180,15 +176,75 @@ const currentBot = ref({
   name: '',
   operatorStopTime: 20,
   schedule: {
-    start: '',
-    end: '',
-    offset: 5
+    timezone: '',
+    isSchedule: false,
+    workingHours: []
   },
   smallTimeout: 10,
   stopOnOperator: false,
   temperature: 0.5,
   whisper: false,
-})
+});
+
+const workingHours = ref([
+  {
+    title: 'ПН',
+    start: '00:00',
+    end: '23:59',
+    isWork: true
+  },
+  {
+    title: 'ВТ',
+    start: '00:00',
+    end: '23:59',
+    isWork: true
+  },
+  {
+    title: 'СР',
+    start: '00:00',
+    end: '23:59',
+    isWork: true
+  },
+  {
+    title: 'ЧТ',
+    start: '00:00',
+    end: '23:59',
+    isWork: true
+  },
+  {
+    title: 'ПТ',
+    start: '00:00',
+    end: '23:59',
+    isWork: true
+  },
+  {
+    title: 'СБ',
+    start: '00:00',
+    end: '23:59',
+    isWork: true
+  },
+  {
+    title: 'ВС',
+    start: '00:00',
+    end: '23:59',
+    isWork: true
+  },
+])
+
+function getUTCOffsetString() {
+  const offsetMinutes = new Date().getTimezoneOffset();
+  const offsetHours = -(offsetMinutes / 60);
+
+  const fraction = offsetHours % 1;
+  let hourString = `utc${offsetHours >= 0 ? '+' : ''}${Math.trunc(offsetHours)}`;
+
+  if (fraction !== 0) {
+    const minutes = Math.abs(fraction * 60);
+    hourString += `_${minutes}`;
+  }
+
+  return hourString;
+}
 
 const botRules = computed(() => {
   return {
@@ -285,17 +341,24 @@ onMounted(async () => {
       if (res?.functions) {
         botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
       }
-
+      if (res?.reminders?.length) {
+        reminders.value = res?.reminders
+      }
       Object.keys(currentBot.value).forEach(key => {
         if (key in res && res[key] !== null && res[key] !== undefined) {
           currentBot.value[key] = res[key];
         }
       });
+      if (!res?.schedule?.timezone) {
+        currentBot.value.schedule.timezone = getUTCOffsetString();
+      }
+      if (!res?.schedule?.workingHours) {
+        currentBot.value.schedule.workingHours = workingHours.value
+      }
     }),
     channelStore.getAllChannels(),
     knowledgeStore.getKnowledgeListByBot(<string>route.params.id),
     notificationStore.getTelegramNotificationLink().then((res) => {
-      console.log(res);
       const response = JSON.parse(res);
       telegramLink.value = response?.link;
     })
@@ -372,14 +435,15 @@ const confirmBotMainSettings = async () => {
     actions: filterEmptyActions(botFunction.actions)
   }));
   if (isFormCorrect) {
+    // if (currentBot.value.schedule.isSchedule) {
+    //   currentBot.value.schedule.workingHours = workingHours.value
+    // }
     await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
       toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
-      // if (reminders.value) {
-      //   await botReminderStore.saveBotReminder(<string>route.params.id, reminders.value)
-      // }
+      if (reminders.value) {
+        await botReminderStore.saveBotReminder(<string>route.params.id, reminders.value)
+      }
       if (countFunctionChanging.value > 1) {
-        console.log('has change');
-        console.log(botFunctions.value);
         await botStore.saveFunctionById(<string>route.params.id, botFunctions.value)
       }
       if (res?.success) {
@@ -454,7 +518,6 @@ function handleKeyDown(event) {
   }
 }
 
-// const interruptDialogue = ref<boolean>(false);
 
 const getInterruptDialogue = (functionIndex: number) => {
   return computed({
@@ -463,10 +526,9 @@ const getInterruptDialogue = (functionIndex: number) => {
       const action = botFunctions.value[functionIndex]?.actions?.find(
           (action: any) => action.name === 'stop_dialogue'
       );
-      return action ? false : true; // Return false if the action exists, otherwise true
+      return !action;
     },
     set(value: any) {
-      // If the value is set to false, ensure the 'stop_dialogue' action exists
       if (!value) {
         const exists = botFunctions.value[functionIndex]?.actions?.some(
             (action: any) => action.name === 'stop_dialogue'
@@ -475,7 +537,6 @@ const getInterruptDialogue = (functionIndex: number) => {
           botFunctions.value[functionIndex]?.actions.push({ name: 'stop_dialogue' });
         }
       } else {
-        // If the value is set to true, remove the 'stop_dialogue' action
         botFunctions.value[functionIndex].actions = botFunctions.value[functionIndex].actions.filter(
             (action: any) => action.name !== 'stop_dialogue'
         );
@@ -513,7 +574,6 @@ const addFile = async (event: Event, functionIndex: number) => {
   const file = input.files?.[0] || null;
   if (!file) return;
   await uploadFileStore.loadFile(file).then((res) => {
-    console.log(res?.mimeType)
     botFunctions.value[functionIndex]?.actions?.push({
       name: 'send_file',
       parameters: {
@@ -786,26 +846,9 @@ const reminders = ref<{
   isSchedule: boolean,
   schedule: {
     start?: string,
-    end?: string,
-    timezone?: string | null
+    end?: string
   }
 }[]>([]);
-
-function getUTCOffsetString() {
-  const offsetMinutes = new Date().getTimezoneOffset(); // Returns minutes
-  const offsetHours = -(offsetMinutes / 60); // Convert minutes to hours (UTC+ is negative, so negate)
-
-  const fraction = offsetHours % 1;
-  let hourString = `utc${offsetHours >= 0 ? '+' : ''}${Math.trunc(offsetHours)}`;
-
-  if (fraction !== 0) {
-    const minutes = Math.abs(fraction * 60); // Convert the fraction to minutes
-    hourString += `_${minutes}`;
-  }
-
-  return hourString;
-}
-
 
 
 const addReminder = () => {
@@ -818,8 +861,7 @@ const addReminder = () => {
     isSchedule:false,
     schedule: {
       start: '',
-      end: '',
-      timezone: getUTCOffsetString()
+      end: ''
     }
   })
 }
@@ -965,78 +1007,19 @@ const hideDeleteReminderModal = () => {
                   </span>
                   <span class="bot-card__activate">
                     {{ $t('setWorkingHours') }}
-                    <InputSwitch v-model="fullTimeWork" style="margin-left: 8px"/>
+                    <InputSwitch v-model="currentBot.schedule.isSchedule" style="margin-left: 8px"/>
                   </span>
-                  <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="workingZone" :options="workingZones" optionLabel="title" :placeholder="t('chooseOption')"></Dropdown>
-                  <div v-if="fullTimeWork" class="flex flex-column gap-2 mt-3">
-                    <div class="flex align-items-center gap-2">
-                      <span style="width: 25px">ПН:</span>
-                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly v-model="mondayTimeStart" />
+<!--                  <pre>{{ currentBot }}</pre>-->
+                  <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="currentBot.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
+                  <div v-if="currentBot.schedule.isSchedule" class="flex flex-column gap-2 mt-3">
+                    <div class="flex align-items-center gap-2" v-for="(workingHour, index) in currentBot.schedule.workingHours" :key="index">
+                      <span style="width: 25px">{{ workingHour.title }}:</span>
+                      <Calendar :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.start" />
                       <span>-</span>
-                      <Calendar :disabled="!mondayActive" id="calendar-timeonly" timeOnly v-model="mondayTimeEnd" />
+                      <Calendar :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.end" />
                       <span class="bot-card__activate" >
                         Работает
-                        <InputSwitch v-model="mondayActive" style="margin-left: 8px"/>
-                      </span>
-                    </div>
-                    <div class="flex align-items-center gap-2">
-                      <span style="width: 25px">ВТ:</span>
-                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly v-model="tuesdayTimeStart" />
-                      <span>-</span>
-                      <Calendar :disabled="!tuesdayActive" id="calendar-timeonly" timeOnly v-model="tuesdayTimeEnd" />
-                      <span class="bot-card__activate" >
-                        Работает
-                        <InputSwitch v-model="tuesdayActive" style="margin-left: 8px"/>
-                      </span>
-                    </div>
-                    <div class="flex align-items-center gap-2">
-                      <span style="width: 25px">СР:</span>
-                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly v-model="wednesdayTimeStart"/>
-                      <span>-</span>
-                      <Calendar :disabled="!wednesdayActive" id="calendar-timeonly" timeOnly v-model="wednesdayTimeEnd" />
-                      <span class="bot-card__activate" >
-                        Работает
-                        <InputSwitch v-model="wednesdayActive" style="margin-left: 8px"/>
-                      </span>
-                    </div>
-                    <div class="flex align-items-center gap-2">
-                      <span style="width: 25px">ЧТ:</span>
-                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly v-model="thursdayTimeStart" />
-                      <span>-</span>
-                      <Calendar :disabled="!thursdayActive" id="calendar-timeonly" timeOnly v-model="thursdayTimeEnd" />
-                      <span class="bot-card__activate" >
-                        Работает
-                        <InputSwitch v-model="thursdayActive" style="margin-left: 8px"/>
-                      </span>
-                    </div>
-                    <div class="flex align-items-center gap-2">
-                      <span style="width: 25px">ПТ:</span>
-                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly v-model="fridayTimeStart" />
-                      <span>-</span>
-                      <Calendar :disabled="!fridayActive" id="calendar-timeonly" timeOnly v-model="fridayTimeEnd" />
-                      <span class="bot-card__activate" >
-                        Работает
-                        <InputSwitch v-model="fridayActive" style="margin-left: 8px"/>
-                      </span>
-                    </div>
-                    <div class="flex align-items-center gap-2">
-                      <span style="width: 25px">СБ:</span>
-                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly v-model="saturdayTimeStart" />
-                      <span>-</span>
-                      <Calendar :disabled="!saturdayActive" id="calendar-timeonly" timeOnly v-model="saturdayTimeEnd" />
-                      <span class="bot-card__activate" >
-                        Работает
-                        <InputSwitch v-model="saturdayActive" style="margin-left: 8px"/>
-                      </span>
-                    </div>
-                    <div class="flex align-items-center gap-2">
-                      <span style="width: 25px">ВС:</span>
-                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly v-model="sundayTimeStart" />
-                      <span>-</span>
-                      <Calendar :disabled="!sundayActive" id="calendar-timeonly" timeOnly v-model="sundayTimeEnd" />
-                      <span class="bot-card__activate" >
-                        Работает
-                        <InputSwitch v-model="sundayActive" style="margin-left: 8px"/>
+                        <InputSwitch v-model="workingHour.isWork" style="margin-left: 8px"/>
                       </span>
                     </div>
                   </div>
@@ -1138,7 +1121,7 @@ const hideDeleteReminderModal = () => {
 
                           <TabPanel>
                             <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'add_note' && item?.parameters?.text || botFunction?.actions?.some((item) => item?.name === 'edit_lead_card' && item?.parameters?.custom_fields_values?.some(field => field?.field_id || field.values.some((val) => val.value)))) }">{{ $t('crm')}}</span>
+                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'add_note' && item?.parameters?.text || botFunction?.actions?.some((item) => item?.name === 'edit_lead_card' && item?.parameters?.custom_fields_values?.some(field => field?.field_id || field.values.some((val) => val.value)))) }">CRM</span>
                             </template>
                             <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
 
@@ -1240,7 +1223,7 @@ const hideDeleteReminderModal = () => {
                     {{ $t('setWorkingHours') }}
                     <InputSwitch v-model="message.isSchedule" style="margin-left: 8px"/>
                   </span>
-                        <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="message.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
+<!--                        <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="message.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>-->
                         <div v-if="message.isSchedule" class="flex align-items-center gap-2 mt-3">
                           <div class="flex flex-column gap-1">
                             <span>Начало:</span>
