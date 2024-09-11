@@ -819,10 +819,10 @@ onMounted(() => {
 })
 
 const timeList = ref([
-  {
-    id: 'seconds',
-    title: t('perSeconds')
-  },
+  // {
+  //   id: 'seconds',
+  //   title: t('perSeconds')
+  // },
   {
     id: 'minutes',
     title: t('perMinutes')
@@ -831,10 +831,10 @@ const timeList = ref([
     id: 'hours',
     title: t('perHour')
   },
-  {
-    id: 'days',
-    title: t('perDay')
-  }
+  // {
+  //   id: 'days',
+  //   title: t('perDay')
+  // }
 ]);
 
 const reminders = ref<{
@@ -856,7 +856,7 @@ const addReminder = () => {
     id: reminders.value.length + 1,
     quantity: 10,
     message: '',
-    timeframe: 'seconds',
+    timeframe: 'minutes',
     type: 'message',
     isSchedule:false,
     schedule: {
@@ -1081,7 +1081,7 @@ const hideDeleteReminderModal = () => {
                             </div>
                           </Dialog>
                         </div>
-                        <Textarea rows="1" cols="30" v-model="botFunction.prompt" />
+                        <Textarea rows="2" cols="30" v-model="botFunction.prompt" />
                       </div>
                       <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
                       <span class="bot-card__activate">
