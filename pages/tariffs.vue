@@ -101,13 +101,7 @@ const proClientCountList = ref<{ title: string; value: number; priceInMonth: num
         value: 20000,
         priceInMonth: 15990,
         priceInYear: 159900,
-      },
-      // {
-      //   title: '5000',
-      //   value: 5000,
-      //   priceInMonth: 7990,
-      //   priceInYear: 79900,
-      // }
+      }
     ]
 )
 const proTariffSum = computed(() => {
@@ -219,10 +213,6 @@ const whatsAppChannelPrice = computed(() => {
     return whatsAppChannelCount.value * 19900
   }
 })
-
-const changeCurrency = (event: any) => {
-  console.log(event);
-}
 </script>
 
 <template>
@@ -471,7 +461,7 @@ const changeCurrency = (event: any) => {
                       <InputText id="premium-channel-count" style="width: 50px" type="number" min="0" v-model="whatsAppChannelCount" />
                       <div class="flex flex-column gap-1 mt-4 mb-4">
                         <span>К оплате</span>
-                        <span class="font-bold text-2xl">{{ thousandSeparator(whatsAppChannelPrice) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
+                        <span class="font-bold text-2xl">{{ thousandSeparator(whatsAppChannelPrice * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
                       <Button label="Оплатить" class="p-3 w-full mt-auto"></Button>
                     </div>
