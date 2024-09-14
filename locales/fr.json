@@ -302,5 +302,6 @@
   "text": "Texte",
   "selectEmployees": "Sélectionnez les employés",
   "connectSeparateKey": "Connectez une clé secrète APi distincte pour le robot d'analyse vocale",
-  "crm": "Gestion CRM"
+  "crm": "Gestion CRM",
+  "startMessageNewBot": "Commencez à créer un nouveau bot GPT en connectant la clé secrète API (OpenAI) à la page 1. Général."
 }

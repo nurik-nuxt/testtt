@@ -301,5 +301,6 @@
   "text": "Text",
   "selectEmployees": "Select employees",
   "connectSeparateKey": "Connect a separate APi Secret Key for the speech analytics bot",
-  "crm": "CRM management"
+  "crm": "CRM management",
+  "startMessageNewBot": "Start creating a new GPT bot by connecting the API Secret key (OpenAI) on page 1. General."
 }

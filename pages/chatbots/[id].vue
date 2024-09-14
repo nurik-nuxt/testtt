@@ -186,6 +186,12 @@ const currentBot = ref({
   whisper: false,
 });
 
+const isValidatedApiSecretKey = computed(() => {
+  const openAiKeyPattern = /^sk-(proj-)?[a-zA-Z0-9]{48}$/;
+
+  return !!currentBot.value.apiKey.match(openAiKeyPattern);
+})
+
 const workingHours = ref([
   {
     title: 'ПН',
@@ -506,7 +512,7 @@ const editKnowledgeFile = (knowledgeId: string) => {
 const openTelegram = () => {
   window.open(telegramLink.value, '_blank');
 }
-const activeTab = ref(mainStore.chatBotActiveTab)
+// const activeTab = ref(mainStore.chatBotActiveTab)
 const messages = computed(() => {
   return state.messages.reverse();
 })
@@ -814,15 +820,21 @@ const showFileDeleteModal = ref<boolean>(false);
 const showFuctionDeleteModal = ref<boolean>(false);
 const showReminderDeleteModal = ref<boolean>(false);
 
-onMounted(() => {
-  mainStore.setChatBotActiveTab(1)
-})
+watch(
+    () => currentBot.value.apiKey,
+    (val) => {
+      if (val.length > 0) {
+        mainStore.setChatBotActiveTab(1)
+      } else {
+        mainStore.setChatBotActiveTab(0);
+        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
+      }
+    },
+    { deep: true, immediate: true }
+)
+
 
 const timeList = ref([
-  // {
-  //   id: 'seconds',
-  //   title: t('perSeconds')
-  // },
   {
     id: 'minutes',
     title: t('perMinutes')
@@ -831,10 +843,6 @@ const timeList = ref([
     id: 'hours',
     title: t('perHour')
   },
-  // {
-  //   id: 'days',
-  //   title: t('perDay')
-  // }
 ]);
 
 const reminders = ref<{
@@ -912,11 +920,11 @@ const hideDeleteReminderModal = () => {
           <h5>{{ $t('edit') }} "{{ bot?.name }}"</h5>
           <div class="flex align-items-center gap-4">
             <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-            <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading"></Button>
+            <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading || !isValidatedApiSecretKey"></Button>
           </div>
         </div>
         <div>
-          <TabView v-model:activeIndex="activeTab">
+          <TabView v-model:activeIndex="mainStore.chatBotActiveTab">
             <TabPanel :header="`1.${t('general')}`">
               <div class="card-form p-fluid" style="margin-top: 16px">
 
@@ -1029,7 +1037,7 @@ const hideDeleteReminderModal = () => {
               <div class="mt-4 flex gap-4 align-items-center justify-content-end">
                 <Button :label="t('deleteBotButton')" severity="danger" class="mr-auto" @click="removeBot"></Button>
                 <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-                <Button :label="t('save')" @click="confirmBotMainSettings"></Button>
+                <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading || !isValidatedApiSecretKey"></Button>
               </div>
             </TabPanel>
 
