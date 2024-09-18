@@ -67,7 +67,10 @@ export const useApi = async (uri: string, options: FetchOptions = {}, isAdmin: b
                 }
                 return resp;
             } catch (e) {
-
+                jsCookie.remove("accessToken");
+                jsCookie.remove("refreshToken");
+                jsCookie.remove("user");
+                window.location.reload();
             }
         }
         if (isLoading) {

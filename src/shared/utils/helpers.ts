@@ -26,4 +26,9 @@ const thousandSeparator = (number: number) => {
     return number.toLocaleString('en-US').replace(/,/g, ' ');
 }
 
-export { formatDate, convertTimestampToReadableDate, thousandSeparator };
+const convertToBrowserTimezone = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+};
+
+export { formatDate, convertTimestampToReadableDate, thousandSeparator, convertToBrowserTimezone };

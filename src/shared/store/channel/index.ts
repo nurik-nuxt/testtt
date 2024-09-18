@@ -22,7 +22,8 @@ interface ChannelRequestItem {
     type: string;
     token?: string;
     title?: string;
-    credentials?: ChannelCredentials
+    credentials?: ChannelCredentials;
+    webhook?: string;
 }
 
 export const useChannelStore = defineStore('channel', {

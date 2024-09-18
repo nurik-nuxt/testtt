@@ -16,6 +16,7 @@ import {useAmoCrmStore} from "~/src/shared/store/amocrm";
 import { useLoaderStore } from "~/src/shared/store/loader";
 import { useBotReminder } from "~/src/shared/store/reminder";
 import { BaseFile } from "~/src/shared/components/base";
+import { convertToBrowserTimezone } from "~/src/shared/utils/helpers";
 
 const { isMobileOrTablet } = useDevice();
 
@@ -187,9 +188,9 @@ const currentBot = ref({
 });
 
 const isValidatedApiSecretKey = computed(() => {
-  const openAiKeyPattern = /^sk-(proj-)?[a-zA-Z0-9]{48}$/;
-
-  return !!currentBot.value.apiKey.match(openAiKeyPattern);
+  // const openAiKeyPattern = /^sk-(proj-)?[a-zA-Z0-9]{48}$/;
+  // return !!currentBot.value.apiKey.match(openAiKeyPattern);
+  return !!currentBot.value.apiKey.length;
 })
 
 const workingHours = ref([
@@ -348,7 +349,16 @@ onMounted(async () => {
         botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
       }
       if (res?.reminders?.length) {
-        reminders.value = res?.reminders
+        const updatedData = res?.reminders?.map(item => {
+          return {
+            ...item,
+            schedule: {
+              start: convertToBrowserTimezone(item.schedule.start),
+              end: convertToBrowserTimezone(item.schedule.end)
+            }
+          };
+        })
+        reminders.value = updatedData
       }
       Object.keys(currentBot.value).forEach(key => {
         if (key in res && res[key] !== null && res[key] !== undefined) {
@@ -360,6 +370,12 @@ onMounted(async () => {
       }
       if (!res?.schedule?.workingHours) {
         currentBot.value.schedule.workingHours = workingHours.value
+      }
+      if (res?.apiKey) {
+        mainStore.setChatBotActiveTab(1);
+      } else {
+        mainStore.setChatBotActiveTab(0);
+        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
       }
     }),
     channelStore.getAllChannels(),
@@ -820,18 +836,18 @@ const showFileDeleteModal = ref<boolean>(false);
 const showFuctionDeleteModal = ref<boolean>(false);
 const showReminderDeleteModal = ref<boolean>(false);
 
-watch(
-    () => currentBot.value.apiKey,
-    (val) => {
-      if (val.length > 0) {
-        mainStore.setChatBotActiveTab(1)
-      } else {
-        mainStore.setChatBotActiveTab(0);
-        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
-      }
-    },
-    { deep: true, immediate: true }
-)
+// watch(
+//     () => currentBot.value.apiKey,
+//     (val) => {
+//       if (val.length > 0) {
+//         mainStore.setChatBotActiveTab(1)
+//       } else {
+//         mainStore.setChatBotActiveTab(0);
+//         toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
+//       }
+//     },
+//     { deep: true, immediate: true }
+// )
 
 
 const timeList = ref([
@@ -1270,6 +1286,7 @@ const hideDeleteReminderModal = () => {
                 </svg>
               </span>
                       <span v-if="channel.type === 'amocrm'" style="width: 30px">
+
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="0 0 30 30" version="1.1">
 <defs>
 <filter id="alpha" filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
@@ -1300,6 +1317,12 @@ const hideDeleteReminderModal = () => {
 </g>
 </svg>
           </span>
+                      <span v-if="channel.type === 'bitrix24'" style="width: 30px">
+                 <svg width="30px" height="30px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="512" cy="512" r="512" style="fill:#2fc7f7"/>
+                    <path d="M877 499.07h-22v-22h-5.91V505H877zM852.07 543A43.93 43.93 0 1 1 896 499.07 44.17 44.17 0 0 1 852.07 543zm0-79.83a35.9 35.9 0 1 0 35.9 35.9 35.87 35.87 0 0 0-35.9-35.9zm-84.48 59.56v-70.12h-14.78l-56.18 73.07v13.94h50.69v27.88h20.27v-27.88h16.9v-16.9zm-20.27-16.47v16.04H733.8c-4.22 0-11.83.42-14.36.42l28.72-38.86c0 3.38-.84 13.52-.84 22.39zm-132.21 60.82h79v-17.32h-52.39c7.18-28.72 51.11-35.06 51.11-67.16 0-17.32-11.83-30-36.33-30a85.18 85.18 0 0 0-38 9.29L624 478c8.45-3.8 17.74-7.6 29.14-7.6 9.29 0 17.74 3.8 17.74 14.36.41 23.6-51.12 25.29-55.77 82.32zm-76.45-46.89-33.79-46.46h24.5l22 30.41 22.39-30.41h24.5L564 520.19l34.64 46.89h-24.5l-22.39-31.26-22.81 31.26h-24.5zm-73.92-75.61a14.36 14.36 0 0 1 28.72 0c0 7.6-6.34 13.94-14.78 13.94s-13.94-5.91-13.94-13.94zm2.53 29.14h23.65v93.35h-23.64zm-73.5 0h20.27l2.53 10.56c8.45-8.45 16.05-12.67 25.77-12.67a24.76 24.76 0 0 1 13.09 3.8L447 495.27a20.08 20.08 0 0 0-10.56-3c-6.34 0-11.4 2.53-19 9.29v65.94h-23.66zm-124.6-29.14a14.24 14.24 0 0 1 14.36-14.36c8 0 14.78 5.91 14.78 14.36 0 7.6-6.34 13.94-14.78 13.94s-14.36-5.91-14.36-13.94zm2.53 29.14h23.65v93.35h-23.64zm55.3 70.55v-52h-16.9v-18.54H327v-21.54l23.65-6.76v28.3H379l-5.91 18.59H350.7v46c0 8.87 3 11.83 9.29 11.83a26.42 26.42 0 0 0 14.36-4.65l7.18 16.05c-6.76 4.65-18.16 7.18-27.46 7.18-16.89.46-27.07-8.84-27.07-24.46zM164 437h38c27.88 0 40.55 16.05 40.55 32.95 0 11.4-5.49 21.54-15.63 27v.42c15.21 3.8 24.5 16.05 24.5 31.26 0 20.27-15.21 38.44-45.62 38.44H164zm35.06 54.49c13.09 0 20.27-7.18 20.27-17.32 0-9.71-6.34-17.32-20.27-17.32h-11v34.64zm3.8 56.18c15.63 0 24.5-5.91 24.5-19 0-11-8.45-17.74-21.54-17.74h-17.74v36.75z" style="fill:#fff"/>
+                 </svg>
+               </span>
                    </span>
                   {{ channel.title }}
                   <span class="ml-auto" style="color: #19C927">{{ $t('connected') }}</span>
@@ -1352,10 +1375,16 @@ const hideDeleteReminderModal = () => {
                           </g>
                         </svg>
                       </span>
+                      <span v-if="channel.type === 'bitrix24'" style="width: 30px">
+                      <svg width="30px" height="30px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="512" cy="512" r="512" style="fill:#2fc7f7"/>
+                    <path d="M877 499.07h-22v-22h-5.91V505H877zM852.07 543A43.93 43.93 0 1 1 896 499.07 44.17 44.17 0 0 1 852.07 543zm0-79.83a35.9 35.9 0 1 0 35.9 35.9 35.87 35.87 0 0 0-35.9-35.9zm-84.48 59.56v-70.12h-14.78l-56.18 73.07v13.94h50.69v27.88h20.27v-27.88h16.9v-16.9zm-20.27-16.47v16.04H733.8c-4.22 0-11.83.42-14.36.42l28.72-38.86c0 3.38-.84 13.52-.84 22.39zm-132.21 60.82h79v-17.32h-52.39c7.18-28.72 51.11-35.06 51.11-67.16 0-17.32-11.83-30-36.33-30a85.18 85.18 0 0 0-38 9.29L624 478c8.45-3.8 17.74-7.6 29.14-7.6 9.29 0 17.74 3.8 17.74 14.36.41 23.6-51.12 25.29-55.77 82.32zm-76.45-46.89-33.79-46.46h24.5l22 30.41 22.39-30.41h24.5L564 520.19l34.64 46.89h-24.5l-22.39-31.26-22.81 31.26h-24.5zm-73.92-75.61a14.36 14.36 0 0 1 28.72 0c0 7.6-6.34 13.94-14.78 13.94s-13.94-5.91-13.94-13.94zm2.53 29.14h23.65v93.35h-23.64zm-73.5 0h20.27l2.53 10.56c8.45-8.45 16.05-12.67 25.77-12.67a24.76 24.76 0 0 1 13.09 3.8L447 495.27a20.08 20.08 0 0 0-10.56-3c-6.34 0-11.4 2.53-19 9.29v65.94h-23.66zm-124.6-29.14a14.24 14.24 0 0 1 14.36-14.36c8 0 14.78 5.91 14.78 14.36 0 7.6-6.34 13.94-14.78 13.94s-14.36-5.91-14.36-13.94zm2.53 29.14h23.65v93.35h-23.64zm55.3 70.55v-52h-16.9v-18.54H327v-21.54l23.65-6.76v28.3H379l-5.91 18.59H350.7v46c0 8.87 3 11.83 9.29 11.83a26.42 26.42 0 0 0 14.36-4.65l7.18 16.05c-6.76 4.65-18.16 7.18-27.46 7.18-16.89.46-27.07-8.84-27.07-24.46zM164 437h38c27.88 0 40.55 16.05 40.55 32.95 0 11.4-5.49 21.54-15.63 27v.42c15.21 3.8 24.5 16.05 24.5 31.26 0 20.27-15.21 38.44-45.62 38.44H164zm35.06 54.49c13.09 0 20.27-7.18 20.27-17.32 0-9.71-6.34-17.32-20.27-17.32h-11v34.64zm3.8 56.18c15.63 0 24.5-5.91 24.5-19 0-11-8.45-17.74-21.54-17.74h-17.74v36.75z" style="fill:#fff"/>
+                 </svg>
+               </span>
                    </span>
                   {{ channel.title }}
                   <span class="ml-auto">{{ $t('connectToBot') }}</span>
-                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="connectToBot(channel._id)"  />
+                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="connectToBot(channel._id)" :disabled="connectedChannels?.some((channel) => channel.type === 'amocrm' || channel.type === 'bitrix24')"  />
                 </span>
               </div>
             </TabPanel>
