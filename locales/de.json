@@ -302,5 +302,8 @@
   "selectEmployees": "Wählen Sie Mitarbeiter aus",
   "connectSeparateKey": "Verbinden Sie einen separaten APi Secret Key für den Sprachanalyse-Bot",
   "crm": "CRM-Management",
-  "startMessageNewBot": "Beginnen Sie mit der Erstellung eines neuen GPT-Bots, indem Sie den API-Geheimschlüssel (OpenAI) auf Seite 1 verbinden. Allgemein."
+  "startMessageNewBot": "Beginnen Sie mit der Erstellung eines neuen GPT-Bots, indem Sie den API-Geheimschlüssel (OpenAI) auf Seite 1 verbinden. Allgemein.",
+  "changeDealStageBitrix": "Ändern Sie die Transaktionsphase in Bitrix24",
+  "connectedChannels1": "WhatsApp-Kanäle",
+  "subscription": "Abonnements"
 }

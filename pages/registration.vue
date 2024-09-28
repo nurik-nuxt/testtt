@@ -57,8 +57,11 @@ const signIn = async () => {
         method: 'POST',
         body: form
       })
-      if (response.success && response.id) {
-        return navigateTo({ name: 'login' })
+      if (response.success) {
+        toast.add({ severity: 'success', detail: response?.message, life: 5000 });
+        setTimeout(() => {
+          return navigateTo({ name: 'login' });
+        }, 5000);  // This will delay navigation by 5 seconds
       }
       if (response?.error) {
         toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.error, life: 5000 })

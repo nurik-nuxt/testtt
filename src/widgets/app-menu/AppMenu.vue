@@ -44,6 +44,11 @@ const menu = computed(() => {
       icon: 'pi pi-fw pi-star',
       url: 'tariffs'
     },
+    // {
+    //   label: t('subscription'),
+    //   icon: 'pi pi-fw pi-qrcode',
+    //   url: 'subscriptions'
+    // },
     {
       label: t('callAnalytics'),
       icon: 'pi pi-fw pi-chart-pie',

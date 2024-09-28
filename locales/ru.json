@@ -302,5 +302,8 @@
   "text": "Текст",
   "selectEmployees": "Выберете сотрудников",
   "connectSeparateKey": "Подключите отдельный APi Secret Key для бота речевой аналитики",
-  "startMessageNewBot": "Начните создание нового GPT-бота с подключения API Secret key (OpenAI) на странице 1. Общие."
+  "startMessageNewBot": "Начните создание нового GPT-бота с подключения API Secret key (OpenAI) на странице 1. Общие.",
+  "changeDealStageBitrix": "Изменить этап сделки в Bitrix24",
+  "connectedChannels1": "Каналы WhatsApp",
+  "subscription": "Подписки"
 }

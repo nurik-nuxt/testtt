@@ -1,5 +1,5 @@
-import { useApi } from "~/composable";
-import { defineStore } from "pinia";
+import {useApi} from "~/composable";
+import {defineStore} from "pinia";
 
 interface Funnel {
     ID: string;
@@ -16,6 +16,16 @@ interface FunnelStatus {
     SORT: number;
 }
 
+interface Filed {
+    "key": string;
+    "type": string;
+    "isRequired": boolean;
+    "isReadOnly": boolean;
+    "isImmutable": boolean;
+    "isMultiple": boolean;
+    "isDynamic": boolean;
+    "name": string;
+}
 interface ActiveStatusItem {
     pipeline_id: number;
     active_statuses: number[];
@@ -27,7 +37,7 @@ export const useBitrix24 = defineStore('bitrix24', {
           funnels: [] as Funnel[],
           statuses: [] as FunnelStatus[],
           activeFunnels: [] as any,
-
+          fields: [] as Filed[]
         }
     },
 
@@ -35,16 +45,28 @@ export const useBitrix24 = defineStore('bitrix24', {
         getFunnels: (state) => state.funnels,
         getStatuses: (state) => state.statuses,
         getActiveFunnels: (state) => state.activeFunnels,
+        getFields: (state) => state.fields
     },
 
     actions: {
         async loadFunnels(id: string) {
             try {
-                const response = await useApi(`/bitrix24/funnels/${id}`, {
+                this.funnels = await useApi(`/bitrix24/funnels/${id}`, {
                     method: 'GET'
-                })
-                console.log(response);
-                return response;
+                });
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async loadFields() {
+            try {
+                const response = await useApi(`/bitrix24/fields`, {
+                    method: 'GET'
+                });
+                if (response?.fields) {
+                    this.fields = response?.fields
+                }
             } catch (e) {
                 console.error(e)
             }

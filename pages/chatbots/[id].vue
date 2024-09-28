@@ -1,22 +1,23 @@
 <script setup lang="ts">
-import { useBotStore } from "~/src/shared/store/bot";
-import { useChannelStore } from "~/src/shared/store/channel";
-import { useKnowledgeStore } from "~/src/shared/store/knowledge";
-import { useMainStore } from "~/src/shared/store/main";
-import { useNotificationStore } from "~/src/shared/store/notification";
-import { queryGetModelList } from "~/src/shared/repository/dictionaries";
+import {useBotStore} from "~/src/shared/store/bot";
+import {useChannelStore} from "~/src/shared/store/channel";
+import {useKnowledgeStore} from "~/src/shared/store/knowledge";
+import {useMainStore} from "~/src/shared/store/main";
+import {useNotificationStore} from "~/src/shared/store/notification";
+import {queryGetModelList} from "~/src/shared/repository/dictionaries";
 import jsCookie from "js-cookie";
-import { useToast } from "primevue/usetoast";
-import { helpers, required, requiredIf } from "@vuelidate/validators";
+import {useToast} from "primevue/usetoast";
+import {helpers, required, requiredIf} from "@vuelidate/validators";
 import useValidate from "@vuelidate/core/dist/index";
-import { socket, state } from "~/socket";
-import { useLayout } from '~/composable';
+import {socket, state} from "~/socket";
+import {useLayout} from '~/composable';
 import {useUploadFileStore} from "~/src/shared/store/upload";
 import {useAmoCrmStore} from "~/src/shared/store/amocrm";
-import { useLoaderStore } from "~/src/shared/store/loader";
-import { useBotReminder } from "~/src/shared/store/reminder";
-import { BaseFile } from "~/src/shared/components/base";
-import { convertToBrowserTimezone } from "~/src/shared/utils/helpers";
+import {useBitrix24} from "~/src/shared/store/bitrix24";
+import {useLoaderStore} from "~/src/shared/store/loader";
+import {useBotReminder} from "~/src/shared/store/reminder";
+import {BaseFile} from "~/src/shared/components/base";
+import {convertToBrowserTimezone} from "~/src/shared/utils/helpers";
 
 const { isMobileOrTablet } = useDevice();
 
@@ -54,6 +55,7 @@ const mainStore = useMainStore();
 const notificationStore = useNotificationStore();
 const uploadFileStore = useUploadFileStore();
 const amoCrmStore = useAmoCrmStore();
+const bitrix24Store = useBitrix24();
 const loaderStore = useLoaderStore();
 const botReminderStore = useBotReminder();
 
@@ -168,6 +170,7 @@ const currentBot = ref({
   joinTimeout: 0,
   maxTokens: 300,
   bigTimeout: 24,
+  channels: [],
   messageLimit: {
     qty: 30,
     period: 1,
@@ -188,8 +191,6 @@ const currentBot = ref({
 });
 
 const isValidatedApiSecretKey = computed(() => {
-  // const openAiKeyPattern = /^sk-(proj-)?[a-zA-Z0-9]{48}$/;
-  // return !!currentBot.value.apiKey.match(openAiKeyPattern);
   return !!currentBot.value.apiKey.length;
 })
 
@@ -344,12 +345,16 @@ onMounted(async () => {
   await Promise.all([
     amoCrmStore.fetchVoronki(),
     amoCrmStore.fetchAmoCrmFields(),
-    botStore.getBot(<string>route.params.id).then((res) => {
+    botStore.getBot(<string>route.params.id).then(async (res) => {
+      if (res?.channels?.some((channel) => channel.type === 'bitrix24')) {
+        await bitrix24Store.loadFunnels(res?.channels?.find((channel) => channel.type === 'bitrix24')?.channelId);
+        await  bitrix24Store.loadFields();
+      }
       if (res?.functions) {
         botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
       }
       if (res?.reminders?.length) {
-        const updatedData = res?.reminders?.map(item => {
+        reminders.value = res?.reminders?.map(item => {
           return {
             ...item,
             schedule: {
@@ -358,7 +363,6 @@ onMounted(async () => {
             }
           };
         })
-        reminders.value = updatedData
       }
       Object.keys(currentBot.value).forEach(key => {
         if (key in res && res[key] !== null && res[key] !== undefined) {
@@ -503,10 +507,86 @@ const createChannel = () => {
 }
 
 const connectToBot = async (channelId: string) => {
-  await channelStore.connectChannelToBot(channelId, <string>route.params.id)
+  await channelStore.connectChannelToBot(channelId, <string>route.params.id).then(async () => {
+    await botStore.getBot(<string>route.params.id).then(async (res) => {
+      if (res?.channels?.some((channel) => channel.type === 'bitrix24')) {
+        await bitrix24Store.loadFunnels(res?.channels?.find((channel) => channel.type === 'bitrix24')?.channelId);
+        await  bitrix24Store.loadFields();
+      }
+      if (res?.functions) {
+        botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
+      }
+      if (res?.reminders?.length) {
+        reminders.value = res?.reminders?.map(item => {
+          return {
+            ...item,
+            schedule: {
+              start: convertToBrowserTimezone(item.schedule.start),
+              end: convertToBrowserTimezone(item.schedule.end)
+            }
+          };
+        })
+      }
+      Object.keys(currentBot.value).forEach(key => {
+        if (key in res && res[key] !== null && res[key] !== undefined) {
+          currentBot.value[key] = res[key];
+        }
+      });
+      if (!res?.schedule?.timezone) {
+        currentBot.value.schedule.timezone = getUTCOffsetString();
+      }
+      if (!res?.schedule?.workingHours) {
+        currentBot.value.schedule.workingHours = workingHours.value
+      }
+      if (res?.apiKey) {
+        mainStore.setChatBotActiveTab(1);
+      } else {
+        mainStore.setChatBotActiveTab(0);
+        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
+      }
+    })
+  })
 }
 const disconnectToBot = async (channelId: string) => {
-  await channelStore.disconnectChannelToBot(channelId, <string>route.params.id)
+  await channelStore.disconnectChannelToBot(channelId, <string>route.params.id).then(async () => {
+    await botStore.getBot(<string>route.params.id).then(async (res) => {
+      if (res?.channels?.some((channel) => channel.type === 'bitrix24')) {
+        await bitrix24Store.loadFunnels(res?.channels?.find((channel) => channel.type === 'bitrix24')?.channelId);
+        await  bitrix24Store.loadFields();
+      }
+      if (res?.functions) {
+        botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
+      }
+      if (res?.reminders?.length) {
+        reminders.value = res?.reminders?.map(item => {
+          return {
+            ...item,
+            schedule: {
+              start: convertToBrowserTimezone(item.schedule.start),
+              end: convertToBrowserTimezone(item.schedule.end)
+            }
+          };
+        })
+      }
+      Object.keys(currentBot.value).forEach(key => {
+        if (key in res && res[key] !== null && res[key] !== undefined) {
+          currentBot.value[key] = res[key];
+        }
+      });
+      if (!res?.schedule?.timezone) {
+        currentBot.value.schedule.timezone = getUTCOffsetString();
+      }
+      if (!res?.schedule?.workingHours) {
+        currentBot.value.schedule.workingHours = workingHours.value
+      }
+      if (res?.apiKey) {
+        mainStore.setChatBotActiveTab(1);
+      } else {
+        mainStore.setChatBotActiveTab(0);
+        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
+      }
+    })
+  })
 }
 
 const files = computed(() => {
@@ -548,10 +628,11 @@ const getInterruptDialogue = (functionIndex: number) => {
       const action = botFunctions.value[functionIndex]?.actions?.find(
           (action: any) => action.name === 'stop_dialogue'
       );
-      return !action;
+      return !!action;
     },
-    set(value: any) {
-      if (!value) {
+    set(value) {
+      if (value) {
+        // Add the stop_dialogue action if it doesn't exist
         const exists = botFunctions.value[functionIndex]?.actions?.some(
             (action: any) => action.name === 'stop_dialogue'
         );
@@ -559,6 +640,7 @@ const getInterruptDialogue = (functionIndex: number) => {
           botFunctions.value[functionIndex]?.actions.push({ name: 'stop_dialogue' });
         }
       } else {
+        // Remove the stop_dialogue action if it exists
         botFunctions.value[functionIndex].actions = botFunctions.value[functionIndex].actions.filter(
             (action: any) => action.name !== 'stop_dialogue'
         );
@@ -722,7 +804,11 @@ const getWebhookText = (index: number) => {
 };
 
 const funnels = computed(() => {
-  return amoCrmStore.getAllFunnels
+  if (currentBot.value?.channels?.some((channel) => channel.type === 'bitrix24')) {
+    return bitrix24Store.getFunnels
+  } else {
+    return amoCrmStore.getAllFunnels
+  }
 })
 const getFunnelId = (index: number) => {
   return computed({
@@ -778,7 +864,11 @@ const getDealNoteText = (index: number) => {
   });
 };
 const fields = computed(() => {
-  return amoCrmStore.getFields
+  if (currentBot.value?.channels?.some((channel) => channel.type === 'bitrix24')) {
+    return bitrix24Store.getFields
+  } else {
+    return amoCrmStore.getFields
+  }
 })
 
 const getFieldId = (index: number) => {
@@ -827,8 +917,9 @@ watch(
       immediate: false
     }
 )
-const deleteFunction = async (index: number) => {
-  botFunctions.value.splice(index-1, 1);
+const deleteFunction = async () => {
+  console.log(selectedBotTaskIndex.value, 'index');
+  botFunctions.value.splice(selectedBotTaskIndex.value, 1);
   showFuctionDeleteModal.value = false;
 }
 
@@ -916,6 +1007,12 @@ const showDeleteReminderModal = (id: number) => {
 const hideDeleteReminderModal = () => {
   showReminderDeleteModal.value = false;
   reminderId.value = 0
+}
+
+const selectedBotTaskIndex = ref()
+const showDeleteConfirmModal = (index: any) => {
+  showFuctionDeleteModal.value = true;
+  selectedBotTaskIndex.value = index;
 }
 </script>
 
@@ -1089,6 +1186,7 @@ const hideDeleteReminderModal = () => {
 <!--                <pre>{{ botFunctions }}</pre>-->
                 <div v-if="botFunctions" class="mt-5 flex flex-column gap-4">
                   <div v-for="(botFunction, index) in botFunctions" :key="index" class="task-wrapper">
+<!--                    <pre>{{ botFunction }}</pre>-->
                     <div class="mt-3 mb-4 flex flex-column gap-3">
                       <div class="flex flex-column gap-2">
                         <div class="flex justify-content-between w-full align-items-center mb-4">
@@ -1096,11 +1194,11 @@ const hideDeleteReminderModal = () => {
                             <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
                             <label style="font-weight: 700">{{ $t('botTask') }}</label>
                           </div>
-                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showFuctionDeleteModal = true"></i>
+                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showDeleteConfirmModal(index)"></i>
                           <Dialog v-model:visible="showFuctionDeleteModal" :header="'Удалить задачу бота?'">
                             <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы действительно хотите удалить эту задачу?</span>
                             <div class="flex justify-content-center gap-2 w-full">
-                              <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunction(index)"></Button>
+                              <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunction"></Button>
                               <Button type="button" :label="t('cancel')" @click="showFuctionDeleteModal = false"></Button>
                             </div>
                           </Dialog>
@@ -1147,7 +1245,7 @@ const hideDeleteReminderModal = () => {
                             <template #header>
                               <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'add_note' && item?.parameters?.text || botFunction?.actions?.some((item) => item?.name === 'edit_lead_card' && item?.parameters?.custom_fields_values?.some(field => field?.field_id || field.values.some((val) => val.value)))) }">CRM</span>
                             </template>
-                            <h5 class="mt-4">{{ $t('changeDealStage') }}</h5>
+                            <h5 class="mt-4">{{ currentBot?.channels?.some((channel) => channel.type === 'bitrix24') ? $t('changeDealStageBitrix') : $t('changeDealStage') }}</h5>
 
                             <div class="mt-4 flex justify-content-between gap-4 fields">
                               <div class="flex flex-column w-full gap-2">
@@ -1156,7 +1254,9 @@ const hideDeleteReminderModal = () => {
                               </div>
                               <div class="flex flex-column w-full gap-2">
                                 <label for="statusId">{{ $t('changeStatus') }}:</label>
-                                <Dropdown style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action?.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
+                                <Dropdown v-if="currentBot?.channels?.some((channel) => channel.type === 'bitrix24')" style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel.id === getFunnelId(<number>index).value)?.statuses" optionLabel="name" option-value="status_id" :placeholder="t('chooseField')"></Dropdown>
+
+                                <Dropdown v-else style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action?.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
                               </div>
                             </div>
                             <div class="flex flex-column mt-3">
@@ -1168,7 +1268,7 @@ const hideDeleteReminderModal = () => {
                               <div class="flex align-items-center gap-4 fields">
                                 <div class="flex flex-column gap-2 w-full">
                                   <label for="chooseField">{{ $t('chooseField') }}</label>
-                                  <Dropdown id="funnel" :model-value="getFieldId(<number>index).value" @update:model-value="getFieldId(<number>index).value = $event" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
+                                  <Dropdown id="funnel" :model-value="getFieldId(<number>index).value" @update:model-value="getFieldId(<number>index).value = $event" :options="fields" optionLabel="name" :option-value="`${currentBot?.channels?.some((channel) => channel.type === 'bitrix24') ? 'key' : 'id'}`" placeholder="Выберите один"></Dropdown>
                                 </div>
                                 <div class="flex flex-column gap-2 w-full">
                                   <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>

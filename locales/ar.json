@@ -303,5 +303,8 @@
   "selectEmployees": "حدد الموظفين",
   "connectSeparateKey": "قم بتوصيل مفتاح سري منفصل لواجهة برمجة التطبيقات (APi) لروبوت تحليلات الكلام",
   "crm": "إدارة علاقات العملاء",
-  "startMessageNewBot": "ابدأ في إنشاء روبوت GPT جديد عن طريق توصيل مفتاح API السري (OpenAI) في الصفحة 1. عام."
+  "startMessageNewBot": "ابدأ في إنشاء روبوت GPT جديد عن طريق توصيل مفتاح API السري (OpenAI) في الصفحة 1. عام.",
+  "changeDealStageBitrix": "تغيير مرحلة المعاملة في Bitrix24",
+  "connectedChannels1": "قنوات الواتس اب",
+  "subscription": "الاشتراكات"
 }
