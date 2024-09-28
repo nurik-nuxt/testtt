@@ -504,7 +504,7 @@ const payBasicPlan = async () => {
       return;
     }
 
-    if (initialResponse?.error === 'already have active or pending subscription, please delete them') {
+    if (initialResponse?.error === 'User already has pending subscription, please pay to activate') {
       const cancelResponse = await subscriptionStore.cancelSubscription(initialResponse?.subscriction_id);
 
       if (cancelResponse?.success) {
