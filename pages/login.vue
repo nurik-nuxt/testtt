@@ -54,6 +54,9 @@ const login = async () => {
       if (response?.error) {
         toast.add({ severity: 'error', summary: t('error'), detail: response?.error, life: 5000 })
       }
+      if (response?.error === 'Please verify your email before logging in.') {
+        toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.advice, life: 5000 })
+      }
     } catch (e) {
       console.log(e)
     }

@@ -6,11 +6,13 @@ import { formatDateToDDMMYYYY } from "~/src/shared/utils/helpers"
 
 const { t } = useI18n();
 const subscriptionStore = useSubscriptionStore();
+const tariffsStore = useTariffsStore();
 const autoRenewal = ref(true)
 
-const channelCount = ref(2)
-
-const totalPrice = ref(50)
+onMounted(async () => {
+  await tariffsStore.loadTariffs();
+  await tariffsStore.loadUpgradableTariffs()
+})
 
 const currencyValue = ref<string>('rub')
 
@@ -212,261 +214,29 @@ const whatsAppChannelPrice = computed(() => {
   }
 })
 
-const test = [
-  {
-    id: "66eeb318ca68fc027c7a867c",
-    name: "base_100",
-    display_name: "Base",
-    rus_name: "Базовый",
-    price_per_month: 1100,
-    price_per_year: 11000,
-    access: {
-      whatsapp: true,
-      call_analytics: true,
-      api_access: true
-    },
-    limits: {
-      leads: 100
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z"
-  },
-  {
-    id: "66eeb318ca68fc027c7a867d",
-    name: "base_300",
-    display_name: "Base",
-    rus_name: "Базовый",
-    price_per_month: 2990,
-    price_per_year: 29900,
-    access: {
-      whatsapp: true,
-      call_analytics: true,
-      api_access: true
-    },
-    limits: {
-      leads: 300
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z"
-  },
-  {
-    id: "66eeb318ca68fc027c7a8678",
-    name: "base_600",
-    display_name: "Base",
-    rus_name: "Базовый",
-    price_per_month: 3990,
-    price_per_year: 39900,
-    access: {
-      whatsapp: true,
-      call_analytics: true,
-      api_access: true
-    },
-    limits: {
-      leads: 600
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z"
-  },
-  {
-    id: "66eeb318ca68fc027c7a8679",
-    name: "base_2000",
-    display_name: "Base",
-    rus_name: "Базовый",
-    price_per_month: 5990,
-    price_per_year: 59900,
-    access: {
-      whatsapp: true,
-      call_analytics: true,
-      api_access: true
-    },
-    limits: {
-      leads: 2000
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z"
-  },
-  {
-    id: "66eeb318ca68fc027c7a867a",
-    name: "base_5000",
-    display_name: "Base",
-    rus_name: "Базовый",
-    price_per_month: 7990,
-    price_per_year: 79900,
-    access: {
-      whatsapp: true,
-      call_analytics: true,
-      api_access: true
-    },
-    limits: {
-      leads: 5000
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z"
-  },
-  {
-    id: "66eeb318ca68fc027c7a867b",
-    name: "start",
-    display_name: "Start",
-    rus_name: "Старт",
-    price_per_month: 0,
-    price_per_year: 0,
-    access: {
-      whatsapp: false,
-      call_analytics: false,
-      api_access: false
-    },
-    limits: {
-      leads: 20
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z"
-  },
-  {
-    id: "66eeb318ca68fc027c7a8677",
-    name: "integrator",
-    display_name: "Integrator",
-    rus_name: "Интегратор",
-    price_per_month: 0,
-    price_per_year: 0,
-    access: {
-      whatsapp: true,
-      call_analytics: true,
-      api_access: true
-    },
-    limits: {
-      leads: 5000
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z",
-    forFront: {
-      order: -1,
-      color: "#00FFDD",
-      isSpecial: true,
-      specialty: "for_integrators",
-      size: "normal",
-      isFeatured: false,
-      isMostOptimal: false,
-      isInitiallyHidden: true
-    }
-  },
-  {
-    id: "66eeb319ca68fc027c7a867e",
-    name: "pro",
-    display_name: "Pro",
-    rus_name: "Про",
-    price_per_month: 15990,
-    price_per_year: 159900,
-    access: {
-      whatsapp: true,
-      call_analytics: true,
-      api_access: true
-    },
-    limits: {
-      leads: 20000
-    },
-    version: 1,
-    is_active: true,
-    start_date: "2024-09-18T00:00:00.000Z",
-    end_date: "2025-09-18T00:00:00.000Z"
-  }
-]
 
-const services = [
-  {
-    id: "66e959485b04b04f540602fc",
-    name: "whatsapp_1",
-    type: "whatsapp",
-    price_per_month: 1990,
-    price_per_year: 19900,
-    start_date: "2024-09-15T19:00:00.000Z",
-    end_date: "2025-09-16T19:00:00.000Z",
-    fixed: false,
-    is_active: true
-  },
-  {
-    id: "66ef4f66899aa7a630b637b1",
-    name: "call_analytics_500",
-    type: "call_analytics",
-    quantity: 500,
-    price_per_month: 1100,
-    price_per_year: 11000,
-    start_date: "2024-09-21T22:57:42.448Z",
-    end_date: "2025-09-21T22:57:42.448Z",
-    is_active: true
-  },
-  {
-    id: "66f02607972583e8e6283852",
-    name: "call_analytics_1000",
-    type: "call_analytics",
-    quantity: 1000,
-    price_per_month: 1990,
-    price_per_year: 19900,
-    start_date: "2024-09-22T14:13:27.784Z",
-    end_date: "2025-09-22T14:13:27.784Z",
-    is_active: true
-  },
-  {
-    id: "66f0261efd6a4925aa5ee4c7",
-    name: "call_analytics_2000",
-    type: "call_analytics",
-    quantity: 2000,
-    price_per_month: 2990,
-    price_per_year: 29900,
-    start_date: "2024-09-22T14:13:50.471Z",
-    end_date: "2025-09-22T14:13:50.471Z",
-    is_active: true
-  },
-  {
-    id: "66f02627239288b4e2064605",
-    name: "call_analytics_unlimited",
-    type: "call_analytics",
-    unlimited: true,
-    price_per_month: 4990,
-    price_per_year: 49900,
-    start_date: "2024-09-22T14:13:59.338Z",
-    end_date: "2025-09-22T14:13:59.338Z",
-    is_active: true
-  },
-  {
-    id: "66f02659acb8400cf7041933",
-    name: "additional_user_1",
-    type: "additional_user",
-    price_per_month: 490,
-    quantity: 1,
-    start_date: "2024-09-22T14:14:48.995Z",
-    end_date: "2025-09-22T14:14:48.995Z",
-    is_active: true
-  }
-]
+const test = computed(() => {
+  return tariffsStore.getTariffs
+})
+
+ const services = computed(() => {
+   return tariffsStore.getServices
+ })
 
 const basicPlans = computed(() => {
-  return test.filter(plan => plan.name.startsWith('base'));
+  return test?.value?.filter(plan => plan.name.startsWith('base'));
 });
 
 const proPlans = computed(() => {
-  return test.filter(plan => plan.name.startsWith('pro'))
+  return test?.value?.filter(plan => plan.name.startsWith('pro'))
 })
 
 
 
 const analyticsServices = computed(() =>
-    services.filter(service => service.type === 'call_analytics')
+    services?.value?.filter(service => service.type === 'call_analytics')
         .map(service => ({
-          id: service.id,
+          id: service._id,
           title: service.unlimited ? '∞' : service.quantity,
           value: service.unlimited ? 'unlimited' : service.quantity,
           priceInMonth: service.price_per_month,
@@ -475,11 +245,15 @@ const analyticsServices = computed(() =>
 );
 
 const basicClientOptions = computed(() => {
-  return basicPlans.value.map(plan => ({
-    title: plan.limits.leads,
-    value: plan.limits.leads,
-  }));
+  return basicPlans.value
+      .slice() // Create a shallow copy of the array to avoid mutating the original array
+      .sort((a, b) => a.limits.leads - b.limits.leads) // Sort by `limits.leads` in ascending order
+      .map(plan => ({
+        title: plan.limits.leads,
+        value: plan.limits.leads,
+      }));
 });
+
 
 const proClientOptions = computed(() => {
   return proPlans.value.map(plan => ({
@@ -489,53 +263,93 @@ const proClientOptions = computed(() => {
 });
 
 const payBasicPlan = async () => {
-  const planId = test?.find((plan) => plan?.limits?.leads === basicClientCount.value)?.id;
+ if (subscriptions.value.length) {
+   showUpgradeModal.value = true
+ } else {
+   const planId = test?.value?.find((plan) => plan?.limits?.leads === basicClientCount.value)?._id;
 
-  if (!planId) {
-    console.error('Plan ID not found.');
-    return;
-  }
+   if (!planId) {
+     return;
+   }
 
-  try {
-    const initialResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+   try {
+     const initialResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
 
-    if (initialResponse?.success) {
-      window.open(initialResponse?.dataForFront?.paymentUrl, '_blank');
+     if (initialResponse?.success) {
+       window.open(initialResponse?.dataForFront?.paymentUrl, '_blank');
+       return;
+     }
+
+     if (initialResponse?.error === 'User already has pending subscription, please pay to activate') {
+       const cancelResponse = await subscriptionStore.cancelSubscription(initialResponse?.subscriction_id);
+
+       if (cancelResponse?.success) {
+         const retryResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+
+         if (retryResponse?.success) {
+           window.open(retryResponse?.dataForFront?.paymentUrl, '_blank');
+         } else {
+           console.error('Error in retrying subscription:', retryResponse?.error);
+         }
+       } else {
+         console.error('Error in canceling subscription:', cancelResponse?.error);
+       }
+     } else {
+       console.error('Error in initial subscription:', initialResponse?.error);
+     }
+   } catch (error) {
+     console.error('Unexpected error:', error);
+   }
+ }
+};
+const payProPlan = async () => {
+  if (subscriptions.value.length) {
+    showUpgradeModal.value = true
+  } else {
+    const planId = test?.value?.find((plan) => plan?.limits?.leads === proClientCount.value)?._id;
+
+    if (!planId) {
+      console.error('Plan ID not found.');
       return;
     }
 
-    if (initialResponse?.error === 'User already has pending subscription, please pay to activate') {
-      const cancelResponse = await subscriptionStore.cancelSubscription(initialResponse?.subscriction_id);
+    try {
+      const initialResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
 
-      if (cancelResponse?.success) {
-        const retryResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+      if (initialResponse?.success) {
+        window.open(initialResponse?.dataForFront?.paymentUrl, '_blank');
+        return;
+      }
 
-        if (retryResponse?.success) {
-          window.open(retryResponse?.dataForFront?.paymentUrl, '_blank');
+      if (initialResponse?.error === 'User already has pending subscription, please pay to activate') {
+        const cancelResponse = await subscriptionStore.cancelSubscription(initialResponse?.subscriction_id);
+
+        if (cancelResponse?.success) {
+          const retryResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+
+          if (retryResponse?.success) {
+            window.open(retryResponse?.dataForFront?.paymentUrl, '_blank');
+          } else {
+            console.error('Error in retrying subscription:', retryResponse?.error);
+          }
         } else {
-          console.error('Error in retrying subscription:', retryResponse?.error);
+          console.error('Error in canceling subscription:', cancelResponse?.error);
         }
       } else {
-        console.error('Error in canceling subscription:', cancelResponse?.error);
+        console.error('Error in initial subscription:', initialResponse?.error);
       }
-    } else {
-      console.error('Error in initial subscription:', initialResponse?.error);
+    } catch (error) {
+      console.error('Unexpected error:', error);
     }
-  } catch (error) {
-    console.error('Unexpected error:', error);
   }
-};
-const payProPlan = () => {
-  const planId = test?.find((plan) => plan?.limits?.leads === proClientCount.value)?.id;
-  console.log(planId);
 }
 
 const payAnalyticsService = async () => {
-  const serviceId = services.find(
+  const serviceId = services?.value?.find(
       (service) =>
           service.quantity === analyticsPrice.value ||
           (analyticsPrice.value === 'unlimited' && service.unlimited)
-  )?.id;
+  )?._id;
   if (serviceId) {
     await subscriptionStore.addSubscriptionService(serviceId, totalAnalyticsTariffTime.value).then(async (res) => {
       if (res?.success) {
@@ -552,9 +366,13 @@ const payAnalyticsService = async () => {
 }
 
 watchEffect(async () => {
-  await subscriptionStore.loadSubscriptionsTariff()
-  await subscriptionStore.loadSubscriptionsService()
-  await subscriptionStore.loadSubscriptionsWhatsapp()
+  await Promise.all([
+     subscriptionStore.loadSubscriptionsTariff(),
+     subscriptionStore.loadSubscriptionsService(),
+     subscriptionStore.loadSubscriptionsWhatsapp(),
+     tariffsStore.loadTariffs(),
+     tariffsStore.loadUpgradableTariffs()
+  ])
 })
 
 const subscriptions = computed(() => {
@@ -570,10 +388,9 @@ const subscriptionsWhatsapp = computed(() => {
 });
 
 const payWhatsappService = async () => {
-  const serviceId = services?.find((service) => service.type === 'whatsapp')?.id;
+  const serviceId = services?.value?.find((service) => service.type === 'whatsapp')?._id;
   if (serviceId) {
     await subscriptionStore.addSubscriptionServiceWhatsapp(serviceId, totalWhatsAppTariffTime.value, whatsAppChannelCount.value).then((res) => {
-      console.log(res);
       if (res?.success) {
         window.open(res?.dataForFront?.paymentUrl, '_blank');
       }
@@ -588,45 +405,22 @@ const upgradeTariff = () => {
 
 const selectedUpgradeTariffId = ref()
 
-const activeTariff = computed(() => {
-  return subscriptionStore.getSubscriptions?.find(subscription => subscription.type === 'tariff' && subscription.status === 'active');
-});
-
-const activeTariffLeads = computed(() => {
-  const activeTariff = subscriptionStore.getSubscriptions?.find((subscription) => subscription.type === 'tariff' && subscription.status === 'active');
-  return activeTariff ? activeTariff.billing_cycles[0].limit : 0;
-});
-
-const activeTariffRecurrence = computed(() => {
-  // Assuming 'per_month' or 'per_year' is stored somewhere in the active tariff data
-  return activeTariff.value ? activeTariff.value.billing_cycles[0].recurrence : 'per_month'; // Default to 'per_month' if not found
-});
 
 const upgradedTariffs = computed(() => {
-  return test
-      .filter(tariff => tariff.name !== 'start' && tariff.name !== 'integrator' && tariff.limits.leads > activeTariffLeads.value)  // Only higher tariffs
-      .map((item) => {
-        const price = totalTariffTime.value === 'per_month'
-            ? thousandSeparator(item.price_per_month)
-            : thousandSeparator(item.price_per_year);
-
-        const currencyTitle = currencyList.value.find((currency) => currency.value === currencyValue.value)?.title;
-
-        return {
-          ...item,
-          full_name: `${item.display_name} - ${item.limits.leads}, ${price} ${currencyTitle}`,
-        };
-      });
+  return tariffsStore.getUpgradableTariffs?.map((item) => {
+    return {
+      ... item,
+      full_name: `${item.display_name} - ${item?.limits?.leads}, ${totalUpgradeTariffTime.value === 'per_month' ? `${item?.upgrade_prices?.difference_month_price}` : `${item?.upgrade_prices?.difference_year_price}`} Руб`
+    }
+  })
 });
 const payUpgradeTariff = async () => {
   if (selectedUpgradeTariffId.value) {
     await subscriptionStore.upgradeTariff(selectedUpgradeTariffId.value, totalUpgradeTariffTime.value).then((res) => {
-      console.log(res?.paymentUrl);
       window.open(res?.paymentUrl, '_blank');
       showUpgradeModal.value = false
     })
   }
-  // await subscriptionStore.upgradeTariff()
 }
 
 const totalUpgradeTariffTime = ref<'per_month' | 'per_year'>('per_month')
@@ -658,17 +452,18 @@ const changeRecurrence = () => {
         v-model="selectedUpgradeTariffId"
         :options="upgradedTariffs"
         class="w-full"
-        option-value="id"
+        option-value="_id"
         option-label="full_name"
     >
       <template #option="slotProps">
         <div class="flex justify-content-between align-items-center w-full">
           <span>{{ slotProps.option.display_name }} - {{ slotProps.option.limits.leads }}</span>
-          <span class="font-bold">
+          <span class="font-bold" style="color: #10b981">
+            +
         {{ totalUpgradeTariffTime === 'per_month'
-              ? thousandSeparator(slotProps.option.price_per_month)
-              : thousandSeparator(slotProps.option.price_per_year) }}
-        {{ currencyList?.find((item) => item.value === currencyValue)?.title }}
+              ? thousandSeparator(slotProps.option?.upgrade_prices.difference_month_price)
+              : thousandSeparator(slotProps.option?.upgrade_prices?.difference_year_price) }}
+        Руб
       </span>
         </div>
       </template>
@@ -676,11 +471,12 @@ const changeRecurrence = () => {
       <template #item="slotProps">
         <div class="flex justify-content-between align-items-center w-full">
           <span>{{ slotProps.option.display_name }} - {{ slotProps.option.limits.leads }}</span>
-          <span class="font-bold">
+          <span class="font-bold" style="color: #10b981">
+            +
         {{ totalUpgradeTariffTime === 'per_month'
-              ? thousandSeparator(slotProps.option.price_per_month)
-              : thousandSeparator(slotProps.option.price_per_year) }}
-        {{ currencyList?.find((item) => item.value === currencyValue)?.title }}
+              ? thousandSeparator(slotProps.option?.upgrade_prices.difference_month_price)
+              : thousandSeparator(slotProps.option?.upgrade_prices?.difference_year_price) }}
+        Руб
       </span>
         </div>
       </template>
@@ -699,7 +495,7 @@ const changeRecurrence = () => {
             <div v-if="subscriptions?.length" class="tariff-card">
               <div class="flex gap-2 align-items-center">
                 <span>{{ $t('currentPlan') }}:</span>
-                <span class="font-bold">{{ test?.find((item) => item.id === subscriptions?.find((subscription) => subscription.type === 'tariff'  && subscription.status === 'active')?.tariff_id)?.rus_name}}</span>
+                <span class="font-bold">{{ test?.find((item) => item._id === subscriptions?.find((subscription) => subscription.type === 'tariff'  && subscription.status === 'active')?.tariff_id)?.display_name}} {{ test?.find((item) => item._id === subscriptions?.find((subscription) => subscription.type === 'tariff'  && subscription.status === 'active')?.tariff_id)?.limits?.leads}}</span>
               </div>
               <div class="flex gap-2 align-items-center">
                 <span>{{ $t('used') }}:</span>
@@ -709,15 +505,8 @@ const changeRecurrence = () => {
                 <span>{{ $t('validUntil') }}:</span>
                 <span class="font-bold">{{ formatDateToDDMMYYYY(subscriptions?.find((subscription) => subscription.type === 'tariff'  && subscription.status === 'active')?.end_date) }}</span>
               </div>
-<!--              <div class="flex gap-2 align-items-center">-->
-<!--                <span>{{ $t('autoRenewal') }}:</span>-->
-<!--                <span class="flex align-items-center font-bold">-->
-<!--                  {{ $t('switch') }}-->
-<!--                  <InputSwitch v-model="autoRenewal" style="margin-left: 8px"/></span>-->
-<!--              </div>-->
               <div class="flex flex-column gap-2">
-                <span>Улучшить тариф до:</span>
-                <Button label="Обновить" class="p-3 mt-auto" style="height: 30px; width: 50%" @click="upgradeTariff"></Button>
+                <Button label="Обновить тариф" class="p-3 mt-auto" style="height: 30px;" @click="upgradeTariff"></Button>
               </div>
             </div>
             <div class="tariff-card" v-for="subscriptionCallAnalytics in subscriptionsServices" :key="subscriptionCallAnalytics._id">
@@ -816,7 +605,7 @@ const changeRecurrence = () => {
                         <span>К оплате</span>
                         <span class="font-bold text-2xl">{{ thousandSeparator(basicTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-                      <Button label="Оплатить" class="p-3 w-full mt-auto" @click="payBasicPlan" :disabled="!!subscriptions?.length"></Button>
+                      <Button :label="`${subscriptions.length ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payBasicPlan" ></Button>
                     </div>
                   </div>
                 </div>
@@ -856,7 +645,7 @@ const changeRecurrence = () => {
                         <span>К оплате</span>
                         <span class="font-bold text-2xl">{{ thousandSeparator(proTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-                      <Button label="Оплатить" class="p-3 w-full mt-auto" @click="payProPlan" :disabled="!!subscriptions?.length"></Button>
+                      <Button :label="`${subscriptions.length ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payProPlan"></Button>
                     </div>
                   </div>
                 </div>

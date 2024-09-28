@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { useChannelStore } from "~/src/shared/store/channel";
-import {useToast} from "primevue/usetoast";
+import { useSubscriptionStore } from "~/src/shared/store/subscription";
+import { useToast } from "primevue/usetoast";
 
 const channelStore = useChannelStore();
+const subscriptionStore = useSubscriptionStore()
 const { t } = useI18n();
 const toast = useToast();
 
-const channelTitle = ref<string>('')
+const channelTitle = ref<string>('');
+
+const isPayWhatsapp = computed(() => {
+  return subscriptionStore.getSubscriptionsWhatsapp.length
+})
 
 const createChannel = async () => {
   await channelStore.createNewChannel({ type: 'whatsapp', title: channelTitle.value }).then((res) => {
@@ -16,18 +22,31 @@ const createChannel = async () => {
     }
   })
 }
+
+const payWhatsapp = () => {
+  return navigateTo({ name: 'tariffs' })
+}
+
+onMounted(async () => {
+  await subscriptionStore.loadSubscriptionsWhatsapp()
+})
 </script>
 
 <template>
   <div class="grid">
     <div class="col-12">
       <div class="card">
+        <div v-if="!isPayWhatsapp" class="flex gap-4 align-items-center">
+          <span style="color: #ef4444">У вас не оплачено подключение канала WhatsApp</span>
+          <Button label="Оплатить" @click="payWhatsapp"></Button>
+          {{ isPayWhatsapp }}
+        </div>
         <h5 class="mt-4 mb-4">WhatsApp</h5>
         <div class="flex flex-column gap-2 mb-4">
           <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
           <InputText id="channelTitle" type="text" v-model="channelTitle" class="channel-title" />
         </div>
-        <Button :label="t('toPlug')" @click="createChannel" :disabled="!channelTitle.length" class="save-btn"></Button>
+        <Button :label="t('toPlug')" @click="createChannel" :disabled="!channelTitle.length || isPayWhatsapp.length" class="save-btn"></Button>
       </div>
     </div>
   </div>

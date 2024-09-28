@@ -61,17 +61,15 @@ const signIn = async () => {
         toast.add({ severity: 'success', detail: response?.message, life: 5000 });
         setTimeout(() => {
           return navigateTo({ name: 'login' });
-        }, 5000);  // This will delay navigation by 5 seconds
+        }, 5000);
       }
       if (response?.error) {
-        toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.error, life: 5000 })
+        toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.message, life: 5000 })
       }
     } catch (e) {
       console.log(e);
     }
   }
-  // console.log(isFormCorrect);
-  // console.log(form);
 }
 definePageMeta({
   layout: 'auth'

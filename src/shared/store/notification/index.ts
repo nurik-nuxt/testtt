@@ -1,6 +1,7 @@
 import {useApi} from "~/composable";
 
 export const useNotificationStore = defineStore('notification', {
+
     actions: {
         async getTelegramNotificationLink() {
             try {
