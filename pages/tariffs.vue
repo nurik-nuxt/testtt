@@ -461,9 +461,9 @@ const changeRecurrence = () => {
           <span class="font-bold" style="color: #10b981">
             +
         {{ totalUpgradeTariffTime === 'per_month'
-              ? thousandSeparator(slotProps.option?.upgrade_prices.difference_month_price)
-              : thousandSeparator(slotProps.option?.upgrade_prices?.difference_year_price) }}
-        Руб
+              ? thousandSeparator(slotProps.option?.upgrade_prices.difference_month_price * currencyList?.find((item) => item.value === currencyValue)?.diff)
+              : thousandSeparator(slotProps.option?.upgrade_prices?.difference_year_price * currencyList?.find((item) => item.value === currencyValue)?.diff) }}
+        {{ currencyList?.find((item) => item.value === currencyValue)?.title }}
       </span>
         </div>
       </template>
@@ -474,9 +474,9 @@ const changeRecurrence = () => {
           <span class="font-bold" style="color: #10b981">
             +
         {{ totalUpgradeTariffTime === 'per_month'
-              ? thousandSeparator(slotProps.option?.upgrade_prices.difference_month_price)
-              : thousandSeparator(slotProps.option?.upgrade_prices?.difference_year_price) }}
-        Руб
+              ? thousandSeparator(slotProps.option?.upgrade_prices.difference_month_price * currencyList?.find((item) => item.value === currencyValue)?.diff)
+              : thousandSeparator(slotProps.option?.upgrade_prices?.difference_year_price * currencyList?.find((item) => item.value === currencyValue)?.diff) }}
+        {{ currencyList?.find((item) => item.value === currencyValue)?.title }}
       </span>
         </div>
       </template>
