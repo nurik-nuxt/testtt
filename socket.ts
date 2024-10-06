@@ -1,5 +1,6 @@
 import { io } from "socket.io-client";
 import jsCookie from "js-cookie";
+const { apiBaseUrl} = useRuntimeConfig().public;
 
 interface Message {
     id: number;
@@ -10,7 +11,7 @@ export const state = reactive({
     connected: false,
     messages: [] as Message[]
 })
-export const socket = io('https://api.7sales.ai/chat', {
+export const socket = io(`${apiBaseUrl}/chat`, {
     auth: {
         token: jsCookie.get('accessToken')
     }

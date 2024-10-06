@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useChannelStore } from "~/src/shared/store/channel";
 import { useToast } from "primevue/usetoast";
+import { useSubscriptionStore } from "~/src/shared/store/subscription";
 
+const subscriptionStore = useSubscriptionStore();
 const toast = useToast();
 const { t } = useI18n();
 const channels = ref([
@@ -67,9 +69,14 @@ const openChannel = (type: string, id: string) => {
 onMounted(async () => {
   await channelStore.getAllChannels();
 })
+
+const test = async () => {
+  await subscriptionStore.subscriptionConsume()
+}
 </script>
 
 <template>
+<!--  <Button @click="test">AAA</Button>-->
   <div class="grid">
     <div class="col-12">
       <div class="card">

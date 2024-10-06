@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
 import jsCookie from "js-cookie";
 import { useChatStore } from "~/src/shared/store/chat";
+const { apiBaseUrl} = useRuntimeConfig().public;
 
 interface Message {
     id: number;
@@ -12,7 +13,7 @@ export const state = reactive({
     messages: [] as Message[]
 })
 
-export const socket = io('https://api.7sales.ai/superchat', {
+export const socket = io(`${apiBaseUrl}/superchat`, {
     auth: {
         token: jsCookie.get('accessToken')
     }

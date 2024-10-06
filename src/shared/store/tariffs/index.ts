@@ -94,6 +94,17 @@ export const useTariffsStore = defineStore('tariffs', {
             } catch (e) {
                 console.error(e)
             }
+        },
+
+        async assignTariff(data: { email: string; tariff_id?: string; recurrence?: 'per_month' | 'per_year' }[]) {
+            try {
+                return  await useApi(`/subscription/assign-tariff`, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                })
+            } catch (e) {
+                console.error(e)
+            }
         }
     }
 })

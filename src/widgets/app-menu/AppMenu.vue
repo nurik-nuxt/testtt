@@ -161,6 +161,11 @@ const menuAdmin = computed(() => {
       label: 'Пользователи',
       icon: 'pi pi-fw pi-users',
       url: 'admin/users'
+    },
+    {
+      label: 'Тарифы',
+      icon: 'pi pi-fw pi-qrcode',
+      url: 'admin/tariffs'
     }
   ]
 })

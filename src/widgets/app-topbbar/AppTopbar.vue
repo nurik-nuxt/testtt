@@ -1,7 +1,25 @@
 <script setup>
 import { useLayout } from '~/composable';
 import { useAuthStore } from "~/src/shared/store/auth";
+import { useNotificationStore } from "~/src/shared/store/notification";
+import { useSubscriptionStore } from "~/src/shared/store/subscription";
+import { socket } from "~/notification";
 
+const notificationStore = useNotificationStore();
+const subscriptionStore = useSubscriptionStore();
+
+onUnmounted(() => {
+  socket.disconnect();
+})
+onMounted(async () => {
+  await notificationStore.getNotificationList();
+  await subscriptionStore.loadSubscriptionsTariff();
+  socket.connect();
+});
+
+const subscriptions = computed(() => {
+  return subscriptionStore.getSubscriptions
+});
 
 const { layoutConfig, layoutState, onMenuToggle, showLanguageDialog, setToggleChat, chatVisible } = useLayout();
 const authStore = useAuthStore();
@@ -20,7 +38,9 @@ onBeforeUnmount(() => {
   unbindOutsideClickListener();
 });
 
-
+const notifications = computed(() => {
+  return notificationStore.getNotifications
+})
 const onTopBarMenuButton = () => {
   topbarMenuActive.value = !topbarMenuActive.value;
 };
@@ -63,6 +83,14 @@ const applyImpersonate = async () => {
   await authStore.makeImpersonate(userIdToImpersonate.value)
 }
 
+const notificationColorClass = computed(() => {
+  const importance = notifications[0]?.importance;
+  if (importance === 3) return 'notification-red';
+  if (importance === 1) return 'notification-green';
+  if (importance === 2) return 'notification-yellow';
+  return 'notification-yellow';
+})
+
 </script>
 
 
@@ -82,6 +110,7 @@ const applyImpersonate = async () => {
       <i class="pi pi-bars"></i>
     </button>
 
+
     <nuxt-link v-if="authStore.isAdmin" to="/" class="layout-topbar-logo">
       <span class="layout-topbar-logo-text">Admin</span>
     </nuxt-link>
@@ -94,6 +123,12 @@ const applyImpersonate = async () => {
     <nuxt-link v-else to="/" class="layout-topbar-logo">
       <span class="layout-topbar-logo-text">7sales</span>
     </nuxt-link>
+    <div class="flex justify-content-between w-full">
+      <div style="font-weight: 700;" :class="notificationColorClass">
+        {{ notifications[0]?.message }}
+      </div>
+      <div style="font-weight: 700; color: rgb(25, 201, 39)" v-if="subscriptions[0]?.billing_cycles[0]?.limit">{{ subscriptions[0]?.billing_cycles[0]?.usage }} / {{ subscriptions[0]?.billing_cycles[0]?.limit }}</div>
+    </div>
 
 
 
@@ -123,5 +158,17 @@ const applyImpersonate = async () => {
   .mobile-chat-toggle {
     display: block;
   }
+}
+
+.notification-red {
+  color: red;
+}
+
+.notification-green {
+  color: rgb(25, 201, 39);
+}
+
+.notification-yellow {
+  color: rgb(249, 117, 62);
 }
 </style>

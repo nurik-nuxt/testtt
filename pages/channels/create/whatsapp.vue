@@ -39,14 +39,13 @@ onMounted(async () => {
         <div v-if="!isPayWhatsapp" class="flex gap-4 align-items-center">
           <span style="color: #ef4444">У вас не оплачено подключение канала WhatsApp</span>
           <Button label="Оплатить" @click="payWhatsapp"></Button>
-          {{ isPayWhatsapp }}
         </div>
         <h5 class="mt-4 mb-4">WhatsApp</h5>
         <div class="flex flex-column gap-2 mb-4">
           <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
           <InputText id="channelTitle" type="text" v-model="channelTitle" class="channel-title" />
         </div>
-        <Button :label="t('toPlug')" @click="createChannel" :disabled="!channelTitle.length || isPayWhatsapp.length" class="save-btn"></Button>
+        <Button :label="t('toPlug')" @click="createChannel" :disabled="!channelTitle.length || !isPayWhatsapp > 0" class="save-btn"></Button>
       </div>
     </div>
   </div>

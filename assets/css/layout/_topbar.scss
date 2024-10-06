@@ -22,7 +22,7 @@
         color: var(--surface-900);
         font-size: 1.5rem;
         font-weight: 500;
-        width: 300px;
+        width: 290px;
         border-radius: 12px;
 
         img {
@@ -107,11 +107,12 @@
         .layout-topbar-logo {
             width: auto;
             order: 2;
+            display: none;
         }
 
         .layout-menu-button {
             margin-left: 0;
-            order: 1;
+            //order: 1;
         }
 
         .layout-topbar-menu-button {

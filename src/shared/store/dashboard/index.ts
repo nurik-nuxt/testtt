@@ -69,16 +69,20 @@ export const useDashboardStore = defineStore('dashboard', {
             }
         },
 
-        async loadUsers(){
+        async loadUsers(withTariff: boolean = false) {
             try {
-                const response = await useApi(`/user-list`, {
+                // Build the URL based on the value of withTariff
+                const url = withTariff ? `/user-list?with-tariff=true` : `/user-list`;
+
+                const response = await useApi(url, {
                     method: 'GET'
-                },true)
+                }, true);
+
                 if (response?.data?.users?.length) {
-                    this.users = response?.data?.users
+                    this.users = response?.data?.users;
                 }
             } catch (e) {
-                console.error(e)
+                console.error(e);
             }
         },
 

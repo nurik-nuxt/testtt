@@ -186,6 +186,37 @@ export const useSubscriptionStore = defineStore('subscription', {
             } catch (e) {
                 console.error(e)
             }
+        },
+
+        setSubscriptionUsage(usage: number) {
+            this.subscriptions[0].billing_cycles[0].usage = usage
+        },
+        async subscriptionConsume() {
+            try {
+                const response = await useApi(`/subscription/consume`, {
+                    method: 'POST',
+                    body: {
+                        // type: "subscription_activation",
+                        serviceType: "tariff",
+                        // message: "Ваша стартовая подписка активирована",
+                        // createdAt:  "2024-09-29T07:48:08.711Z",
+                        // isRead: false,
+                        // isImportant: true,
+                        // validFrom: {
+                        //     $date: "2024-09-29T07:48:08.710Z"
+                        // },
+                        // validUntil: null,
+                        // alwaysShowToast: false,
+                        // data: {
+                        //     subscriptionId: "66f906380bcd23299948bd7f",
+                        //     daysRemaining: 365
+                        // }
+                    }
+                })
+                console.log(response);
+            } catch (e) {
+                console.error(e)
+            }
         }
     }
 })
