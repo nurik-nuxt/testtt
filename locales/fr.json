@@ -307,5 +307,6 @@
   "changeDealStageBitrix": "Changer l'étape de la transaction dans Bitrix24",
   "connectedChannels1": "Canaux WhatsApp",
   "subscription": "Abonnements",
-  "isReminderStop": "Arrête d'écrire"
+  "isReminderStop": "Arrête d'écrire",
+  "systemPromts": "Produits système"
 }

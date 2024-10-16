@@ -45,6 +45,9 @@ const login = async () => {
     try {
       const response = await authStore.login(form);
       if (response?.access_token) {
+        if (response?.user?.role === 'admin') {
+          return navigateTo({ name: 'admin-dashboard' })
+        }
         if (response?.user?.role === 'support') {
           return navigateTo({ name: 'supports-chatbots' })
         } else {

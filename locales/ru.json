@@ -306,5 +306,6 @@
   "changeDealStageBitrix": "Изменить этап сделки в Bitrix24",
   "connectedChannels1": "Каналы WhatsApp",
   "subscription": "Подписки",
-  "isReminderStop": "Прекратить напиманию"
+  "isReminderStop": "Прекратить напиманию",
+  "systemPromts": "Системные промты"
 }

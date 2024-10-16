@@ -305,5 +305,6 @@
   "changeDealStageBitrix": "Bitrix24 ішіндегі транзакция кезеңін өзгертіңіз",
   "connectedChannels1": "WhatsApp арналары",
   "subscription": "Жазылымдар",
-  "isReminderStop": "Жазуды тоқтатыңыз"
+  "isReminderStop": "Жазуды тоқтатыңыз",
+  "systemPromts": "Жүйелік өнімдер"
 }

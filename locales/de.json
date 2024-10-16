@@ -306,5 +306,6 @@
   "changeDealStageBitrix": "Ändern Sie die Transaktionsphase in Bitrix24",
   "connectedChannels1": "WhatsApp-Kanäle",
   "subscription": "Abonnements",
-  "isReminderStop": "Hör auf zu schreiben"
+  "isReminderStop": "Hör auf zu schreiben",
+  "systemPromts": "Systemprodukte"
 }

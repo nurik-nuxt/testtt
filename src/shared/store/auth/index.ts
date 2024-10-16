@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
         supportedUserEmail(state){
             if (process.client) {
                 const userCookie = jsCookie.get('supportedUserEmail')
-                return userCookie ? JSON.parse(userCookie) : state.supportedEmail
+                return userCookie ? JSON.parse(userCookie) : state?.supportedEmail
             } else {
                 return null;
             }
@@ -115,8 +115,9 @@ export const useAuthStore = defineStore('auth', {
                 jsCookie.set('supportRefreshToken', response.refresh_token);
                 console.log(response);
                 jsCookie.set('supportedUserEmail', JSON.stringify(response?.user?.email))
+                jsCookie.set('supportName', JSON.stringify(response?.user?.name))
+                jsCookie.set('supportPhone', JSON.stringify(response?.user?.phone))
                 this.supportedEmail = response?.user?.email
-                // jsCookie.set('supportedUserId', response?.user?._id)
             } catch (e) {
                 console.log(e);
             }

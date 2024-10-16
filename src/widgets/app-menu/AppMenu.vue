@@ -93,21 +93,21 @@ const menuSupport = computed(() => {
       icon: 'pi pi-fw pi-star',
       url: 'supports/tariffs'
     },
-    {
-      label: t('message'),
-      icon: 'pi pi-fw pi-comment',
-      url: 'supports/dialogues'
-    },
+    // {
+    //   label: t('message'),
+    //   icon: 'pi pi-fw pi-comment',
+    //   url: 'supports/dialogues'
+    // },
     {
       label: t('callAnalytics'),
       icon: 'pi pi-fw pi-chart-pie',
       url: 'supports/analytics'
     },
-    {
-      label: t('logs'),
-      icon: 'pi pi-fw pi-prime',
-      url: 'supports/logs'
-    },
+    // {
+    //   label: t('logs'),
+    //   icon: 'pi pi-fw pi-prime',
+    //   url: 'supports/logs'
+    // },
     // {
     //   label: t('partnerAccount'),
     //   icon: 'pi pi-fw pi-id-card',
@@ -118,11 +118,11 @@ const menuSupport = computed(() => {
       icon: 'pi pi-fw pi-user',
       url: 'supports/cabinet'
     },
-    {
-      label: t('hiddenSettings'),
-      icon: 'pi pi-fw pi-cog',
-      url: 'supports/settings'
-    },
+    // {
+    //   label: t('hiddenSettings'),
+    //   icon: 'pi pi-fw pi-cog',
+    //   url: 'supports/settings'
+    // },
   ]
 })
 const menuAdmin = computed(() => {
@@ -133,7 +133,7 @@ const menuAdmin = computed(() => {
       url: 'admin/dashboard'
     },
     {
-      label: 'Скрытые промты',
+      label: t('systemPromts'),
       icon: 'pi pi-fw pi-star',
       url: 'admin/products'
     },
@@ -147,16 +147,16 @@ const menuAdmin = computed(() => {
       icon: 'pi pi-fw pi-database',
       url: 'admin/knowledge'
     },
-    {
-      label: 'Логи',
-      icon: 'pi pi-fw pi-prime',
-      url: 'admin/logs'
-    },
-    {
-      label: 'Настройки ...',
-      icon: 'pi pi-fw pi-cog',
-      url: 'admin/settings'
-    },
+    // {
+    //   label: 'Логи',
+    //   icon: 'pi pi-fw pi-prime',
+    //   url: 'admin/logs'
+    // },
+    // {
+    //   label: 'Настройки ...',
+    //   icon: 'pi pi-fw pi-cog',
+    //   url: 'admin/settings'
+    // },
     // {
     //   label: 'Пользователи',
     //   icon: 'pi pi-fw pi-users',

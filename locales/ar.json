@@ -307,5 +307,6 @@
   "changeDealStageBitrix": "تغيير مرحلة المعاملة في Bitrix24",
   "connectedChannels1": "قنوات الواتس اب",
   "subscription": "الاشتراكات",
-  "isReminderStop": "توقف عن الكتابة"
+  "isReminderStop": "توقف عن الكتابة",
+  "systemPromts": "منتجات النظام"
 }

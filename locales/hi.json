@@ -307,5 +307,6 @@
   "changeDealStageBitrix": "Bitrix24 में लेनदेन चरण बदलें",
   "connectedChannels1": "व्हाट्सएप चैनल",
   "subscription": "सदस्यता",
-  "isReminderStop": "लेखन बंद"
+  "isReminderStop": "लेखन बंद",
+  "systemPromts": "सिस्टम उत्पाद"
 }

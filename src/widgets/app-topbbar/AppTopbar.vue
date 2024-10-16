@@ -4,6 +4,7 @@ import { useAuthStore } from "~/src/shared/store/auth";
 import { useNotificationStore } from "~/src/shared/store/notification";
 import { useSubscriptionStore } from "~/src/shared/store/subscription";
 import { socket } from "~/notification";
+import jsCookie from 'js-cookie';
 
 const notificationStore = useNotificationStore();
 const subscriptionStore = useSubscriptionStore();
@@ -80,7 +81,9 @@ const isOutsideClicked = (event) => {
 };
 const userIdToImpersonate = ref('');
 const applyImpersonate = async () => {
-  await authStore.makeImpersonate(userIdToImpersonate.value)
+  await authStore.makeImpersonate(userIdToImpersonate.value).then(() => {
+    window.location.reload();
+  })
 }
 
 const notificationColorClass = computed(() => {
@@ -90,6 +93,15 @@ const notificationColorClass = computed(() => {
   if (importance === 2) return 'notification-yellow';
   return 'notification-yellow';
 })
+
+const logoutSupport = () => {
+  jsCookie.remove('supportAccessToken')
+  jsCookie.remove('supportRefreshToken')
+  jsCookie.remove('supportedUserEmail')
+  jsCookie.remove('supportName')
+  jsCookie.remove('supportPhone')
+  window.location.reload();
+}
 
 </script>
 
@@ -106,7 +118,7 @@ const notificationColorClass = computed(() => {
 <!--      <span style="color: red" v-if="authStore.supportedUserEmail">{{ authStore.supportedUserEmail }}</span>-->
 <!--    </div>-->
 
-    <button v-if="!authStore.isSupport" class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
+    <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
       <i class="pi pi-bars"></i>
     </button>
 
@@ -119,11 +131,12 @@ const notificationColorClass = computed(() => {
       <InputText type="text" v-model="userIdToImpersonate" />
       <Button :disabled="!userIdToImpersonate.length" :label="t('apply')" @click="applyImpersonate"/>
       <span style="color: red" v-if="authStore.supportedUserEmail">{{ authStore.supportedUserEmail }}</span>
+      <i class="pi pi-sign-out ml-auto" style="cursor: pointer" @click="logoutSupport"></i>
     </div>
     <nuxt-link v-else to="/" class="layout-topbar-logo">
       <span class="layout-topbar-logo-text">7sales</span>
     </nuxt-link>
-    <div class="flex justify-content-between w-full">
+    <div v-if="!authStore.isSupport" class="flex justify-content-between w-full">
       <div style="font-weight: 700;" :class="notificationColorClass">
         {{ notifications[0]?.message }}
       </div>
