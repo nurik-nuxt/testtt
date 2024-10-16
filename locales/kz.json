@@ -304,5 +304,6 @@
   "startMessageNewBot": "1-бетте API құпия кілтін (OpenAI) қосу арқылы жаңа GPT ботын жасауды бастаңыз. Жалпы.",
   "changeDealStageBitrix": "Bitrix24 ішіндегі транзакция кезеңін өзгертіңіз",
   "connectedChannels1": "WhatsApp арналары",
-  "subscription": "Жазылымдар"
+  "subscription": "Жазылымдар",
+  "isReminderStop": "Жазуды тоқтатыңыз"
 }

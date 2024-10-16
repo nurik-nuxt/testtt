@@ -66,16 +66,20 @@ const copyWebhook = async () => {
             <p class="mb-0">2. Перейдите в меню Приложения/Разработчикам --> Добавить чат-бот --> Передавать боту сообщение из чата.</p>
             <p class="mb-0">3. Скопируйте вебхук из поля "Вебхук для вызова rest api" и вставьте его в поле URL.</p>
           </div>
-          <div class="flex flex-column gap-2 mb-4">
-            <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
-            <InputText id="channelTitle" type="text" v-model="channelTitle" />
-          </div>
+<!--          <div class="flex flex-column gap-2 mb-4">-->
+<!--            <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>-->
+<!--            <InputText id="channelTitle" type="text" v-model="channelTitle" />-->
+<!--          </div>-->
           <div class="flex flex-column gap-1 mb-4">
             <label for="channelTitle" style="font-weight: 700">WEBHOOK<span style="color: red">*</span></label>
             <InputText id="channelTitle" type="text" v-model="webhook" />
           </div>
           <div class="flex flex-column gap-1 mb-4">
             <p>4. Задайте название бота (оно будет выводиться в чате).</p>
+            <div class="flex flex-column gap-2 mb-4">
+              <label for="channelTitle" style="font-weight: 700">Название бота<span style="color: red">*</span></label>
+              <InputText id="channelTitle" type="text" v-model="channelTitle" />
+            </div>
             <p>5. Нажмите на кнопку "Скопировать WEBHOOK" и вставьте его в поле "URL обработчика бота".</p>
           </div>
           <Button label="Скопировать WEBHOOK" class="webhook-btn" @click="copyWebhook"></Button>

@@ -305,5 +305,6 @@
   "startMessageNewBot": "Start creating a new GPT bot by connecting the API Secret key (OpenAI) on page 1. General.",
   "changeDealStageBitrix": "Change transaction stage in Bitrix24",
   "connectedChannels1": "WhatsApp channels",
-  "subscription": "Subscriptions"
+  "subscription": "Subscriptions",
+  "isReminderStop": "Stop writing"
 }

@@ -305,5 +305,6 @@
   "startMessageNewBot": "Начните создание нового GPT-бота с подключения API Secret key (OpenAI) на странице 1. Общие.",
   "changeDealStageBitrix": "Изменить этап сделки в Bitrix24",
   "connectedChannels1": "Каналы WhatsApp",
-  "subscription": "Подписки"
+  "subscription": "Подписки",
+  "isReminderStop": "Прекратить напиманию"
 }

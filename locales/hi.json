@@ -306,5 +306,6 @@
   "startMessageNewBot": "पेज 1 पर एपीआई सीक्रेट कुंजी (ओपनएआई) को कनेक्ट करके एक नया जीपीटी बॉट बनाना शुरू करें। सामान्य।",
   "changeDealStageBitrix": "Bitrix24 में लेनदेन चरण बदलें",
   "connectedChannels1": "व्हाट्सएप चैनल",
-  "subscription": "सदस्यता"
+  "subscription": "सदस्यता",
+  "isReminderStop": "लेखन बंद"
 }

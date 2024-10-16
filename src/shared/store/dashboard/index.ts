@@ -1,13 +1,26 @@
-import {useApi} from "~/composable";
+import { useApi } from "~/composable";
 
 export const useDashboardStore = defineStore('dashboard', {
     state: () => {
         return {
+            isLoadingTariffStatisticsSums: false as boolean,
+            paidUsersCount: 0 as number,
+            isLoadingPaidUsersCount: false as boolean,
             userStatistics: {
                 newUsersThisMonth: 0 as number,
                 newUsersThisYear: 0 as number,
                 newUsersToday: 0 as number,
                 totalUsers: 0 as number
+            },
+            tariffStatistics: {
+                newUsersThisMonth: 0 as number,
+                newUsersThisYear: 0 as number,
+                newUsersToday: 0 as number,
+            },
+            tariffStatisticsSums: {
+                newUsersThisMonth: 0 as number,
+                newUsersThisYear: 0 as number,
+                newUsersToday: 0 as number,
             },
             botsStatistics: {
                 totalBots: 0 as number,
@@ -26,7 +39,12 @@ export const useDashboardStore = defineStore('dashboard', {
         getUserStatistics: (state) => state.userStatistics,
         getBotsStatistics: (state) => state.botsStatistics,
         getLeadsStatistics: (state) => state.leadsStatistics,
-        getUsers: (state) => state.users
+        getUsers: (state) => state.users,
+        getTariffStatistics: (state) => state.tariffStatistics,
+        getTariffStatisticsSums: (state) => state.tariffStatisticsSums,
+        getLoadingTariffStatisticsSums: (state) => state.isLoadingTariffStatisticsSums,
+        getPaidUsersCount: (state) => state.paidUsersCount,
+        getLoadingPaidUsersCount: (state) => state.isLoadingPaidUsersCount
     },
 
     actions: {
@@ -66,6 +84,53 @@ export const useDashboardStore = defineStore('dashboard', {
                 }
             } catch (e) {
                 console.error(e)
+            }
+        },
+
+        async loadTariffStatistics() {
+            try {
+                const response = await useApi('/active-subscriptions-stats', {
+                    method: 'GET'
+                }, true)
+                console.log(response);
+                if (response?.success) {
+                    this.tariffStatistics = response?.data
+                }
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async loadTariffStatisticsSums() {
+            try {
+                this.isLoadingTariffStatisticsSums = true
+                const response = await useApi('/total-tariff-sum', {
+                    method: 'GET'
+                }, true)
+                console.log(response);
+                if (response?.success) {
+                    this.tariffStatisticsSums = response?.data
+                }
+            } catch (e) {
+                console.error(e)
+            } finally {
+                this.isLoadingTariffStatisticsSums = false
+            }
+        },
+        async loadUsersTariffPayCount() {
+            try {
+                this.isLoadingPaidUsersCount = true
+                const response = await useApi('/paid-users-count', {
+                    method: 'GET'
+                }, true)
+                console.log('loadUsersTariffPayCount', response)
+                if(response?.success) {
+                    this.paidUsersCount = response?.data?.paidUsersCount
+                }
+            } catch (e) {
+                console.error(e)
+            } finally {
+                this.isLoadingPaidUsersCount = false
             }
         },
 

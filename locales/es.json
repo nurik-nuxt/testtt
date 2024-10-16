@@ -306,5 +306,6 @@
   "startMessageNewBot": "Comience a crear un nuevo bot GPT conectando la clave secreta API (OpenAI) en la página 1. General.",
   "changeDealStageBitrix": "Cambiar etapa de transacción en Bitrix24",
   "connectedChannels1": "Canales de whatsapp",
-  "subscription": "Suscripciones"
+  "subscription": "Suscripciones",
+  "isReminderStop": "deja de escribir"
 }

@@ -804,12 +804,13 @@ const getWebhookText = (index: number) => {
 };
 
 const funnels = computed(() => {
-  if (currentBot.value?.channels?.some((channel) => channel.type === 'bitrix24')) {
-    return bitrix24Store.getFunnels
+  if (currentBot.value?.channels?.some((channel) => channel?.type === 'bitrix24')) {
+    return bitrix24Store.getFunnels || []
   } else {
-    return amoCrmStore.getAllFunnels
+    return amoCrmStore.getAllFunnels || []
   }
 })
+
 const getFunnelId = (index: number) => {
   return computed({
     get() {
@@ -1014,6 +1015,9 @@ const showDeleteConfirmModal = (index: any) => {
   showFuctionDeleteModal.value = true;
   selectedBotTaskIndex.value = index;
 }
+
+const isReminderStop = ref<boolean>(false)
+const isOnReminder = ref<boolean>(true)
 </script>
 
 <template>
@@ -1210,6 +1214,10 @@ const showDeleteConfirmModal = (index: any) => {
                         {{ $t('endDialogue') }}
                           <InputSwitch v-model="getInterruptDialogue(index).value" style="margin-left: 24px"/>
                       </span>
+                      <span class="bot-card__activate">
+                        {{ $t('isReminderStop') }}
+                          <InputSwitch v-model="isReminderStop" style="margin-left: 24px"/>
+                      </span>
                       <div class="task-panel">
                         <TabView :scrollable="true">
                           <!--Send FileInMessage-->
@@ -1250,7 +1258,7 @@ const showDeleteConfirmModal = (index: any) => {
                             <div class="mt-4 flex justify-content-between gap-4 fields">
                               <div class="flex flex-column w-full gap-2">
                                 <label for="funnel">{{ $t('choosePipeline') }}:</label>
-                                <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
+<!--                                <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>-->
                               </div>
                               <div class="flex flex-column w-full gap-2">
                                 <label for="statusId">{{ $t('changeStatus') }}:</label>
@@ -1343,10 +1351,15 @@ const showDeleteConfirmModal = (index: any) => {
                         <span class="bot-card__activate" style="margin-top: 8px">
                     {{ $t('works247') }}
                   </span>
-                        <span class="bot-card__activate">
+                  <span class="bot-card__activate">
                     {{ $t('setWorkingHours') }}
                     <InputSwitch v-model="message.isSchedule" style="margin-left: 8px"/>
                   </span>
+                  <span class="bot-card__activate" style="margin-top: 8px">
+                    {{ $t('onOffButton') }}
+                    <InputSwitch v-model="isOnReminder" style="margin-left: 8px"/>
+                  </span>
+
 <!--                        <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="message.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>-->
                         <div v-if="message.isSchedule" class="flex align-items-center gap-2 mt-3">
                           <div class="flex flex-column gap-1">

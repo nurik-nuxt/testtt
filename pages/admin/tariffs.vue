@@ -132,6 +132,7 @@ const selectedUpgradeTariffId = ref()
           <Column field="_id" header="ID"></Column>
           <Column field="name" header="Имя"></Column>
           <Column field="email" header="Email"></Column>
+          <Column field="role" header="Роль"></Column>
           <Column field="tariff" header="Тариф">
             <template #body="slotProps">
               {{ tariffs?.find((tariff) => tariff?._id === slotProps.data.tariff?.tariff_id)?.rus_name }} {{ tariffs?.find((tariff) => tariff?._id === slotProps.data.tariff?.tariff_id)?.limits?.leads }}
