@@ -137,12 +137,15 @@ const changeChannel = async () => {
             <div class="flex flex-column gap-2 mb-4">
               <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
               <InputText id="channelTitle" type="text" v-model="channelTitle" />
-              <Button :label="t('save')" @click="changeChannel" :disabled="!channelTitle?.length"></Button>
+              <Button :label="t('change')" @click="changeChannel" :disabled="!channelTitle?.length"></Button>
             </div>
           </div>
-          <div class="flex flex-column gap-4">
+          <div class="flex flex-column gap-4" style="width: 50%">
             <h5>{{ $t('instructionsConnectAmoCRM') }}</h5>
-            <span>{{ $t('instructionText') }}</span>
+            <span>{{ $t('instructionTextAmo1') }}</span>
+            <span>{{ $t('instructionTextAmo2') }}</span>
+            <span>{{ $t('instructionTextAmo3') }}</span>
+            <span>{{ $t('instructionTextAmo4') }}</span>
           </div>
         </div>
         <div class="flex flex-column mt-5 gap-3">

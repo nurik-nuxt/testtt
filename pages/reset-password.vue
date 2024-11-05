@@ -33,8 +33,12 @@ const resetPassword = async () => {
   const isFormCorrect = await v$.value.$validate();
 
   if (isFormCorrect) {
-    console.log('login')
-    return navigateTo({ name: 'login' })
+    await authStore.resendConfirmation(form.email).then((res) => {
+      if (res?.success) {
+        toast.add({ severity: 'success', summary: 'Успешно', detail:res?.message, life: 5000 });
+      }
+    })
+    // return navigateTo({ name: 'login' })
     // try {
     //   const response = await authStore.login(form);
     //   console.log(response);

@@ -2,7 +2,6 @@
 import { useDashboardStore } from "~/src/shared/store/dashboard";
 import { FilterMatchMode } from '@primevue/core/api';
 import { useTariffsStore } from "~/src/shared/store/tariffs";
-import {thousandSeparator} from "~/src/shared/utils/helpers";
 
 const dashboardStore = useDashboardStore();
 const tariffsStore = useTariffsStore();
@@ -74,10 +73,6 @@ const tariffUpgradeTimeList = ref<{ title: string; value: string }[]>(
 )
 
 const payUpgradeTariff = async () => {
-  console.log('payUpgradeTariff')
-  console.log(selectedEmail.value);
-  console.log(selectedUpgradeTariffId.value);
-  console.log(totalUpgradeTariffTime.value)
   if (selectedEmail.value) {
     await tariffsStore.assignTariff([{email: selectedEmail.value, tariff_id: selectedUpgradeTariffId.value, recurrence: totalUpgradeTariffTime.value}]).then(async () => {
       await dashboardStore.loadUsers(true)

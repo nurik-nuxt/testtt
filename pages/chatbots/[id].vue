@@ -16,6 +16,7 @@ import {useAmoCrmStore} from "~/src/shared/store/amocrm";
 import {useBitrix24} from "~/src/shared/store/bitrix24";
 import {useLoaderStore} from "~/src/shared/store/loader";
 import {useBotReminder} from "~/src/shared/store/reminder";
+import { useUserStore } from "~/src/shared/store/user";
 import {BaseFile} from "~/src/shared/components/base";
 import {convertToBrowserTimezone} from "~/src/shared/utils/helpers";
 
@@ -58,13 +59,12 @@ const amoCrmStore = useAmoCrmStore();
 const bitrix24Store = useBitrix24();
 const loaderStore = useLoaderStore();
 const botReminderStore = useBotReminder();
+const userStore = useUserStore();
+
 
 const loading = computed(() => {
   return loaderStore.getLoading;
 })
-
-
-const extra = ref<boolean>(true);
 
 
 const { data: models, suspense: suspenseModels } = queryGetModelList();
@@ -81,7 +81,7 @@ const apiKeyTypes = ref([
   {
     title: t('use7sTokens'),
     code: 'shared',
-    disabled: true,
+    disabled: false,
   }
 ]);
 
@@ -109,38 +109,10 @@ const createKnowledgeBase = (id: number) => {
 
 const knowledgeBaseSelectedKey = ref(null);
 
-const fullTimeWork = ref<boolean>(false);
-
-const workingZone = ref(null);
-
 const workingZones = computed(() => {
   return botReminderStore.getAllTimeZones;
 })
 
-
-const mondayActive = ref(true);
-const tuesdayActive = ref(true);
-const wednesdayActive = ref(true);
-const thursdayActive = ref(true);
-const fridayActive = ref(true);
-const saturdayActive = ref(true);
-const sundayActive = ref(true);
-
-const mondayTimeStart = ref(null);
-const tuesdayTimeStart = ref(null);
-const wednesdayTimeStart = ref(null);
-const thursdayTimeStart = ref(null);
-const fridayTimeStart = ref(null);
-const saturdayTimeStart = ref(null);
-const sundayTimeStart = ref(null);
-
-const mondayTimeEnd = ref(null);
-const tuesdayTimeEnd = ref(null);
-const wednesdayTimeEnd = ref(null);
-const thursdayTimeEnd = ref(null);
-const fridayTimeEnd = ref(null);
-const saturdayTimeEnd = ref(null);
-const sundayTimeEnd = ref(null);
 
 const active = ref(true)
 const filters = ref({});
@@ -156,7 +128,7 @@ const currentBot = ref({
   user_id: '',
   instructions: '',
   apiKey: '',
-  apiKeyType: '',
+  apiKeyType: 'own',
   controlSignals: {
     stopBot: '',
     continueBot: ''
@@ -191,7 +163,13 @@ const currentBot = ref({
 });
 
 const isValidatedApiSecretKey = computed(() => {
-  return !!currentBot.value.apiKey.length;
+  if (currentBot.value.apiKeyType === 'shared') {
+    return userBalance.value <= 0;
+  } else {
+    if (currentBot.value.apiKey.length > 3) {
+      return false
+    } else return true
+  }
 })
 
 const workingHours = ref([
@@ -339,6 +317,11 @@ function ensureAllActionsExist(botFunction: any) {
   return botFunction;
 }
 
+const userBalance = computed(() => {
+  return userStore.user?.balance
+})
+
+const showEmptyOpenAISecretKey = ref<string>(false)
 onMounted(async () => {
   socket.connect();
 
@@ -379,7 +362,8 @@ onMounted(async () => {
         mainStore.setChatBotActiveTab(1);
       } else {
         mainStore.setChatBotActiveTab(0);
-        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
+        showEmptyOpenAISecretKey.value = true
+        // toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
       }
     }),
     channelStore.getAllChannels(),
@@ -387,7 +371,8 @@ onMounted(async () => {
     notificationStore.getTelegramNotificationLink().then((res) => {
       const response = JSON.parse(res);
       telegramLink.value = response?.link;
-    })
+    }),
+    userStore.fetchUserInfo()
   ]);
 });
 
@@ -404,7 +389,7 @@ const sendMessage = () => {
       joinToChat();
     }
     if (message.value.trim() !== '' ) {
-      const currentMessage = message.value; // Capture the current message value
+      const currentMessage = message.value;
 
       setTimeout(() => {
         socket.emit('message', currentMessage)
@@ -461,9 +446,6 @@ const confirmBotMainSettings = async () => {
     actions: filterEmptyActions(botFunction.actions)
   }));
   if (isFormCorrect) {
-    // if (currentBot.value.schedule.isSchedule) {
-    //   currentBot.value.schedule.workingHours = workingHours.value
-    // }
     await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
       toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
       if (reminders.value) {
@@ -542,7 +524,8 @@ const connectToBot = async (channelId: string) => {
         mainStore.setChatBotActiveTab(1);
       } else {
         mainStore.setChatBotActiveTab(0);
-        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
+        showEmptyOpenAISecretKey.value = true;
+        // toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
       }
     })
   })
@@ -583,7 +566,7 @@ const disconnectToBot = async (channelId: string) => {
         mainStore.setChatBotActiveTab(1);
       } else {
         mainStore.setChatBotActiveTab(0);
-        toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
+        showEmptyOpenAISecretKey.value = true
       }
     })
   })
@@ -648,6 +631,31 @@ const getInterruptDialogue = (functionIndex: number) => {
     },
   });
 };
+const getStopReminder = (functionIndex: number) => {
+  return computed({
+    get() {
+      // Check if the botFunction has the 'stop_reminder' action
+      const action = botFunctions.value[functionIndex]?.actions?.find(
+          (action: any) => action.name === 'stop_reminder'
+      );
+      return !!action;
+    },
+    set(value) {
+      if (value) {
+        const exists = botFunctions.value[functionIndex]?.actions?.some(
+            (action: any) => action.name === 'stop_reminder'
+        );
+        if (!exists) {
+          botFunctions.value[functionIndex]?.actions.push({ name: 'stop_reminder' });
+        }
+      } else {
+        botFunctions.value[functionIndex].actions = botFunctions.value[functionIndex].actions.filter(
+            (action: any) => action.name !== 'stop_reminder'
+        );
+      }
+    },
+  });
+};
 
 
 
@@ -662,7 +670,7 @@ const deleteFunctionSendFile = (file: any, functionIndex: number, fileIndex: num
       delete action[i];
       break;
     }
-  };
+  }
   showFileDeleteModal.value = false;
 }
 
@@ -743,6 +751,9 @@ const addTask = () => {
           },
           {
             name: 'stop_dialogue'
+          },
+          {
+            name: 'stop_reminder'
           }
         ]
       }
@@ -806,8 +817,10 @@ const getWebhookText = (index: number) => {
 const funnels = computed(() => {
   if (currentBot.value?.channels?.some((channel) => channel?.type === 'bitrix24')) {
     return bitrix24Store.getFunnels || []
-  } else {
+  } else if (currentBot.value?.channels?.some((channel) => channel?.type === 'amocrm')) {
     return amoCrmStore.getAllFunnels || []
+  } else {
+    return []
   }
 })
 
@@ -921,25 +934,13 @@ watch(
 const deleteFunction = async () => {
   console.log(selectedBotTaskIndex.value, 'index');
   botFunctions.value.splice(selectedBotTaskIndex.value, 1);
-  showFuctionDeleteModal.value = false;
+  showFunctionDeleteModal.value = false;
 }
 
 const showFileDeleteModal = ref<boolean>(false);
-const showFuctionDeleteModal = ref<boolean>(false);
+const showFunctionDeleteModal = ref<boolean>(false);
 const showReminderDeleteModal = ref<boolean>(false);
 
-// watch(
-//     () => currentBot.value.apiKey,
-//     (val) => {
-//       if (val.length > 0) {
-//         mainStore.setChatBotActiveTab(1)
-//       } else {
-//         mainStore.setChatBotActiveTab(0);
-//         toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
-//       }
-//     },
-//     { deep: true, immediate: true }
-// )
 
 
 const timeList = ref([
@@ -960,6 +961,7 @@ const reminders = ref<{
   timeframe: string,
   type: string,
   isSchedule: boolean,
+  isActiveReminder: boolean,
   schedule: {
     start?: string,
     end?: string
@@ -975,6 +977,7 @@ const addReminder = () => {
     timeframe: 'minutes',
     type: 'message',
     isSchedule:false,
+    isActiveReminder: true,
     schedule: {
       start: '',
       end: ''
@@ -992,7 +995,6 @@ const messageTypes = ref([
     title: t('generateUsingAI')
   }
 ])
-const messageType = ref(null);
 
 const deleteReminder = (id: number) => {
   reminders.value = reminders.value.filter(message => message.id !== id);
@@ -1012,12 +1014,11 @@ const hideDeleteReminderModal = () => {
 
 const selectedBotTaskIndex = ref()
 const showDeleteConfirmModal = (index: any) => {
-  showFuctionDeleteModal.value = true;
+  showFunctionDeleteModal.value = true;
   selectedBotTaskIndex.value = index;
 }
 
 const isReminderStop = ref<boolean>(false)
-const isOnReminder = ref<boolean>(true)
 </script>
 
 <template>
@@ -1030,6 +1031,14 @@ const isOnReminder = ref<boolean>(true)
     </div>
   </Dialog>
 
+  <Dialog v-model:visible="showEmptyOpenAISecretKey" modal header="Как правильно создать ИИ-бота" :style="{ width: '50rem' }">
+    <span class="text-surface-500 dark:text-surface-400 block mb-4" style="font-weight: 700;">1. Введите API Secret Key OpenAI в разделе 1.Общие.</span>
+    <span class="text-surface-500 dark:text-surface-400 block mb-4">2. Сформулируйте промт и задачи для бота.</span>
+    <span class="text-surface-500 dark:text-surface-400 block mb-4">3. Настройте напоминания для ваших клиентов.</span>
+    <span class="text-surface-500 dark:text-surface-400 block mb-4">4. Подключите к боту нужные каналы.</span>
+    <span class="text-surface-500 dark:text-surface-400 block mb-4">Сохраняйте изменения на каждом шаге.</span>
+  </Dialog>
+
   <div class="grid">
     <div class="app-wrapper">
       <div class="card h-full flex flex-column w-full">
@@ -1037,7 +1046,7 @@ const isOnReminder = ref<boolean>(true)
           <h5>{{ $t('edit') }} "{{ bot?.name }}"</h5>
           <div class="flex align-items-center gap-4">
             <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-            <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading || !isValidatedApiSecretKey"></Button>
+            <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading || isValidatedApiSecretKey"></Button>
           </div>
         </div>
         <div>
@@ -1084,12 +1093,6 @@ const isOnReminder = ref<boolean>(true)
                   <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
                 </div>
 
-                <!--Bot bigTimeout-->
-<!--                <div class="field" style="margin-top: 12px">-->
-<!--                  <label for="name1" style="font-weight: 700">{{ $t('responseTimeout') }}</label>-->
-<!--                  <InputText style="margin-bottom: 8px" id="bigTimeout" type="number" min="1" v-model="currentBot.bigTimeout"/>-->
-<!--                  <span style="color: #64748b">{{ $t('conversationHistoryTimeout') }}</span>-->
-<!--                </div>-->
 
                 <!--Bot operatorStopTime-->
                 <div class="field" style="margin-top: 12px">
@@ -1154,7 +1157,7 @@ const isOnReminder = ref<boolean>(true)
               <div class="mt-4 flex gap-4 align-items-center justify-content-end">
                 <Button :label="t('deleteBotButton')" severity="danger" class="mr-auto" @click="removeBot"></Button>
                 <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-                <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading || !isValidatedApiSecretKey"></Button>
+                <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading || isValidatedApiSecretKey"></Button>
               </div>
             </TabPanel>
 
@@ -1187,7 +1190,6 @@ const isOnReminder = ref<boolean>(true)
 
 
                 <!--Bot Tasks-->
-<!--                <pre>{{ botFunctions }}</pre>-->
                 <div v-if="botFunctions" class="mt-5 flex flex-column gap-4">
                   <div v-for="(botFunction, index) in botFunctions" :key="index" class="task-wrapper">
 <!--                    <pre>{{ botFunction }}</pre>-->
@@ -1199,11 +1201,11 @@ const isOnReminder = ref<boolean>(true)
                             <label style="font-weight: 700">{{ $t('botTask') }}</label>
                           </div>
                           <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showDeleteConfirmModal(index)"></i>
-                          <Dialog v-model:visible="showFuctionDeleteModal" :header="'Удалить задачу бота?'">
+                          <Dialog v-model:visible="showFunctionDeleteModal" :header="'Удалить задачу бота?'">
                             <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы действительно хотите удалить эту задачу?</span>
                             <div class="flex justify-content-center gap-2 w-full">
                               <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunction"></Button>
-                              <Button type="button" :label="t('cancel')" @click="showFuctionDeleteModal = false"></Button>
+                              <Button type="button" :label="t('cancel')" @click="showFunctionDeleteModal = false"></Button>
                             </div>
                           </Dialog>
                         </div>
@@ -1216,7 +1218,7 @@ const isOnReminder = ref<boolean>(true)
                       </span>
                       <span class="bot-card__activate">
                         {{ $t('isReminderStop') }}
-                          <InputSwitch v-model="isReminderStop" style="margin-left: 24px"/>
+                          <InputSwitch v-model="getStopReminder(index).value" style="margin-left: 24px"/>
                       </span>
                       <div class="task-panel">
                         <TabView :scrollable="true">
@@ -1258,7 +1260,7 @@ const isOnReminder = ref<boolean>(true)
                             <div class="mt-4 flex justify-content-between gap-4 fields">
                               <div class="flex flex-column w-full gap-2">
                                 <label for="funnel">{{ $t('choosePipeline') }}:</label>
-<!--                                <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>-->
+                                <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
                               </div>
                               <div class="flex flex-column w-full gap-2">
                                 <label for="statusId">{{ $t('changeStatus') }}:</label>
@@ -1323,7 +1325,6 @@ const isOnReminder = ref<boolean>(true)
 
             <TabPanel :header="`3.${t('reminders')}`">
               <div>
-<!--                <pre>{{ reminders }}</pre>-->
                 <div v-if="reminders?.length">
                   <div v-for="(message, i) in reminders" :key="i" class="mt-4 flex align-items-center gap-8 w-full">
                     <div class="flex flex-column w-full task-wrapper">
@@ -1357,7 +1358,7 @@ const isOnReminder = ref<boolean>(true)
                   </span>
                   <span class="bot-card__activate" style="margin-top: 8px">
                     {{ $t('onOffButton') }}
-                    <InputSwitch v-model="isOnReminder" style="margin-left: 8px"/>
+                    <InputSwitch v-model="message.isActiveReminder" style="margin-left: 8px"/>
                   </span>
 
 <!--                        <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="message.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>-->

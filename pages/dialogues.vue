@@ -389,7 +389,6 @@ socket.on('message', async (message) => {
           </div>
           <div class="empty-chat" v-else>
             <span class="empty-chat-message">{{ $t('selectChat') }}</span>
-            <!-- Add content here for when no chat is selected, if needed -->
           </div>
         </div>
       </div>
@@ -598,14 +597,14 @@ socket.on('message', async (message) => {
 @media (max-width: 601px) {
   @supports (height: 100dvh) {
     .chat-content {
-      height: calc(100dvh - 140px) !important; /* Adjust the height as needed */
+      height: calc(100dvh - 140px) !important;
     }
   }
   .message-client, .message-me {
     max-width: 300px !important;
   }
   .chat-content {
-    height: calc(100vh - 140px); /* Adjust the height as needed */
+    height: calc(100vh - 140px);
   }
   .chat-loading {
     height: calc(100vh - 140px);

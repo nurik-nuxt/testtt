@@ -63,9 +63,13 @@ const signIn = async () => {
           return navigateTo({ name: 'login' });
         }, 5000);
       }
-      if (response?.error) {
-        toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.message, life: 5000 })
+      // console.log(response);
+      if (response?.error === 'User already registered') {
+        toast.add({ severity: 'error', summary: 'Пользователь уже зарегистрирован', detail: response?.message, life: 5000 })
       }
+      // if (response?.error) {
+      //   toast.add({ severity: 'error', summary: 'Ошибка', detail: response?.message, life: 5000 })
+      // }
     } catch (e) {
       console.log(e);
     }

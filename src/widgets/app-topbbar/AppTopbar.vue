@@ -108,15 +108,6 @@ const logoutSupport = () => {
 
 <template>
   <div class="layout-topbar">
-<!--    <nuxt-link v-if="authStore.isAdmin" to="/" class="layout-topbar-logo">-->
-<!--      <span class="layout-topbar-logo-text">Admin</span>-->
-<!--    </nuxt-link>-->
-<!--    <div v-else-if="authStore.isSupport" class="flex align-items-center gap-4">-->
-<!--      <span>{{ $t('idClient') }}:</span>-->
-<!--      <InputText type="text" v-model="userIdToImpersonate" />-->
-<!--      <Button :disabled="!userIdToImpersonate.length" :label="t('apply')" @click="applyImpersonate"/>-->
-<!--      <span style="color: red" v-if="authStore.supportedUserEmail">{{ authStore.supportedUserEmail }}</span>-->
-<!--    </div>-->
 
     <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">
       <i class="pi pi-bars"></i>

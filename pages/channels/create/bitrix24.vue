@@ -66,10 +66,6 @@ const copyWebhook = async () => {
             <p class="mb-0">2. Перейдите в меню Приложения/Разработчикам --> Добавить чат-бот --> Передавать боту сообщение из чата.</p>
             <p class="mb-0">3. Скопируйте вебхук из поля "Вебхук для вызова rest api" и вставьте его в поле URL.</p>
           </div>
-<!--          <div class="flex flex-column gap-2 mb-4">-->
-<!--            <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>-->
-<!--            <InputText id="channelTitle" type="text" v-model="channelTitle" />-->
-<!--          </div>-->
           <div class="flex flex-column gap-1 mb-4">
             <label for="channelTitle" style="font-weight: 700">WEBHOOK<span style="color: red">*</span></label>
             <InputText id="channelTitle" type="text" v-model="webhook" />

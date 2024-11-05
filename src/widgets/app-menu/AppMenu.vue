@@ -166,6 +166,11 @@ const menuAdmin = computed(() => {
       label: 'Пользователи',
       icon: 'pi pi-fw pi-users',
       url: 'admin/tariffs'
+    },
+    {
+      label: 'Внутерные токены',
+      icon: 'pi pi-fw pi-users',
+      url: 'admin/tokens'
     }
   ]
 })

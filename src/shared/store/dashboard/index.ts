@@ -1,5 +1,11 @@
-import { useApi } from "~/composable";
+import {useApi} from "~/composable";
 
+interface InsideToken {
+    _id: string;
+    name: string;
+    priceInputToken: number;
+    priceOutputToken: number;
+}
 export const useDashboardStore = defineStore('dashboard', {
     state: () => {
         return {
@@ -31,7 +37,8 @@ export const useDashboardStore = defineStore('dashboard', {
                 totalLeadsCount: 0 as number,
                 totalAssistantMessagesCount: 0 as number
             },
-            users: [] as any
+            users: [] as any,
+            insideTokens: [] as InsideToken[]
         }
     },
 
@@ -44,7 +51,8 @@ export const useDashboardStore = defineStore('dashboard', {
         getTariffStatisticsSums: (state) => state.tariffStatisticsSums,
         getLoadingTariffStatisticsSums: (state) => state.isLoadingTariffStatisticsSums,
         getPaidUsersCount: (state) => state.paidUsersCount,
-        getLoadingPaidUsersCount: (state) => state.isLoadingPaidUsersCount
+        getLoadingPaidUsersCount: (state) => state.isLoadingPaidUsersCount,
+        getInsideTokens: (state) => state.insideTokens
     },
 
     actions: {
@@ -158,6 +166,35 @@ export const useDashboardStore = defineStore('dashboard', {
                 }, true);
             } catch (e) {
                 console.error(e)
+            }
+        },
+
+        async loadTariffsToken(){
+            try {
+                const response = await useApi('/inside-tokens', {
+                    method: 'GET'
+                },true)
+                console.log(response)
+                if (response.success) {
+                    this.insideTokens = response?.data?.tokens
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async changeTokenPrice(id: string, priceInputToken: number, priceOutputToken: number) {
+            try {
+                return await useApi('/update-token-tariff', {
+                    method: 'PUT',
+                    body: {
+                        id,
+                        priceInputToken,
+                        priceOutputToken
+                    }
+                }, true);
+            } catch (e) {
+                console.log(e)
             }
         }
     }

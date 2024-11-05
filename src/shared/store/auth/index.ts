@@ -52,7 +52,7 @@ export const useAuthStore = defineStore('auth', {
         },
         isAdmin() {
             return this.userData?.role === 'admin'
-        }
+        },
     },
 
     actions: {
@@ -126,6 +126,33 @@ export const useAuthStore = defineStore('auth', {
         setTokens(access_token: string,refresh_token: string){
             this.access_token = access_token;
             this.refresh_token = refresh_token
+        },
+
+        async resendConfirmation(email: string) {
+            try {
+                return await useApi(`/auth/forgot-password`, {
+                    method: 'POST',
+                    body: {
+                        email
+                    }
+                });
+            } catch (e) {
+                console.log(e)
+            }
+        },
+
+        async confirmPassword(password: string, token: string){
+            try {
+                return await useApi(`/auth/reset-password`, {
+                    method: 'POST',
+                    body: {
+                        password,
+                        token
+                    }
+                })
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 });

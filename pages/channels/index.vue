@@ -49,16 +49,26 @@ const availableChannels = computed(() => {
   return channelStore.getChannels
 })
 
-const deleteChannel = async (id: string) => {
-  await channelStore.deleteChannel(id).then(async (res) => {
-    if (res.success) {
-      await channelStore.getAllChannels();
-    } else {
-      toast.add({ severity: 'error', summary: t('error'), detail: res?.message, life: 5000 })
-    }
-  });
+const deleteChannelId = ref<string | null>(null);
+const visibleChannel = ref<boolean>(false)
+const deleteChannel = async () => {
+  if (deleteChannelId.value) {
+    await channelStore.deleteChannel(deleteChannelId.value).then(async (res) => {
+      if (res.success) {
+        await channelStore.getAllChannels();
+        deleteChannelId.value = null;
+        visibleChannel.value = false;
+      } else {
+        toast.add({ severity: 'error', summary: t('error'), detail: res?.message, life: 5000 })
+      }
+    });
+  }
 }
 
+const removeChannel = async (id: string) => {
+  visibleChannel.value = true;
+  deleteChannelId.value = id
+}
 const openChannel = (type: string, id: string) => {
   if (type === 'wappi') {
     return navigateTo({ name: `channels-whatsapp-id`, params: { id }})
@@ -76,7 +86,13 @@ const test = async () => {
 </script>
 
 <template>
-<!--  <Button @click="test">AAA</Button>-->
+  <Dialog v-model:visible="visibleChannel" modal :header="t('deleteChannel')" :style="{ width: '25rem' }">
+    <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы точно хотите удалить этого канала?</span>
+    <div class="flex justify-content-center gap-2 w-full">
+      <Button type="button" :label="t('delete')" severity="danger" @click="deleteChannel"></Button>
+      <Button type="button" :label="t('cancel')" @click="visibleChannel = false"></Button>
+    </div>
+  </Dialog>
   <div class="grid">
     <div class="col-12">
       <div class="card">
@@ -144,7 +160,7 @@ const test = async () => {
             <div class="channel-info">
               <span class="channel-title">{{ channel.title }}</span>
             </div>
-            <i style="cursor: pointer; margin-left: auto; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="deleteChannel(channel._id)"/>
+            <i style="cursor: pointer; margin-left: auto; margin-right: 10px; color: #EE9186;" class="pi pi-trash" @click="removeChannel(channel._id)"/>
             <i style="cursor: pointer" class="pi pi-cog" @click="openChannel(channel.type, channel._id)"/>
           </span>
         </div>

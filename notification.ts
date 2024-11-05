@@ -14,7 +14,7 @@ export const socket = io(`${apiBaseUrl}/notification`, {
 
 socket.on("connect", () => {
     state.connected = true;
-    console.log('notification socket connected');
+    // console.log('notification socket connected');
 });
 
 socket.on("disconnect", () => {

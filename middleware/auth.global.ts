@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
         return navigateTo({ name: 'channels' })
     }
 
-    if (to.name === 'login' || to.name === 'registration' || to.name === 'reset-password') {
+    if (to.name === 'login' || to.name === 'registration' || to.name === 'reset-password' || to.name === 'reset') {
         if (isAuthenticated) {
             return navigateTo({ name: 'index' })
         }

@@ -246,8 +246,8 @@ const analyticsServices = computed(() =>
 
 const basicClientOptions = computed(() => {
   return basicPlans.value
-      .slice() // Create a shallow copy of the array to avoid mutating the original array
-      .sort((a, b) => a.limits.leads - b.limits.leads) // Sort by `limits.leads` in ascending order
+      .slice()
+      .sort((a, b) => a.limits.leads - b.limits.leads)
       .map(plan => ({
         title: plan.limits.leads,
         value: plan.limits.leads,
@@ -263,7 +263,7 @@ const proClientOptions = computed(() => {
 });
 
 const payBasicPlan = async () => {
- if (subscriptions.value.length) {
+ if (subscriptions.value.length && subscriptions.value.some((plan) => plan.tariff_id !== '66eeb318ca68fc027c7a867b')) {
    showUpgradeModal.value = true
  } else {
    const planId = test?.value?.find((plan) => plan?.limits?.leads === basicClientCount.value)?._id;
@@ -303,7 +303,7 @@ const payBasicPlan = async () => {
  }
 };
 const payProPlan = async () => {
-  if (subscriptions.value.length) {
+  if (subscriptions.value.length && subscriptions.value.some((plan) => plan.tariff_id !== '66eeb318ca68fc027c7a867b')) {
     showUpgradeModal.value = true
   } else {
     const planId = test?.value?.find((plan) => plan?.limits?.leads === proClientCount.value)?._id;
@@ -407,13 +407,25 @@ const selectedUpgradeTariffId = ref()
 
 
 const upgradedTariffs = computed(() => {
-  return tariffsStore.getUpgradableTariffs?.map((item) => {
-    return {
-      ... item,
-      full_name: `${item.display_name} - ${item?.limits?.leads}, ${totalUpgradeTariffTime.value === 'per_month' ? `${item?.upgrade_prices?.difference_month_price}` : `${item?.upgrade_prices?.difference_year_price}`} Руб`
-    }
-  })
+  return tariffsStore.getUpgradableTariffs
+      ?.filter(
+          (item) =>
+              item._id !== '66eeb318ca68fc027c7a8677' &&
+              item._id !== '66eeb318ca68fc027c7a867b'
+      )
+      .map((item) => {
+        console.log(item);
+        return {
+          ...item,
+          full_name: `${item.display_name} - ${item?.limits?.leads}, ${
+              totalUpgradeTariffTime.value === 'per_month'
+                  ? `${item?.price_per_month}`
+                  : `${item?.price_per_year}`
+          } Руб`,
+        };
+      });
 });
+
 const payUpgradeTariff = async () => {
   if (selectedUpgradeTariffId.value) {
     await subscriptionStore.upgradeTariff(selectedUpgradeTariffId.value, totalUpgradeTariffTime.value).then((res) => {
@@ -506,7 +518,7 @@ const changeRecurrence = () => {
                 <span class="font-bold">{{ formatDateToDDMMYYYY(subscriptions?.find((subscription) => subscription.type === 'tariff'  && subscription.status === 'active')?.end_date) }}</span>
               </div>
               <div class="flex flex-column gap-2">
-                <Button label="Обновить тариф" class="p-3 mt-auto" style="height: 30px;" @click="upgradeTariff"></Button>
+                <Button v-if="subscriptions.some((item) => item.tariff_id !== '66eeb318ca68fc027c7a867b')" label="Обновить тариф" class="p-3 mt-auto" style="height: 30px;" @click="upgradeTariff"></Button>
               </div>
             </div>
             <div class="tariff-card" v-for="subscriptionCallAnalytics in subscriptionsServices" :key="subscriptionCallAnalytics._id">
@@ -538,6 +550,38 @@ const changeRecurrence = () => {
             </div>
 
           </div>
+
+          <BlockViewer header="Pricing" free>
+            <div>
+              <div class="flex align-items-center mb-4 gap-4 mobile">
+                <h5 class="mb-0">Покупка 7Coin</h5>
+              </div>
+              <div class="col-12 lg:col-3">
+                <div class="h-full">
+                  <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
+                    <div class="text-900 font-medium text-xl mb-2">7Coin</div>
+                    <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
+                    <ul class="list-none p-0 m-0 flex-grow-1">
+                      <li class="flex align-items-center mb-3">
+                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                        <span>{{ $t('uniqueClients') }}</span>
+                      </li>
+                      <div class="mb-4">
+                        <SelectButton v-model="startClientCount" :options="startClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
+                      </div>
+                      <li class="flex align-items-center mb-3">
+                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
+                        <span>{{ $t('crmIntegrations') }}</span>
+                      </li>
+                    </ul>
+                    <span class="mb-2 font-bold text-2xl">Бесплатно</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </BlockViewer>
+
           <BlockViewer header="Pricing" free>
             <div>
               <div class="flex align-items-center mb-4 gap-4 mobile">
@@ -605,7 +649,8 @@ const changeRecurrence = () => {
                         <span>К оплате</span>
                         <span class="font-bold text-2xl">{{ thousandSeparator(basicTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-                      <Button :label="`${subscriptions.length ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payBasicPlan" ></Button>
+<!--                      <pre>{{ subscriptions }}</pre>-->
+                      <Button :label="`${subscriptions.length && subscriptions.some((item) => item.tariff_id !== '66eeb318ca68fc027c7a867b') ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payBasicPlan" ></Button>
                     </div>
                   </div>
                 </div>
@@ -645,7 +690,8 @@ const changeRecurrence = () => {
                         <span>К оплате</span>
                         <span class="font-bold text-2xl">{{ thousandSeparator(proTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-                      <Button :label="`${subscriptions.length ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payProPlan"></Button>
+<!--                      <pre>{{ subscriptions }}</pre>-->
+                      <Button :label="`${subscriptions.length && subscriptions.some((item) => item.tariff_id !== '66eeb318ca68fc027c7a867b') ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payProPlan"></Button>
                     </div>
                   </div>
                 </div>

@@ -306,6 +306,12 @@
   "changeDealStageBitrix": "Change transaction stage in Bitrix24",
   "connectedChannels1": "WhatsApp channels",
   "subscription": "Subscriptions",
-  "isReminderStop": "Stop writing",
-  "systemPromts": "System products"
+  "isReminderStop": "Stop reminders",
+  "systemPromts": "System products",
+  "deleteChannel": "Delete channel",
+  "change": "Change",
+  "instructionTextAmo1": "1. Select the desired funnels and stages in the form below.",
+  "instructionTextAmo2": "2. For each channel, you can activate all stages, as well as individual ones - one or several.",
+  "instructionTextAmo3": "3. On one amoCRM account, you can add several channels with different sets of funnels and stages.",
+  "instructionTextAmo4": "4. If you need to change the channel name, enter a new name and click the “Change” button.Save your changes by clicking the SAVE button below 👇🏻"
 }
