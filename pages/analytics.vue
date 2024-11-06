@@ -118,7 +118,7 @@ const apiKeyTypes = ref([
   {
     title: t('use7sTokens'),
     code: 'shared',
-    disabled: true,
+    disabled: false,
   }
 ]);
 

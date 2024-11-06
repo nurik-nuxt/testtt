@@ -110,6 +110,12 @@ const consumeBalance = async () => {
     window.open(res, '_blank');
   })
 }
+
+const formattedBalance = computed(() => {
+  const balance = userStore?.user?.balance || 0;
+  return balance.toFixed(2).replace('.', ','); // Ensures two decimal places with a comma
+});
+
 </script>
 
 <template>
@@ -157,7 +163,7 @@ const consumeBalance = async () => {
             </span>
                 <div style="font-weight: 600" class="flex align-items-center gap-5">
                   <span>Баланс:</span>
-                  <span>{{ userStore?.user?.balance }} Руб</span>
+                  <span>{{ formattedBalance }} Руб</span>
                 </div>
                 <div class="flex justify-content-between w-full">
                   <Button :label="t('logOut')" class="p-0 text-left"  style="margin-top: auto; color: #076AE1" link @click="logout" />
@@ -200,7 +206,7 @@ const consumeBalance = async () => {
           <div class="w-full">
             <div class="flex gap-4 align-items-center mb-4 balance-title">
               <h5 style="font-weight: 700; font-size: 18px; margin-bottom: 0">Пополнить баланс</h5>
-              <SelectButton v-model="currencyValue" :options="currencyList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false" />
+<!--              <SelectButton v-model="currencyValue" :options="currencyList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false" />-->
             </div>
             <InputText style="margin-bottom: 16px; width: 100%" id="input-balance" type="number" min="1" v-model="inputBalance" />
             <div v-if="inputBalance > 0" class="flex flex-column gap-2 mb-4">
