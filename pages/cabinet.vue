@@ -108,6 +108,7 @@ const currencyList = ref<{ title: string; value: string; diff: number }[]>(
 const consumeBalance = async () => {
   await userStore.consumeBalance(inputBalance.value, currencyValue.value).then((res) => {
     window.open(res, '_blank');
+    inputBalance.value = 0;
   })
 }
 
