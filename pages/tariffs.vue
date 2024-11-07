@@ -3,11 +3,26 @@ import { thousandSeparator } from "~/src/shared/utils/helpers";
 import { useTariffsStore } from "~/src/shared/store/tariffs";
 import { useSubscriptionStore } from "~/src/shared/store/subscription";
 import { formatDateToDDMMYYYY } from "~/src/shared/utils/helpers"
+import {useUserStore} from "~/src/shared/store/user";
 
 const { t } = useI18n();
 const subscriptionStore = useSubscriptionStore();
 const tariffsStore = useTariffsStore();
-const autoRenewal = ref(true)
+const userStore = useUserStore();
+
+const formattedBalance = computed(() => {
+  const balance = userStore?.user?.balance || 0;
+  return balance.toFixed(2).replace('.', ','); // Ensures two decimal places with a comma
+});
+
+const inputBalance = ref<number>(0);
+
+const consumeBalance = async () => {
+  await userStore.consumeBalance(inputBalance.value, currencyValue.value).then((res) => {
+    window.open(res, '_blank');
+    inputBalance.value = 0;
+  })
+}
 
 onMounted(async () => {
   await tariffsStore.loadTariffs();
@@ -123,21 +138,6 @@ const premiumClientCountList = ref<{ title: string; value: string; priceInMonth:
     ]
 )
 
-const startClientCount = ref<string>('20')
-const startClientCountList = ref<{ title: string; value: string }[]>([
-  {
-    title: '20',
-    value: '20'
-  }
-])
-
-const premiumTariffSum = computed(() => {
-  if (totalTariffTime.value === 'per_month') {
-    return premiumClientCountList.value?.find((item) => item.value === premiumClientCount.value)?.priceInMonth
-  } else {
-    return premiumClientCountList.value?.find((item) => item.value === premiumClientCount.value)?.priceInYear
-  }
-})
 
 const totalAnalyticsTariffTime = ref<'per_month' | 'per_year'>('per_month')
 
@@ -371,7 +371,8 @@ watchEffect(async () => {
      subscriptionStore.loadSubscriptionsService(),
      subscriptionStore.loadSubscriptionsWhatsapp(),
      tariffsStore.loadTariffs(),
-     tariffsStore.loadUpgradableTariffs()
+     tariffsStore.loadUpgradableTariffs(),
+     userStore.fetchUserInfo()
   ])
 })
 
@@ -554,37 +555,6 @@ const changeRecurrence = () => {
           <BlockViewer header="Pricing" free>
             <div>
               <div class="flex align-items-center mb-4 gap-4 mobile">
-                <h5 class="mb-0">Покупка 7Coin</h5>
-              </div>
-              <div class="col-12 lg:col-3">
-                <div class="h-full">
-                  <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
-                    <div class="text-900 font-medium text-xl mb-2">7Coin</div>
-                    <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
-                    <ul class="list-none p-0 m-0 flex-grow-1">
-                      <li class="flex align-items-center mb-3">
-                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                        <span>{{ $t('uniqueClients') }}</span>
-                      </li>
-                      <div class="mb-4">
-                        <SelectButton v-model="startClientCount" :options="startClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
-                      </div>
-                      <li class="flex align-items-center mb-3">
-                        <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                        <span>{{ $t('crmIntegrations') }}</span>
-                      </li>
-                    </ul>
-                    <span class="mb-2 font-bold text-2xl">Бесплатно</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </BlockViewer>
-
-          <BlockViewer header="Pricing" free>
-            <div>
-              <div class="flex align-items-center mb-4 gap-4 mobile">
                 <h5 class="mb-0">{{ $t('activatePlan') }}</h5>
                 <div class="flex align-items-center gap-2">
                   <SelectButton v-model="totalTariffTime" :options="tariffTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false" />
@@ -595,33 +565,24 @@ const changeRecurrence = () => {
                 <!-- Start Plan -->
                 <div class="col-12 lg:col-3">
                   <div class="h-full">
-                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
-                      <div class="text-900 font-medium text-xl mb-2">Start</div>
-                      <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
-                      <ul class="list-none p-0 m-0 flex-grow-1">
-                        <li class="flex align-items-center mb-3">
-                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('uniqueClients') }}</span>
-                        </li>
-                        <div class="mb-4">
-                          <SelectButton v-model="startClientCount" :options="startClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
-                        </div>
-                        <li class="flex align-items-center mb-3">
-                          <i class="pi pi-check-circle text-green-500 mr-2"></i>
-                          <span>{{ $t('crmIntegrations') }}</span>
-                        </li>
-                      </ul>
-                      <span class="mb-2 font-bold text-2xl">Бесплатно</span>
+                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #F0F4F8 !important;">
+                      <h5>{{ $t('paymentUsingTokens') }}</h5>
+                      <span>{{ $t('ifYouUseYourAPI') }}</span>
+                      <h5 style="margin-bottom: 0">{{ $t('yourBalance') }}:</h5>
+                      <span class="font-bold text-2xl" style="color: #076AE1">{{ formattedBalance }} руб.</span>
+                      <div style="margin-top: auto">
+                        <InputText style="margin-bottom: 16px; width: 100%" id="input-balance" type="number" min="1" v-model="inputBalance" />
+                        <Button label="Оплатить" class="p-3 w-full mt-auto" @click="consumeBalance"/>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-<!--                <pre>{{ subscriptions }}</pre>-->
 
                 <!-- Basic Plan -->
                 <div class="col-12 lg:col-5">
                   <div class="h-full">
-                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
+                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #E3F4EA !important;">
                       <div class="text-900 font-medium text-xl mb-2">Base</div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <ul class="list-none p-0 m-0 flex-grow-1">
@@ -658,7 +619,7 @@ const changeRecurrence = () => {
                 <!-- Pro Plan -->
                 <div class="col-12 lg:col-4">
                   <div class="h-full">
-                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background-color: #e7f9e7;">
+                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #FFE4E1 !important;">
                       <div class="text-900 font-medium text-xl mb-2">Pro</div>
                       <hr class="my-3 mx-0 border-top-1 border-none surface-border" />
                       <ul class="list-none p-0 m-0 flex-grow-1">
@@ -712,7 +673,7 @@ const changeRecurrence = () => {
               <div class="grid">
                 <div class="col-12 lg:col-4">
                   <div class="h-full">
-                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
+                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #DCE7FA !important;">
                       <div class="text-900 font-medium text-xl mb-2">Количество звонков в мес.</div>
                       <div class="mb-2 mt-2">
                         <SelectButton v-model="analyticsPrice" :options="analyticsServices" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
@@ -742,7 +703,7 @@ const changeRecurrence = () => {
               <div class="grid">
                 <div class="col-12 lg:col-3">
                   <div class="h-full">
-                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">
+                    <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #A8E6C1 !important;">
                       <div class="text-900 font-medium text-xl mb-2">Количество каналов WhatsApp</div>
                       <InputText id="premium-channel-count" style="width: 50px" type="number" min="0" v-model="whatsAppChannelCount" />
                       <div class="flex flex-column gap-1 mt-4 mb-4">

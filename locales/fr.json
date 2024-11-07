@@ -314,5 +314,9 @@
   "instructionTextAmo1": "1. Sélectionnez les entonnoirs et les étapes souhaités dans le formulaire ci-dessous.",
   "instructionTextAmo2": "2. Pour chaque canal, vous pouvez activer toutes les étapes, ainsi que des étapes individuelles - une ou plusieurs.",
   "instructionTextAmo3": "3. Sur un compte amoCRM, vous pouvez ajouter plusieurs canaux avec différents ensembles d'entonnoirs et d'étapes.",
-  "instructionTextAmo4": "4. Si vous devez modifier le nom de la chaîne, entrez un nouveau nom et cliquez sur le bouton « Modifier ».Enregistrez vos modifications en cliquant sur le bouton ENREGISTRER ci-dessous 👇🏻"
+  "instructionTextAmo4": "4. Si vous devez modifier le nom de la chaîne, entrez un nouveau nom et cliquez sur le bouton « Modifier ».Enregistrez vos modifications en cliquant sur le bouton ENREGISTRER ci-dessous 👇🏻",
+  "paymentUsingTokens": "Paiement pour l'utilisation de jetons",
+  "ifYouUseYourAPI": "Si vous utilisez votre clé secrète API, vous n'avez pas besoin de recharger votre solde en 7 secondes.",
+  "yourBalance": "Votre solde",
+  "topUpBalance": "Recharger le solde"
 }

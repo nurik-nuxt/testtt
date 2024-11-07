@@ -313,5 +313,9 @@
   "instructionTextAmo1": "1. Wählen Sie im Formular unten die gewünschten Funnels und Stages aus.",
   "instructionTextAmo2": "2. Für jeden Kanal können Sie alle Stufen sowie einzelne aktivieren – eine oder mehrere.",
   "instructionTextAmo3": "3. Auf einem amoCRM-Konto können Sie mehrere Kanäle mit unterschiedlichen Trichter- und Phasensätzen hinzufügen.",
-  "instructionTextAmo4": "4. Wenn Sie den Kanalnamen ändern müssen, geben Sie einen neuen Namen ein und klicken Sie auf die Schaltfläche „Ändern“.Speichern Sie Ihre Änderungen, indem Sie unten auf die Schaltfläche SPEICHERN klicken 👇🏻"
+  "instructionTextAmo4": "4. Wenn Sie den Kanalnamen ändern müssen, geben Sie einen neuen Namen ein und klicken Sie auf die Schaltfläche „Ändern“.Speichern Sie Ihre Änderungen, indem Sie unten auf die Schaltfläche SPEICHERN klicken 👇🏻",
+  "paymentUsingTokens": "Bezahlung für die Nutzung von Tokens",
+  "ifYouUseYourAPI": "Wenn Sie Ihren API Secret Key verwenden, müssen Sie Ihr Guthaben nicht innerhalb von 7 Sekunden aufladen.",
+  "yourBalance": "Ihr Gleichgewicht",
+  "topUpBalance": "Guthaben aufladen"
 }

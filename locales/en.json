@@ -313,5 +313,9 @@
   "instructionTextAmo1": "1. Select the desired funnels and stages in the form below.",
   "instructionTextAmo2": "2. For each channel, you can activate all stages, as well as individual ones - one or several.",
   "instructionTextAmo3": "3. On one amoCRM account, you can add several channels with different sets of funnels and stages.",
-  "instructionTextAmo4": "4. If you need to change the channel name, enter a new name and click the “Change” button.Save your changes by clicking the SAVE button below 👇🏻"
+  "instructionTextAmo4": "4. If you need to change the channel name, enter a new name and click the “Change” button.Save your changes by clicking the SAVE button below 👇🏻",
+  "paymentUsingTokens": "Payment for using tokens",
+  "ifYouUseYourAPI": "If you use your API Secret Key, you don't need to top up your balance in 7s.",
+  "yourBalance": "Your balance",
+  "topUpBalance": "Top up balance"
 }
