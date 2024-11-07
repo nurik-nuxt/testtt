@@ -568,10 +568,16 @@ const changeRecurrence = () => {
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #F0F4F8 !important;">
                       <h5>{{ $t('paymentUsingTokens') }}</h5>
                       <span>{{ $t('ifYouUseYourAPI') }}</span>
-                      <h5 style="margin-bottom: 0">{{ $t('yourBalance') }}:</h5>
+                      <h5 style="margin-bottom: 0; margin-top: 4px">{{ $t('yourBalance') }}:</h5>
                       <span class="font-bold text-2xl" style="color: #076AE1">{{ formattedBalance }} руб.</span>
                       <div style="margin-top: auto">
-                        <InputText style="margin-bottom: 16px; width: 100%" id="input-balance" type="number" min="1" v-model="inputBalance" />
+                        <span class="mb-2">{{ $t('topUpBalance') }}</span>
+                        <InputText style="margin-bottom: 16px; margin-top: 4px; width: 100%;" id="input-balance" type="number" min="1" v-model="inputBalance" />
+                        <div v-if="inputBalance > 0" class="flex flex-column gap-2 mb-1">
+                          <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'rub' )?.diff) }} Руб</span>
+                          <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'tng' )?.diff) }} Тнг</span>
+                          <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'dollar' )?.diff) }} $</span>
+                        </div>
                         <Button label="Оплатить" class="p-3 w-full mt-auto" @click="consumeBalance"/>
                       </div>
                     </div>
