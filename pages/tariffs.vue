@@ -572,7 +572,7 @@ const changeRecurrence = () => {
                       <span class="font-bold text-2xl" style="color: #076AE1">{{ formattedBalance }} руб.</span>
                       <div style="margin-top: auto">
                         <span class="mb-2">{{ $t('topUpBalance') }}</span>
-                        <InputText style="margin-bottom: 16px; margin-top: 4px; width: 100%;" id="input-balance" type="number" min="1" v-model="inputBalance" />
+                        <InputNumber style="margin-bottom: 16px; margin-top: 4px; width: 100%;" id="input-balance" min="1000" step="1000" v-model="inputBalance" fluid/>
                         <div v-if="inputBalance > 0" class="flex flex-column gap-2 mb-1">
                           <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'rub' )?.diff) }} Руб</span>
                           <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'tng' )?.diff) }} Тнг</span>
