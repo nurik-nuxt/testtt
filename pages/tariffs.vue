@@ -552,6 +552,37 @@ const changeRecurrence = () => {
 
           </div>
 
+<!--          <BlockViewer header="Pricing" free>-->
+<!--            <div>-->
+<!--              <div class="flex align-items-center mb-4 gap-4 mobile">-->
+<!--                <h5 class="mb-0">Покупка 7Coin</h5>-->
+<!--              </div>-->
+<!--              <div class="col-12 lg:col-3">-->
+<!--                <div class="h-full">-->
+<!--                  <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px">-->
+<!--                    <div class="text-900 font-medium text-xl mb-2">7Coin</div>-->
+<!--                    <hr class="my-3 mx-0 border-top-1 border-none surface-border" />-->
+<!--                    <ul class="list-none p-0 m-0 flex-grow-1">-->
+<!--                      <li class="flex align-items-center mb-3">-->
+<!--                        <i class="pi pi-check-circle text-green-500 mr-2"></i>-->
+<!--                        <span>{{ $t('uniqueClients') }}</span>-->
+<!--                      </li>-->
+<!--                      <div class="mb-4">-->
+<!--                        <SelectButton v-model="startClientCount" :options="startClientCountList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>-->
+<!--                      </div>-->
+<!--                      <li class="flex align-items-center mb-3">-->
+<!--                        <i class="pi pi-check-circle text-green-500 mr-2"></i>-->
+<!--                        <span>{{ $t('crmIntegrations') }}</span>-->
+<!--                      </li>-->
+<!--                    </ul>-->
+<!--                    <span class="mb-2 font-bold text-2xl">Бесплатно</span>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+
+<!--            </div>-->
+<!--          </BlockViewer>-->
+
           <BlockViewer header="Pricing" free>
             <div>
               <div class="flex align-items-center mb-4 gap-4 mobile">

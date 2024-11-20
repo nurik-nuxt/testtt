@@ -317,6 +317,7 @@ function ensureAllActionsExist(botFunction: any) {
   return botFunction;
 }
 
+
 const userBalance = computed(() => {
   return userStore.user?.balance
 })
@@ -335,6 +336,11 @@ onMounted(async () => {
       }
       if (res?.functions) {
         botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
+        res?.functions?.forEach((func,index) => {
+          if (!func?.parameters?.length) {
+            botFunctions.value[index].parameters = [];
+          }
+        })
       }
       if (res?.reminders?.length) {
         reminders.value = res?.reminders?.map(item => {
@@ -358,7 +364,7 @@ onMounted(async () => {
       if (!res?.schedule?.workingHours) {
         currentBot.value.schedule.workingHours = workingHours.value
       }
-      if (res?.apiKey) {
+      if (res?.apiKeyType) {
         mainStore.setChatBotActiveTab(1);
       } else {
         mainStore.setChatBotActiveTab(0);
@@ -520,7 +526,7 @@ const connectToBot = async (channelId: string) => {
       if (!res?.schedule?.workingHours) {
         currentBot.value.schedule.workingHours = workingHours.value
       }
-      if (res?.apiKey) {
+      if (res?.apiKeyType) {
         mainStore.setChatBotActiveTab(1);
       } else {
         mainStore.setChatBotActiveTab(0);
@@ -755,6 +761,13 @@ const addTask = () => {
           {
             name: 'stop_reminder'
           }
+        ],
+        parameters: [
+          {
+            name: '',
+            type: 'string',
+            description: '',
+          }
         ]
       }
   )
@@ -816,13 +829,13 @@ const getWebhookText = (index: number) => {
 
 const funnels = computed(() => {
   if (currentBot.value?.channels?.some((channel) => channel?.type === 'bitrix24')) {
-    return bitrix24Store.getFunnels || []
+    return Array.isArray(bitrix24Store.getFunnels) ? bitrix24Store.getFunnels : [];
   } else if (currentBot.value?.channels?.some((channel) => channel?.type === 'amocrm')) {
-    return amoCrmStore.getAllFunnels || []
+    return Array.isArray(amoCrmStore.getAllFunnels) ? amoCrmStore.getAllFunnels : [];
   } else {
-    return []
+    return [];
   }
-})
+});
 
 const getFunnelId = (index: number) => {
   return computed({
@@ -879,11 +892,11 @@ const getDealNoteText = (index: number) => {
 };
 const fields = computed(() => {
   if (currentBot.value?.channels?.some((channel) => channel.type === 'bitrix24')) {
-    return bitrix24Store.getFields
+    return Array.isArray(bitrix24Store.getFields) ? bitrix24Store.getFields : [];
   } else {
-    return amoCrmStore.getFields
+    return Array.isArray(amoCrmStore.getFields) ? amoCrmStore.getFields : [];
   }
-})
+});
 
 const getFieldId = (index: number) => {
   return computed({
@@ -920,6 +933,14 @@ const getFieldValue = (index: number) => {
     }
   });
 };
+
+const getParameterNameValue = (index: number) => {
+  return computed({
+    get() {
+
+    }
+  })
+}
 const countFunctionChanging = ref<number>(0);
 watch(
     () => botFunctions.value,
@@ -1018,7 +1039,29 @@ const showDeleteConfirmModal = (index: any) => {
   selectedBotTaskIndex.value = index;
 }
 
-const isReminderStop = ref<boolean>(false)
+const isReminderStop = ref<boolean>(false);
+
+const parameterTypes = ref<{ title: string; value: 'string' | 'number' }[]>([
+  {
+    title: 'Строка',
+    value: 'string',
+  },
+  {
+    title: 'Число',
+    value: 'number',
+  }
+])
+
+const deleteBotParameter = (indexBotFunction: number, indexParameter: number) => {
+  botFunctions.value[indexBotFunction].parameters.splice(indexParameter, 1);
+}
+const addParameter = (indexBotFunction: number) => {
+  botFunctions.value[indexBotFunction].parameters.push({
+    name: '',
+    type: 'string',
+    description: '',
+  })
+}
 </script>
 
 <template>
@@ -1080,11 +1123,11 @@ const isReminderStop = ref<boolean>(false)
                 </div>
 
                 <!--Bot maxTokens-->
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('maxTokens') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.maxTokens" />
-                  <span style="color: #64748b">{{ $t('requestCost') }}</span>
-                </div>
+<!--                <div class="field" style="margin-top: 12px">-->
+<!--                  <label for="name1" style="font-weight: 700">{{ $t('maxTokens') }}</label>-->
+<!--                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.maxTokens" />-->
+<!--                  <span style="color: #64748b">{{ $t('requestCost') }}</span>-->
+<!--                </div>-->
 
                 <!--Bot joinTimeout-->
                 <div class="field" style="margin-top: 12px">
@@ -1191,16 +1234,22 @@ const isReminderStop = ref<boolean>(false)
 
                 <!--Bot Tasks-->
                 <div v-if="botFunctions" class="mt-5 flex flex-column gap-4">
+<!--                  <pre>{{ botFunctions }}</pre>-->
                   <div v-for="(botFunction, index) in botFunctions" :key="index" class="task-wrapper">
 <!--                    <pre>{{ botFunction }}</pre>-->
                     <div class="mt-3 mb-4 flex flex-column gap-3">
+
                       <div class="flex flex-column gap-2">
+
                         <div class="flex justify-content-between w-full align-items-center mb-4">
+
                           <div class="flex gap-3 align-items-center">
                             <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
                             <label style="font-weight: 700">{{ $t('botTask') }}</label>
                           </div>
+
                           <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showDeleteConfirmModal(index)"></i>
+
                           <Dialog v-model:visible="showFunctionDeleteModal" :header="'Удалить задачу бота?'">
                             <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы действительно хотите удалить эту задачу?</span>
                             <div class="flex justify-content-center gap-2 w-full">
@@ -1212,14 +1261,28 @@ const isReminderStop = ref<boolean>(false)
                         <Textarea rows="2" cols="30" v-model="botFunction.prompt" />
                       </div>
                       <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
-                      <span class="bot-card__activate">
+                      <div class="flex align-items-center gap-4">
+                        <span class="bot-card__activate">
                         {{ $t('endDialogue') }}
                           <InputSwitch v-model="getInterruptDialogue(index).value" style="margin-left: 24px"/>
                       </span>
-                      <span class="bot-card__activate">
+                        <span class="bot-card__activate">
                         {{ $t('isReminderStop') }}
                           <InputSwitch v-model="getStopReminder(index).value" style="margin-left: 24px"/>
                       </span>
+                      </div>
+                      <div class="flex flex-column gap-3">
+                        <span style="font-weight: 700">Параметри задачи</span>
+                        <div v-for="(parameter, parameterIndex) in botFunction?.parameters" :key="parameterIndex" class="flex gap-3 align-items-baseline">
+                          <InputText id="parameterName" type="text" v-model="parameter.name" placeholder="Имя параметра"/>
+                          <Dropdown id="parameterType" v-model="parameter.type" :options="parameterTypes" optionLabel="title" option-value="value" :placeholder="t('chooseOption')"></Dropdown>
+                          <Textarea placeholder="Описание параметра" :autoResize="true" rows="3" cols="2" v-model="parameter.description" />
+                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteBotParameter(index, parameterIndex)"></i>
+                        </div>
+                        <Button :label="t('addTask')" style="background-color: #19C927; border: none" class="add-btn" @click="addParameter(index)"/>
+
+                        <!--                        <pre>{{ botFunction?.parameters }}</pre>-->
+                      </div>
                       <div class="task-panel">
                         <TabView :scrollable="true">
                           <!--Send FileInMessage-->
@@ -1234,6 +1297,7 @@ const isReminderStop = ref<boolean>(false)
                                 <input :id="`file-upload-${index}`" hidden type="file" @input="addFile($event, index)">
                                 <span>{{ $t('maxFileSize5MB') }}</span>
                               </div>
+
                               <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="files">
                                 <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file' && action?.parameters?.fileName)" :key="fileIndex">
                                   <div v-if="file?.parameters?.fileName">
@@ -1248,6 +1312,7 @@ const isReminderStop = ref<boolean>(false)
                                   </Dialog>
                                 </div>
                               </div>
+
                             </div>
                           </TabPanel>
 

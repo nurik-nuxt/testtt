@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useLayout } from '~/composable';
 import { useAuthStore } from "~/src/shared/store/auth";
 import { helpers, minLength, required, email } from "@vuelidate/validators";

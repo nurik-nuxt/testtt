@@ -249,7 +249,10 @@ socket.on('message', async (message) => {
             <div class="flex flex-column gap-4" v-if="message?.type === 'out'">
               <div class="message-me">
                 <div style="font-size: 16px">{{ message?.message?.text }}</div>
-                <div style="font-size: 14px; margin-left: auto">{{ convertTimestampToReadableDate(message?.message?.created_at) }}</div>
+                <div style="font-size: 14px;" class="flex align-center justify-content-between">
+                  <div style="color: yellow" v-if="message?.role === 'assistant' && message?.message?.price > 0">{{ message?.message?.price?.toFixed(2).replace('.', ',') }}  руб.</div>
+                  <div style="margin-left: auto">{{ convertTimestampToReadableDate(message?.message?.created_at) }}</div>
+                </div>
               </div>
             </div>
           </div>
