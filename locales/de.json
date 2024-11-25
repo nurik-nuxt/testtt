@@ -317,5 +317,17 @@
   "paymentUsingTokens": "Bezahlung für die Nutzung von Tokens",
   "ifYouUseYourAPI": "Wenn Sie Ihren API Secret Key verwenden, müssen Sie Ihr Guthaben nicht innerhalb von 7 Sekunden aufladen.",
   "yourBalance": "Ihr Gleichgewicht",
-  "topUpBalance": "Guthaben aufladen"
+  "topUpBalance": "Guthaben aufladen",
+  "restApiSettings": "REST-API-Einstellungen",
+  "requestMethod": "Anfragemethode",
+  "requestUrl": "Adresse anfordern",
+  "apiParams": "API-Aufrufparameter",
+  "taskParameters": "Aufgabenparameter",
+  "variableName": "Variablenname",
+  "action": "Aktion",
+  "apiHeaders": "Header anfordern",
+  "apiBody": "Anforderungstext",
+  "newParameter": "Neuer Parameter",
+  "value": "Bedeutung",
+  "valueToPass": "Zu übergebender Wert"
 }

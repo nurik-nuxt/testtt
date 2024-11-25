@@ -1,0 +1,1 @@
+export { default as BotGeneralKnowledge } from './ui.vue'

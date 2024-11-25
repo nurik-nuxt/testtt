@@ -317,5 +317,16 @@
   "paymentUsingTokens": "Payment for using tokens",
   "ifYouUseYourAPI": "If you use your API Secret Key, you don't need to top up your balance in 7s.",
   "yourBalance": "Your balance",
-  "topUpBalance": "Top up balance"
+  "topUpBalance": "Top up balance",
+  "restApiSettings": "REST API Settings",
+  "requestMethod": "Request method",
+  "requestUrl": "Request address",
+  "apiParams": "API call parameters",
+  "taskParameters": "Task parameters",
+  "variableName": "Variable name",
+  "apiHeaders": "Request headers",
+  "apiBody": "Request body",
+  "newParameter": "New parameter",
+  "value": "Meaning",
+  "valueToPass": "Value to be passed"
 }

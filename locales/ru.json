@@ -317,5 +317,17 @@
   "paymentUsingTokens": "Оплата за использование токенов",
   "ifYouUseYourAPI": "Если вы используете свой API Secret Key, пополнять баланс в 7s не требуется.",
   "yourBalance": "Ваш баланс",
-  "topUpBalance": "Пополнить баланс"
+  "topUpBalance": "Пополнить баланс",
+  "restApiSettings": "Настройки REST API",
+  "requestMethod": "Метод запроса",
+  "requestUrl": "Адрес запроса",
+  "apiParams": "Параметры вызова API",
+  "taskParameters": "Параметры задачи",
+  "variableName": "Имя переменной",
+  "action": "Действие",
+  "apiHeaders": "Заголовки запроса",
+  "apiBody": "Тело запроса",
+  "newParameter": "Новый параметр",
+  "value": "Значение",
+  "valueToPass": "Передаваемо значение"
 }

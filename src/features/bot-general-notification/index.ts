@@ -1,0 +1,1 @@
+export { default as BotGeneralNotification } from './index.vue'

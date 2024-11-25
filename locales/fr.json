@@ -318,5 +318,17 @@
   "paymentUsingTokens": "Paiement pour l'utilisation de jetons",
   "ifYouUseYourAPI": "Si vous utilisez votre clé secrète API, vous n'avez pas besoin de recharger votre solde en 7 secondes.",
   "yourBalance": "Votre solde",
-  "topUpBalance": "Recharger le solde"
+  "topUpBalance": "Recharger le solde",
+  "restApiSettings": "Paramètres de l'API REST",
+  "requestMethod": "Méthode de demande",
+  "requestUrl": "Adresse de la demande",
+  "apiParams": "Paramètres d'appel API",
+  "taskParameters": "Paramètres de tâche",
+  "variableName": "Nom de la variable",
+  "action": "Action",
+  "apiHeaders": "En-têtes de requête",
+  "apiBody": "Corps de la demande",
+  "newParameter": "Nouveau paramètre",
+  "value": "Signification",
+  "valueToPass": "Valeur à transmettre"
 }

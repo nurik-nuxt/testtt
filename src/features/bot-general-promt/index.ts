@@ -1,0 +1,1 @@
+export { default as BotGeneralPromt } from './ui.vue'

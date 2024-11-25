@@ -532,7 +532,7 @@ const changeRecurrence = () => {
               </div>
               <div class="flex gap-2 align-items-center">
                 <span>{{ $t('used') }}:</span>
-                <span class="font-bold">{{ subscriptionCallAnalytics?.billing_cycles[0]?.usage }} {{ $t('of') }} {{ subscriptionCallAnalytics?.billing_cycles[0]?.limit }}</span>
+                <span class="font-bold">{{ subscriptionCallAnalytics?.billing_cycles[0]?.usage }} {{ $t('of') }} {{ subscriptionCallAnalytics?.limit }}</span>
               </div>
             </div>
 

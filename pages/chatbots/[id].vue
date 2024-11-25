@@ -4,12 +4,7 @@ import {useChannelStore} from "~/src/shared/store/channel";
 import {useKnowledgeStore} from "~/src/shared/store/knowledge";
 import {useMainStore} from "~/src/shared/store/main";
 import {useNotificationStore} from "~/src/shared/store/notification";
-import {queryGetModelList} from "~/src/shared/repository/dictionaries";
-import jsCookie from "js-cookie";
 import {useToast} from "primevue/usetoast";
-import {helpers, required, requiredIf} from "@vuelidate/validators";
-import useValidate from "@vuelidate/core/dist/index";
-import {socket, state} from "~/socket";
 import {useLayout} from '~/composable';
 import {useUploadFileStore} from "~/src/shared/store/upload";
 import {useAmoCrmStore} from "~/src/shared/store/amocrm";
@@ -17,8 +12,14 @@ import {useBitrix24} from "~/src/shared/store/bitrix24";
 import {useLoaderStore} from "~/src/shared/store/loader";
 import {useBotReminder} from "~/src/shared/store/reminder";
 import { useUserStore } from "~/src/shared/store/user";
-import {BaseFile} from "~/src/shared/components/base";
 import {convertToBrowserTimezone} from "~/src/shared/utils/helpers";
+import { BotGeneralSettings } from "~/src/features/bot-general-settings";
+import { BotGeneralChannels } from "~/src/features/bot-general-channels";
+import { BotGeneralKnowledge } from "~/src/features/bot-general-knowledge";
+import { BotGeneralNotification } from "~/src/features/bot-general-notification/index";
+import { BotGeneralReminders } from "~/src/features/bot-general-reminders";
+import { BotChat } from "~/src/features/bot-chat";
+import { BotGeneralPromt } from "~/src/features/bot-general-promt";
 
 const { isMobileOrTablet } = useDevice();
 
@@ -35,26 +36,14 @@ watch(
 )
 
 const toast = useToast();
-interface BotItem {
-  title: string;
-  id: number;
-  channels: string[];
-  isActive: boolean
-}
 const route = useRoute();
 
-const userId = computed(() => {
-  const userCookie = jsCookie.get('user')
-  const user = userCookie ? JSON.parse(userCookie) : null
-  return user?._id
-})
 
 const botStore = useBotStore();
 const channelStore = useChannelStore();
 const knowledgeStore = useKnowledgeStore();
 const mainStore = useMainStore();
 const notificationStore = useNotificationStore();
-const uploadFileStore = useUploadFileStore();
 const amoCrmStore = useAmoCrmStore();
 const bitrix24Store = useBitrix24();
 const loaderStore = useLoaderStore();
@@ -67,47 +56,16 @@ const loading = computed(() => {
 })
 
 
-const { data: models, suspense: suspenseModels } = queryGetModelList();
-
-await suspenseModels();
 const { t } = useI18n();
 
-const apiKeyTypes = ref([
-  {
-    title: t('useSeparateToken'),
-    code: 'own',
-    disabled: false,
-  },
-  {
-    title: t('use7sTokens'),
-    code: 'shared',
-    disabled: false,
-  }
-]);
 
-const limitDays = computed(() => {
-  return [
-    {
-      title: t('perDay'),
-      id: 'day'
-    },
-    {
-      title: t('perHour'),
-      id: 'hour'
-    }
-  ]
-})
 const apiKey = ref({
   title: 'Использовать отдельный токен для этого бота',
   code: 'individual_token'
 });
+
 const model = ref(null);
 
-const createKnowledgeBase = (id: number) => {
-  return navigateTo({ name: 'chatbots-knowledge-id', params: { id: id }})
-}
-
-const knowledgeBaseSelectedKey = ref(null);
 
 const workingZones = computed(() => {
   return botReminderStore.getAllTimeZones;
@@ -115,7 +73,6 @@ const workingZones = computed(() => {
 
 
 const active = ref(true)
-const filters = ref({});
 
 const message = ref<string>('')
 
@@ -166,9 +123,7 @@ const isValidatedApiSecretKey = computed(() => {
   if (currentBot.value.apiKeyType === 'shared') {
     return userBalance.value <= 0;
   } else {
-    if (currentBot.value.apiKey.length > 3) {
-      return false
-    } else return true
+    return currentBot.value.apiKey.length <= 3;
   }
 })
 
@@ -232,29 +187,8 @@ function getUTCOffsetString() {
   return hourString;
 }
 
-const botRules = computed(() => {
-  return {
-    name: {
-      required: helpers.withMessage(t('required'), required)
-    },
-    apiKey: {
-      requiredIf: helpers.withMessage(t('required'), requiredIf(() => currentBot.value.apiKeyType === 'own')),
-    }
-  }
-})
-const v$ = useValidate(botRules, currentBot);
 const telegramLink = ref<string>('')
 
-const isJoinedChat = ref<boolean>(false)
-const joinToChat = () => {
-  socket.emit('joinChat', { botId: <string>route.params.id, userId: userId.value })
-  isJoinedChat.value = true
-}
-
-
-onUnmounted(() => {
-  socket.disconnect();
-})
 function ensureAllActionsExist(botFunction: any) {
   const requiredActions = [
     {
@@ -304,6 +238,17 @@ function ensureAllActionsExist(botFunction: any) {
         pipeline_id: '',
         status_id: ''
       }
+    },
+    {
+      name: 'send_to_webhook',
+      parameters: {
+        url: '',
+        method: undefined,
+        isOn: true,
+        queryParams: [],
+        headers: [],
+        bodyParams: []
+      }
     }
   ];
 
@@ -323,9 +268,8 @@ const userBalance = computed(() => {
 })
 
 const showEmptyOpenAISecretKey = ref<string>(false)
-onMounted(async () => {
-  socket.connect();
 
+onMounted(async () => {
   await Promise.all([
     amoCrmStore.fetchVoronki(),
     amoCrmStore.fetchAmoCrmFields(),
@@ -369,10 +313,8 @@ onMounted(async () => {
       } else {
         mainStore.setChatBotActiveTab(0);
         showEmptyOpenAISecretKey.value = true
-        // toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
       }
     }),
-    channelStore.getAllChannels(),
     knowledgeStore.getKnowledgeListByBot(<string>route.params.id),
     notificationStore.getTelegramNotificationLink().then((res) => {
       const response = JSON.parse(res);
@@ -382,46 +324,10 @@ onMounted(async () => {
   ]);
 });
 
-const clearChat = () => {
-  socket.disconnect();
-  state.messages.splice(0,state.messages.length)
-}
-
-const sendMessage = () => {
-  if (!currentBot.value.apiKeyType) {
-    toast.add({ severity: 'error', summary: 'Ошибка', detail: 'Заполняйте API Key и сохраните бота', life: 5000 })
-  } else {
-    if (!isJoinedChat.value) {
-      joinToChat();
-    }
-    if (message.value.trim() !== '' ) {
-      const currentMessage = message.value;
-
-      setTimeout(() => {
-        socket.emit('message', currentMessage)
-      }, 1000)
-
-      state.messages.unshift({ id: state.messages.length + 1, sender: 'Me', message: message.value });
-      message.value = '';
-    }
-  }
-}
-
 const bot = computed(() => {
   return botStore.getCurrentBot
 });
 
-const allChannels = computed(() => {
-  return channelStore.getChannels
-})
-
-const availableChannels = computed(() => {
-  return channelStore.getChannels?.filter((channel) => !channel.connected)
-})
-
-const connectedChannels = computed(() => {
-  return channelStore.getChannels?.filter((channel) => channel?.connectedBotId === <string>route.params.id)
-})
 function filterEmptyActions(actions: any[]) {
   return actions.filter(action => {
     if (action.name === 'send_file' && (!action.parameters.fileName || !action.parameters.type)) {
@@ -445,36 +351,33 @@ function filterEmptyActions(actions: any[]) {
 }
 
 const confirmBotMainSettings = async () => {
-  const isFormCorrect = await v$.value.$validate();
-
   botFunctions.value = botFunctions.value.map((botFunction: any) => ({
     ...botFunction,
     actions: filterEmptyActions(botFunction.actions)
   }));
-  if (isFormCorrect) {
-    await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
-      toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
-      if (reminders.value) {
-        await botReminderStore.saveBotReminder(<string>route.params.id, reminders.value)
-      }
-      if (countFunctionChanging.value > 1) {
-        await botStore.saveFunctionById(<string>route.params.id, botFunctions.value)
-      }
-      if (res?.success) {
-        await botStore.getBot(<string>route.params.id).then((res) => {
-          if (res?.functions) {
-            botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
-          }
+  await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
+    toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
+    if (reminders.value) {
+      await botReminderStore.saveBotReminder(<string>route.params.id, reminders.value)
+    }
+    if (countFunctionChanging.value > 1) {
+      await botStore.saveFunctionById(<string>route.params.id, botFunctions.value)
+    }
+    if (res?.success) {
+      await botStore.getBot(<string>route.params.id).then((res) => {
+        if (res?.functions) {
+          botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
+        }
 
-          Object.keys(currentBot.value).forEach(key => {
-            if (key in res && res[key] !== null && res[key] !== undefined) {
-              currentBot.value[key] = res[key];
-            }
-          });
-        })
-      }
-    })
-  }
+        Object.keys(currentBot.value).forEach(key => {
+          if (key in res && res[key] !== null && res[key] !== undefined) {
+            currentBot.value[key] = res[key];
+          }
+        });
+      })
+    }
+  })
+
 }
 
 const visibleDeleteBot = ref<boolean>(false)
@@ -490,217 +393,10 @@ const confirmRemoveBot = async () => {
   })
 }
 
-const createChannel = () => {
-  return navigateTo({ name: 'channels' })
-}
-
-const connectToBot = async (channelId: string) => {
-  await channelStore.connectChannelToBot(channelId, <string>route.params.id).then(async () => {
-    await botStore.getBot(<string>route.params.id).then(async (res) => {
-      if (res?.channels?.some((channel) => channel.type === 'bitrix24')) {
-        await bitrix24Store.loadFunnels(res?.channels?.find((channel) => channel.type === 'bitrix24')?.channelId);
-        await  bitrix24Store.loadFields();
-      }
-      if (res?.functions) {
-        botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
-      }
-      if (res?.reminders?.length) {
-        reminders.value = res?.reminders?.map(item => {
-          return {
-            ...item,
-            schedule: {
-              start: convertToBrowserTimezone(item.schedule.start),
-              end: convertToBrowserTimezone(item.schedule.end)
-            }
-          };
-        })
-      }
-      Object.keys(currentBot.value).forEach(key => {
-        if (key in res && res[key] !== null && res[key] !== undefined) {
-          currentBot.value[key] = res[key];
-        }
-      });
-      if (!res?.schedule?.timezone) {
-        currentBot.value.schedule.timezone = getUTCOffsetString();
-      }
-      if (!res?.schedule?.workingHours) {
-        currentBot.value.schedule.workingHours = workingHours.value
-      }
-      if (res?.apiKeyType) {
-        mainStore.setChatBotActiveTab(1);
-      } else {
-        mainStore.setChatBotActiveTab(0);
-        showEmptyOpenAISecretKey.value = true;
-        // toast.add({ severity: 'error', detail: t('startMessageNewBot'), life: 500000 })
-      }
-    })
-  })
-}
-const disconnectToBot = async (channelId: string) => {
-  await channelStore.disconnectChannelToBot(channelId, <string>route.params.id).then(async () => {
-    await botStore.getBot(<string>route.params.id).then(async (res) => {
-      if (res?.channels?.some((channel) => channel.type === 'bitrix24')) {
-        await bitrix24Store.loadFunnels(res?.channels?.find((channel) => channel.type === 'bitrix24')?.channelId);
-        await  bitrix24Store.loadFields();
-      }
-      if (res?.functions) {
-        botFunctions.value = res.functions.map(botFunction => ensureAllActionsExist(botFunction));
-      }
-      if (res?.reminders?.length) {
-        reminders.value = res?.reminders?.map(item => {
-          return {
-            ...item,
-            schedule: {
-              start: convertToBrowserTimezone(item.schedule.start),
-              end: convertToBrowserTimezone(item.schedule.end)
-            }
-          };
-        })
-      }
-      Object.keys(currentBot.value).forEach(key => {
-        if (key in res && res[key] !== null && res[key] !== undefined) {
-          currentBot.value[key] = res[key];
-        }
-      });
-      if (!res?.schedule?.timezone) {
-        currentBot.value.schedule.timezone = getUTCOffsetString();
-      }
-      if (!res?.schedule?.workingHours) {
-        currentBot.value.schedule.workingHours = workingHours.value
-      }
-      if (res?.apiKey) {
-        mainStore.setChatBotActiveTab(1);
-      } else {
-        mainStore.setChatBotActiveTab(0);
-        showEmptyOpenAISecretKey.value = true
-      }
-    })
-  })
-}
-
-const files = computed(() => {
-  return knowledgeStore.getKnowledgeList
-});
-
-const deleteKnowledgeFile = async (knowledgeId: string) => {
-  await knowledgeStore.deleteKnowledgeFile(<string>route.params.id, knowledgeId).then(async (res) => {
-    if (res.success) {
-      await knowledgeStore.getKnowledgeListByBot(<string>route.params.id)
-    }
-  })
-}
-
-const editKnowledgeFile = (knowledgeId: string) => {
-  return navigateTo({ name: 'chatbots-knowledge-edit-id', params: { id: route.params.id }, query: { knowledgeId: knowledgeId }})
-}
-
-const openTelegram = () => {
-  window.open(telegramLink.value, '_blank');
-}
-// const activeTab = ref(mainStore.chatBotActiveTab)
-const messages = computed(() => {
-  return state.messages.reverse();
-})
-
-function handleKeyDown(event) {
-  if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault();
-    sendMessage();
-  }
-}
-
-
-const getInterruptDialogue = (functionIndex: number) => {
-  return computed({
-    get() {
-      // Check if the botFunction has the 'stop_dialogue' action
-      const action = botFunctions.value[functionIndex]?.actions?.find(
-          (action: any) => action.name === 'stop_dialogue'
-      );
-      return !!action;
-    },
-    set(value) {
-      if (value) {
-        // Add the stop_dialogue action if it doesn't exist
-        const exists = botFunctions.value[functionIndex]?.actions?.some(
-            (action: any) => action.name === 'stop_dialogue'
-        );
-        if (!exists) {
-          botFunctions.value[functionIndex]?.actions.push({ name: 'stop_dialogue' });
-        }
-      } else {
-        // Remove the stop_dialogue action if it exists
-        botFunctions.value[functionIndex].actions = botFunctions.value[functionIndex].actions.filter(
-            (action: any) => action.name !== 'stop_dialogue'
-        );
-      }
-    },
-  });
-};
-const getStopReminder = (functionIndex: number) => {
-  return computed({
-    get() {
-      // Check if the botFunction has the 'stop_reminder' action
-      const action = botFunctions.value[functionIndex]?.actions?.find(
-          (action: any) => action.name === 'stop_reminder'
-      );
-      return !!action;
-    },
-    set(value) {
-      if (value) {
-        const exists = botFunctions.value[functionIndex]?.actions?.some(
-            (action: any) => action.name === 'stop_reminder'
-        );
-        if (!exists) {
-          botFunctions.value[functionIndex]?.actions.push({ name: 'stop_reminder' });
-        }
-      } else {
-        botFunctions.value[functionIndex].actions = botFunctions.value[functionIndex].actions.filter(
-            (action: any) => action.name !== 'stop_reminder'
-        );
-      }
-    },
-  });
-};
-
-
-
 const webhookUrl = ref<string>('')
 
 const botFunctions = ref<any>([])
 
-const deleteFunctionSendFile = (file: any, functionIndex: number, fileIndex: number) => {
-  const action = botFunctions.value[functionIndex]?.actions;
-  for (let i = 0; i < action.length; i++) {
-    if (action[i]?.name === 'send_file') {
-      delete action[i];
-      break;
-    }
-  }
-  showFileDeleteModal.value = false;
-}
-
-const openFileUploader = (functionIndex: number) => {
-  const fileInput = document.getElementById(`file-upload-${functionIndex}`);
-  if (fileInput) {
-    fileInput.click();
-  }
-}
-
-const addFile = async (event: Event, functionIndex: number) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0] || null;
-  if (!file) return;
-  await uploadFileStore.loadFile(file).then((res) => {
-    botFunctions.value[functionIndex]?.actions?.push({
-      name: 'send_file',
-      parameters: {
-        fileName: res?.filename,
-        type: res?.mimeType?.includes('image') ? 'picture' : res?.mimeType?.includes('pdf') ? 'pdf' : res?.mimeType?.includes('spreadsheetml')  ? 'excel' : res?.mimeType?.includes('wordprocessingml') ? 'docs' : 'file'
-      }
-    })
-  });
-}
 const addTask = () => {
   botFunctions.value.push(
       {
@@ -760,6 +456,17 @@ const addTask = () => {
           },
           {
             name: 'stop_reminder'
+          },
+          {
+            name: 'send_to_webhook',
+            parameters: {
+              url: '',
+              method: undefined,
+              isOn: true,
+              queryParams: [],
+              headers: [],
+              bodyParams: []
+            }
           }
         ],
         parameters: [
@@ -773,175 +480,8 @@ const addTask = () => {
   )
 }
 
-const getNotifyOperatorText = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find((action) => action?.name === 'notify_operator');
-      if (action && action.parameters) {
-        return action.parameters.text || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find((action) => action?.name === 'notify_operator');
-      if (action && action.parameters) {
-        action.parameters.text = value;
-      }
-    }
-  });
-};
-
-const getWebhookUrl = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
-      if (action && action.parameters) {
-        return action.parameters.webhook_url || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
-      if (action && action.parameters) {
-        action.parameters.webhook_url = value;
-      }
-    }
-  });
-};
-
-const getWebhookText = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
-      if (action && action.parameters) {
-        return action.parameters.webhook_text || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'send_webhook');
-      if (action && action.parameters) {
-        action.parameters.webhook_text = value;
-      }
-    }
-  });
-};
-
-const funnels = computed(() => {
-  if (currentBot.value?.channels?.some((channel) => channel?.type === 'bitrix24')) {
-    return Array.isArray(bitrix24Store.getFunnels) ? bitrix24Store.getFunnels : [];
-  } else if (currentBot.value?.channels?.some((channel) => channel?.type === 'amocrm')) {
-    return Array.isArray(amoCrmStore.getAllFunnels) ? amoCrmStore.getAllFunnels : [];
-  } else {
-    return [];
-  }
-});
-
-const getFunnelId = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
-      if (action && action.parameters) {
-        return action.parameters.pipeline_id || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
-      if (action && action.parameters) {
-        action.parameters.pipeline_id = value;
-      }
-    }
-  });
-};
-
-const getStatusId = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
-      if (action && action.parameters) {
-        return action.parameters.status_id || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'move_in_pipeline');
-      if (action && action.parameters) {
-        action.parameters.status_id = value;
-      }
-    }
-  });
-};
-
-const getDealNoteText = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'add_note');
-      if (action && action.parameters) {
-        return action.parameters.text || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'add_note');
-      if (action && action.parameters) {
-        action.parameters.text = value;
-      }
-    }
-  });
-};
-const fields = computed(() => {
-  if (currentBot.value?.channels?.some((channel) => channel.type === 'bitrix24')) {
-    return Array.isArray(bitrix24Store.getFields) ? bitrix24Store.getFields : [];
-  } else {
-    return Array.isArray(amoCrmStore.getFields) ? amoCrmStore.getFields : [];
-  }
-});
-
-const getFieldId = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
-      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0]) {
-        return action.parameters.custom_fields_values[0].field_id || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
-      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0]) {
-        action.parameters.custom_fields_values[0].field_id = value;
-      }
-    }
-  });
-};
-
-const getFieldValue = (index: number) => {
-  return computed({
-    get() {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
-      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0] && action.parameters.custom_fields_values[0].values && action.parameters.custom_fields_values[0].values[0]) {
-        return action.parameters.custom_fields_values[0].values[0].value || '';
-      }
-      return '';
-    },
-    set(value) {
-      const action = botFunctions.value[index]?.actions?.find(action => action?.name === 'edit_lead_card');
-      if (action && action.parameters && action.parameters.custom_fields_values && action.parameters.custom_fields_values[0] && action.parameters.custom_fields_values[0].values && action.parameters.custom_fields_values[0].values[0]) {
-        action.parameters.custom_fields_values[0].values[0].value = value;
-      }
-    }
-  });
-};
-
-const getParameterNameValue = (index: number) => {
-  return computed({
-    get() {
-
-    }
-  })
-}
 const countFunctionChanging = ref<number>(0);
+
 watch(
     () => botFunctions.value,
     () => {
@@ -952,28 +492,7 @@ watch(
       immediate: false
     }
 )
-const deleteFunction = async () => {
-  console.log(selectedBotTaskIndex.value, 'index');
-  botFunctions.value.splice(selectedBotTaskIndex.value, 1);
-  showFunctionDeleteModal.value = false;
-}
 
-const showFileDeleteModal = ref<boolean>(false);
-const showFunctionDeleteModal = ref<boolean>(false);
-const showReminderDeleteModal = ref<boolean>(false);
-
-
-
-const timeList = ref([
-  {
-    id: 'minutes',
-    title: t('perMinutes')
-  },
-  {
-    id: 'hours',
-    title: t('perHour')
-  },
-]);
 
 const reminders = ref<{
   id: number,
@@ -989,83 +508,11 @@ const reminders = ref<{
   }
 }[]>([]);
 
-
-const addReminder = () => {
-  reminders.value.push({
-    id: reminders.value.length + 1,
-    quantity: 10,
-    message: '',
-    timeframe: 'minutes',
-    type: 'message',
-    isSchedule:false,
-    isActiveReminder: true,
-    schedule: {
-      start: '',
-      end: ''
-    }
-  })
-}
-
-const messageTypes = ref([
-  {
-    id: 'message',
-    title: t('sendMyMessage')
-  },
-  {
-    id: 'prompt',
-    title: t('generateUsingAI')
-  }
-])
-
-const deleteReminder = (id: number) => {
-  reminders.value = reminders.value.filter(message => message.id !== id);
-  showReminderDeleteModal.value = false;
-  reminderId.value = 0;
-}
-
-const reminderId = ref<number>(0)
-const showDeleteReminderModal = (id: number) => {
-  showReminderDeleteModal.value = true;
-  reminderId.value = id;
-}
-const hideDeleteReminderModal = () => {
-  showReminderDeleteModal.value = false;
-  reminderId.value = 0
-}
-
-const selectedBotTaskIndex = ref()
-const showDeleteConfirmModal = (index: any) => {
-  showFunctionDeleteModal.value = true;
-  selectedBotTaskIndex.value = index;
-}
-
-const isReminderStop = ref<boolean>(false);
-
-const parameterTypes = ref<{ title: string; value: 'string' | 'number' }[]>([
-  {
-    title: 'Строка',
-    value: 'string',
-  },
-  {
-    title: 'Число',
-    value: 'number',
-  }
-])
-
-const deleteBotParameter = (indexBotFunction: number, indexParameter: number) => {
-  botFunctions.value[indexBotFunction].parameters.splice(indexParameter, 1);
-}
-const addParameter = (indexBotFunction: number) => {
-  botFunctions.value[indexBotFunction].parameters.push({
-    name: '',
-    type: 'string',
-    description: '',
-  })
-}
 </script>
 
 <template>
   <Toast />
+
   <Dialog v-model:visible="visibleDeleteBot" modal :header="t('deleteBotButton')" :style="{ width: '25rem' }">
     <span class="text-surface-500 dark:text-surface-400 block mb-4">{{ $t('aIBotWillDeleted') }}</span>
     <div class="flex justify-content-center gap-2 w-full">
@@ -1095,588 +542,46 @@ const addParameter = (indexBotFunction: number) => {
         <div>
           <TabView v-model:activeIndex="mainStore.chatBotActiveTab">
             <TabPanel :header="`1.${t('general')}`">
-              <div class="card-form p-fluid" style="margin-top: 16px">
-
-                <!--Bot name-->
-                <div class="field">
-                  <label for="name1" style="font-weight: 700">{{ $t('botName') }}</label>
-                  <InputText id="botName" type="text" v-model="currentBot.name" :invalid="v$.$errors.find((el) => el.$property === 'name')?.$message" />
-                </div>
-              </div>
-              <div class="card-form p-fluid" style="margin-top: 12px">
-
-                <!--Bot apiSecretKey-->
-                <label for="name1" style="font-weight: 700">{{ $t('apiSecretKey') }}</label>
-                <Dropdown class="mb-2" style="margin-top: 8px" id="apiKey" v-model="currentBot.apiKeyType" :options="apiKeyTypes" optionLabel="title" option-value="code" :placeholder="t('chooseOption')" option-disabled="disabled"></Dropdown>
-                <InputText v-if="currentBot.apiKeyType === 'own'" style="margin-top: 8px; margin-bottom: 16px;" id="name1" v-model="currentBot.apiKey" :placeholder="t('apiKey')" :invalid="v$.$errors.find((el) => el.$property === 'apiKey')?.$message" />
-
-                <!--Bot model-->
-                <label for="name1" style="font-weight: 700">{{ $t('model') }}</label>
-                <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="apiKey" v-model="currentBot.model" :options="models" optionLabel="name" option-value="name" :placeholder="t('chooseOption')"></Dropdown>
-                <span style="color: #64748b">{{ $t('modelChoice') }}</span>
-
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('temperature') }}</label>
-                  <InputText style="margin-bottom: 8px" id="temperatureValue" type="number" min="1" v-model.number="currentBot.temperature" :disabled="true" />
-                  <Slider style="margin-bottom: 8px" v-model="currentBot.temperature" :min="0" :max="2" :step="0.1"/>
-                  <span style="color: #64748b">{{ $t('creativityLevel') }}</span>
-                </div>
-
-                <!--Bot maxTokens-->
-<!--                <div class="field" style="margin-top: 12px">-->
-<!--                  <label for="name1" style="font-weight: 700">{{ $t('maxTokens') }}</label>-->
-<!--                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.maxTokens" />-->
-<!--                  <span style="color: #64748b">{{ $t('requestCost') }}</span>-->
-<!--                </div>-->
-
-                <!--Bot joinTimeout-->
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('messageMergeTimeout') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.smallTimeout"/>
-                  <span style="color: #64748b">{{ $t('messageWaitTime') }}</span>
-                </div>
-
-
-                <!--Bot operatorStopTime-->
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('pauseMinutes') }}</label>
-                  <InputText style="margin-bottom: 8px" id="name1" type="number" min="1" v-model="currentBot.operatorStopTime" />
-                  <span style="color: #64748b">{{ $t('pauseOperator') }}</span>
-                </div>
-
-                <!--Bot messageLimit-->
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('limitingAIbot') }}</label>
-                  <div class="flex align-items-center gap-2">
-                    <span>{{ $t('maxMessages') }}</span>
-                    <InputText id="message-limit-qty" type="number" min="1" style="max-width: 150px" v-model="currentBot.messageLimit.qty"/>
-                    <span>{{ $t('onceWhile') }}</span>
-                    <InputText id="message-limit-period" type="number" min="1" style="max-width: 150px" v-model="currentBot.messageLimit.period"/>
-                    <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="message-limit-granularity" v-model="currentBot.messageLimit.granularity" :options="limitDays" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
-                  </div>
-                </div>
-
-                <h5>{{ $t('manageBotMessages') }}</h5>
-                <span>{{ $t('operatorControlPhrases') }}</span>
-
-                <!--Bot stopBot-->
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('stopBot') }}</label>
-                  <InputText style="margin-bottom: 8px" id="stopBot" type="text" v-model="currentBot.controlSignals.stopBot" />
-                </div>
-
-                <!--Bot stopBot-->
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('resumeBot') }}</label>
-                  <InputText style="margin-bottom: 8px" id="resumeBot" type="text" v-model="currentBot.controlSignals.continueBot" />
-                </div>
-
-                <div class="field" style="margin-top: 12px">
-                  <label for="name1" style="font-weight: 700">{{ $t('workingHours') }}</label>
-                  <span class="bot-card__activate" style="margin-top: 8px">
-                    {{ $t('works247') }}
-                  </span>
-                  <span class="bot-card__activate">
-                    {{ $t('setWorkingHours') }}
-                    <InputSwitch v-model="currentBot.schedule.isSchedule" style="margin-left: 8px"/>
-                  </span>
-<!--                  <pre>{{ currentBot }}</pre>-->
-                  <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="currentBot.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
-                  <div v-if="currentBot.schedule.isSchedule" class="flex flex-column gap-2 mt-3">
-                    <div class="flex align-items-center gap-2" v-for="(workingHour, index) in currentBot.schedule.workingHours" :key="index">
-                      <span style="width: 25px">{{ workingHour.title }}:</span>
-                      <Calendar :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.start" />
-                      <span>-</span>
-                      <Calendar :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.end" />
-                      <span class="bot-card__activate" >
-                        Работает
-                        <InputSwitch v-model="workingHour.isWork" style="margin-left: 8px"/>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-              <div class="mt-4 flex gap-4 align-items-center justify-content-end">
-                <Button :label="t('deleteBotButton')" severity="danger" class="mr-auto" @click="removeBot"></Button>
-                <nuxt-link to="/chatbots" style="color: #334155">{{ $t('goBack')}}</nuxt-link>
-                <Button :label="t('save')" @click="confirmBotMainSettings" :disabled="loading || isValidatedApiSecretKey"></Button>
-              </div>
+              <BotGeneralSettings
+                  :currentBot="currentBot"
+                  :loading="loading"
+                  :isValidatedApiSecretKey="isValidatedApiSecretKey"
+                  :workingZones="workingZones"
+                  @update:currentBot="currentBot = $event"
+                  @confirmBotMainSettings="confirmBotMainSettings"
+                  @removeBot="removeBot"
+              />
             </TabPanel>
 
             <TabPanel :header="`2.${t('prompt')}`">
-              <div class="card-form p-fluid" style="margin-top: 16px">
-                <!--Bot instructions-->
-                <div class="field">
-                  <div class="flex justify-content-between align-items-end">
-                    <div class="flex flex-column">
-                      <label style="font-weight: 700">{{ $t('botInstructionPrompt') }}</label>
-                      <span class="mb-2 mt-2">{{ $t('promptUsageTip') }}</span>
-                    </div>
-                    <span style="color: #076AE1; margin-bottom: 7px">{{ $t('variables') }}</span>
-                  </div>
-                  <Textarea :placeholder="t('youBotConsultant')" :autoResize="false" rows="25" cols="2" v-model="currentBot.instructions"/>
-                </div>
-
-                <!--Bot helloOnFirst-->
-                <span class="bot-card__activate">
-                  {{ $t('welcomeMessageStart') }}
-                  <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px"/>
-                </span>
-
-                <!--Bot helloOnFirst-->
-                <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
-                  <div class="field" style="margin-top: 12px">
-                    <Textarea :placeholder="t('autoMessageNote')" :autoResize="true" rows="3" cols="30" v-model="currentBot.helloMessage" />
-                  </div>
-                </div>
-
-
-                <!--Bot Tasks-->
-                <div v-if="botFunctions" class="mt-5 flex flex-column gap-4">
-<!--                  <pre>{{ botFunctions }}</pre>-->
-                  <div v-for="(botFunction, index) in botFunctions" :key="index" class="task-wrapper">
-<!--                    <pre>{{ botFunction }}</pre>-->
-                    <div class="mt-3 mb-4 flex flex-column gap-3">
-
-                      <div class="flex flex-column gap-2">
-
-                        <div class="flex justify-content-between w-full align-items-center mb-4">
-
-                          <div class="flex gap-3 align-items-center">
-                            <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
-                            <label style="font-weight: 700">{{ $t('botTask') }}</label>
-                          </div>
-
-                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showDeleteConfirmModal(index)"></i>
-
-                          <Dialog v-model:visible="showFunctionDeleteModal" :header="'Удалить задачу бота?'">
-                            <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы действительно хотите удалить эту задачу?</span>
-                            <div class="flex justify-content-center gap-2 w-full">
-                              <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunction"></Button>
-                              <Button type="button" :label="t('cancel')" @click="showFunctionDeleteModal = false"></Button>
-                            </div>
-                          </Dialog>
-                        </div>
-                        <Textarea rows="2" cols="30" v-model="botFunction.prompt" />
-                      </div>
-                      <span style="font-weight: 700">{{ $t('actionsAfterTask') }}</span>
-                      <div class="flex align-items-center gap-4">
-                        <span class="bot-card__activate">
-                        {{ $t('endDialogue') }}
-                          <InputSwitch v-model="getInterruptDialogue(index).value" style="margin-left: 24px"/>
-                      </span>
-                        <span class="bot-card__activate">
-                        {{ $t('isReminderStop') }}
-                          <InputSwitch v-model="getStopReminder(index).value" style="margin-left: 24px"/>
-                      </span>
-                      </div>
-                      <div class="flex flex-column gap-3">
-                        <span style="font-weight: 700">Параметри задачи</span>
-                        <div v-for="(parameter, parameterIndex) in botFunction?.parameters" :key="parameterIndex" class="flex gap-3 align-items-baseline">
-                          <InputText id="parameterName" type="text" v-model="parameter.name" placeholder="Имя параметра"/>
-                          <Dropdown id="parameterType" v-model="parameter.type" :options="parameterTypes" optionLabel="title" option-value="value" :placeholder="t('chooseOption')"></Dropdown>
-                          <Textarea placeholder="Описание параметра" :autoResize="true" rows="3" cols="2" v-model="parameter.description" />
-                          <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteBotParameter(index, parameterIndex)"></i>
-                        </div>
-                        <Button :label="t('addTask')" style="background-color: #19C927; border: none" class="add-btn" @click="addParameter(index)"/>
-
-                        <!--                        <pre>{{ botFunction?.parameters }}</pre>-->
-                      </div>
-                      <div class="task-panel">
-                        <TabView :scrollable="true">
-                          <!--Send FileInMessage-->
-                          <TabPanel>
-                            <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'send_file' && item?.parameters?.fileName)}">{{ $t('sendFileInMessage')}}</span>
-                            </template>
-                            <div class="mt-4 flex flex-column gap-4">
-                              <span>{{ $t('fileSendingRestrictions') }}</span>
-                              <div class="flex w-full gap-3 align-items-center manage-files">
-                                <Button :label="t('attachFile')" icon="pi pi-plus" class="file-btn" @click="openFileUploader(index)"></Button>
-                                <input :id="`file-upload-${index}`" hidden type="file" @input="addFile($event, index)">
-                                <span>{{ $t('maxFileSize5MB') }}</span>
-                              </div>
-
-                              <div v-if="botFunction?.actions?.filter((action) => action?.name === 'send_file')?.length" class="files">
-                                <div class="flex flex-column gap-3" v-for="(file, fileIndex) in botFunction?.actions?.filter((action) => action?.name === 'send_file' && action?.parameters?.fileName)" :key="fileIndex">
-                                  <div v-if="file?.parameters?.fileName">
-                                    <BaseFile :type="file?.parameters?.type" :file-name="file?.parameters?.fileName" :picture="`https://api.7sales.ai/public/${file?.parameters?.fileName}`" @delete="showFileDeleteModal = true" />
-                                  </div>
-                                  <Dialog v-model:visible="showFileDeleteModal" :header="'Удалить файла'">
-                                    <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы точно хотите удалить этого файла?</span>
-                                    <div class="flex justify-content-center gap-2 w-full">
-                                      <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunctionSendFile(file, index, fileIndex)"></Button>
-                                      <Button type="button" :label="t('cancel')" @click="showFileDeleteModal = false"></Button>
-                                    </div>
-                                  </Dialog>
-                                </div>
-                              </div>
-
-                            </div>
-                          </TabPanel>
-
-                          <TabPanel>
-                            <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'add_note' && item?.parameters?.text || botFunction?.actions?.some((item) => item?.name === 'edit_lead_card' && item?.parameters?.custom_fields_values?.some(field => field?.field_id || field.values.some((val) => val.value)))) }">CRM</span>
-                            </template>
-                            <h5 class="mt-4">{{ currentBot?.channels?.some((channel) => channel.type === 'bitrix24') ? $t('changeDealStageBitrix') : $t('changeDealStage') }}</h5>
-
-                            <div class="mt-4 flex justify-content-between gap-4 fields">
-                              <div class="flex flex-column w-full gap-2">
-                                <label for="funnel">{{ $t('choosePipeline') }}:</label>
-                                <Dropdown style="margin-top: 8px" id="funnel" :model-value="getFunnelId(<number>index).value" @update:model-value="getFunnelId(<number>index).value = $event" :options="funnels" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
-                              </div>
-                              <div class="flex flex-column w-full gap-2">
-                                <label for="statusId">{{ $t('changeStatus') }}:</label>
-                                <Dropdown v-if="currentBot?.channels?.some((channel) => channel.type === 'bitrix24')" style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel.id === getFunnelId(<number>index).value)?.statuses" optionLabel="name" option-value="status_id" :placeholder="t('chooseField')"></Dropdown>
-
-                                <Dropdown v-else style="margin-top: 8px" id="statusId" :model-value="getStatusId(<number>index).value" @update:model-value="getStatusId(<number>index).value = $event" :options="funnels?.find((funnel) => funnel?.id === botFunction?.actions?.find((action) => action?.name === 'move_in_pipeline')?.parameters?.pipeline_id)?._embedded?.statuses" optionLabel="name" option-value="id" :placeholder="t('chooseField')"></Dropdown>
-                              </div>
-                            </div>
-                            <div class="flex flex-column mt-3">
-                              <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">{{ $t('writeDealNote') }}</label>
-                              <Textarea :placeholder="t('dealNoteText')" :autoResize="true" rows="3" cols="2" :model-value="getDealNoteText(<number>index).value" @update:model-value="getDealNoteText(<number>index).value = $event" />
-                            </div>
-                            <div class="flex flex-column mt-3">
-                              <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">{{ $t('setFieldValue') }}</label>
-                              <div class="flex align-items-center gap-4 fields">
-                                <div class="flex flex-column gap-2 w-full">
-                                  <label for="chooseField">{{ $t('chooseField') }}</label>
-                                  <Dropdown id="funnel" :model-value="getFieldId(<number>index).value" @update:model-value="getFieldId(<number>index).value = $event" :options="fields" optionLabel="name" :option-value="`${currentBot?.channels?.some((channel) => channel.type === 'bitrix24') ? 'key' : 'id'}`" placeholder="Выберите один"></Dropdown>
-                                </div>
-                                <div class="flex flex-column gap-2 w-full">
-                                  <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>
-                                  <InputText id="enterFieldValue" type="text" :model-value="getFieldValue(<number>index).value" @update:model-value="getFieldValue(<number>index).value = $event"   />
-                                </div>
-                              </div>
-                            </div>
-                          </TabPanel>
-
-                          <TabPanel>
-                            <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title': botFunction?.actions?.some((item) => item?.name === 'notify_operator' && item?.parameters?.text ) }">{{ $t('notification')}}</span>
-                            </template>
-                            <div class="flex flex-column gap-3">
-                              <span style="font-weight: 700" class="mt-5">{{ $t('notificationText') }}</span>
-                              <Textarea :autoResize="true" rows="3" cols="2" :model-value="getNotifyOperatorText(<number>index).value" @update:model-value="getNotifyOperatorText(<number>index).value = $event" />
-                            </div>
-                          </TabPanel>
-
-                          <TabPanel>
-                            <template #header>
-                              <span class="white-space-nowrap" :class="{'success-tab-title' : botFunction?.actions?.some((item) => item?.name === 'send_webhook' && item?.parameters?.webhook_url && item?.parameters?.webhook_text) }">Webhook</span>
-                            </template>
-                            <div class="flex flex-column gap-3">
-                              <div class="flex flex-column gap-2 mt-5">
-                                <span style="font-weight: 700">URL</span>
-                                <InputText style="margin-bottom: 8px" id="webhookUrl" type="text" :model-value="getWebhookUrl(<number>index).value" @update:model-value="getWebhookUrl(<number>index).value = $event"  />
-                              </div>
-                              <div class="flex flex-column gap-2">
-                                <span style="font-weight: 700">{{ $t('text')}}</span>
-                                <Textarea rows="3" cols="30" :model-value="getWebhookText(<number>index).value" @update:model-value="getWebhookText(<number>index).value = $event" />
-                              </div>
-                            </div>
-                          </TabPanel>
-
-                        </TabView>
-                      </div>
-                    </div>
-                  </div>
-                  <Button :label="t('addTask')" style="background-color: #F9753E; border: none" class="add-btn" @click="addTask"/>
-                </div>
-              </div>
+              <BotGeneralPromt
+                  :currentBot="currentBot"
+                  :botFunctions="botFunctions"
+                  @update:currentBot="currentBot = $event"
+                  @addTask="addTask"
+              />
             </TabPanel>
 
             <TabPanel :header="`3.${t('reminders')}`">
-              <div>
-                <div v-if="reminders?.length">
-                  <div v-for="(message, i) in reminders" :key="i" class="mt-4 flex align-items-center gap-8 w-full">
-                    <div class="flex flex-column w-full task-wrapper">
-                      <div class="flex align-items-center justify-content-between">
-                        <div class="text-xl">{{ i+1 }}. {{ $t('clientMessage')}}</div>
-                        <i class="pi pi-trash ml-auto " style="cursor: pointer; color: #EE9186; font-size: 18px" @click="showDeleteReminderModal(message.id)"></i>
-                        <Dialog v-model:visible="showReminderDeleteModal" :header="'Удалить напоминание'">
-                          <span class="text-surface-500 dark:text-surface-400 block mb-4">Вы действительно хотите удалить это напоминание?</span>
-                          <div class="flex justify-content-center gap-2 w-full">
-                            <Button type="button" :label="t('delete')" severity="danger" @click="deleteReminder(reminderId)"></Button>
-                            <Button type="button" :label="t('cancel')" @click="hideDeleteReminderModal"></Button>
-                          </div>
-                        </Dialog>
-                      </div>
-                      <div class="flex align-items-center gap-3 ml-4 mt-4">
-                        <span>{{ $t('clientNoResponseTime') }}</span>
-                        <InputText id="quantity" type="number" min="1" style="max-width: 70px" v-model="message.quantity"/>
-                        <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="timeItem" v-model="message.timeframe" :options="timeList" optionLabel="title" option-value="id"></Dropdown>
-                      </div>
-                      <Dropdown class="ml-4 mt-2 mb-2" id="messageType" v-model="message.type" :options="messageTypes" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
-                      <InputText v-if="message.type ==='message'" class="ml-4 mt-4" id="purchaseDecision" type="text" :placeholder="t('purchaseDecision')" v-model="message.message" />
-                      <Textarea v-if="message.type ==='prompt'" class="ml-4 mt-4" id="analyzeLast5Messages" type="text" :placeholder="t('analyzeLast5Messages')" :autoResize="true" rows="1" cols="2" v-model="message.message" />
-                      <div class="field" style="margin-top: 12px; margin-left: 21px">
-                        <label for="name1" style="font-weight: 700">{{ $t('workingHours') }}</label>
-                        <span class="bot-card__activate" style="margin-top: 8px">
-                    {{ $t('works247') }}
-                  </span>
-                  <span class="bot-card__activate">
-                    {{ $t('setWorkingHours') }}
-                    <InputSwitch v-model="message.isSchedule" style="margin-left: 8px"/>
-                  </span>
-                  <span class="bot-card__activate" style="margin-top: 8px">
-                    {{ $t('onOffButton') }}
-                    <InputSwitch v-model="message.isActiveReminder" style="margin-left: 8px"/>
-                  </span>
-
-<!--                        <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="message.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>-->
-                        <div v-if="message.isSchedule" class="flex align-items-center gap-2 mt-3">
-                          <div class="flex flex-column gap-1">
-                            <span>Начало:</span>
-                            <Calendar id="calendar-timeonly" timeOnly v-model="message.schedule.start" />
-                          </div>
-                          <div class="flex flex-column gap-1">
-                            <span>Конец:</span>
-                            <Calendar id="calendar-timeonly" timeOnly v-model="message.schedule.end" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <Button :label="t('addMessage')" class="mt-4" @click="addReminder"/>
-              </div>
+              <BotGeneralReminders />
             </TabPanel>
 
             <TabPanel :header="`4.${t('channels')}`">
-              <div class="mt-3" v-if="!allChannels.length">
-                <Button :label="t('creatingChannel')" @click="createChannel"></Button>
-              </div>
-
-              <div class="chanel-list" v-if="connectedChannels.length">
-                <h5 class="font-bold mb-2">{{ $t('connectedChannelsToBot') }}</h5>
-                <span class="chanel-list__item" v-for="channel in connectedChannels" :key="channel._id">
-                   <span class="mr-2">
-                      <i v-if="channel.type === 'telegram'" style="color: #3B82F6; font-size: 27px" class="pi pi-telegram" />
-                      <i v-if="channel.type === 'whatsapp'" style="color: #22c55e; font-size: 27px" class="pi pi-whatsapp" />
-                      <span v-if="channel.type === 'avito'" style="width: 30px">
-                <svg width="30px" height="30px" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="60" cy="140" r="40" fill="#59ff59"/>
-                  <circle cx="140" cy="140" r="30" fill="#ff5959"/>
-                  <circle cx="140" cy="80" r="50" fill="#59a1ff"/>
-                  <circle cx="80" cy="60" r="20" fill="#a159ff"/>
-                </svg>
-              </span>
-                      <span v-if="channel.type === 'amocrm'" style="width: 30px">
-
-            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="0 0 30 30" version="1.1">
-<defs>
-<filter id="alpha" filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
-  <feColorMatrix type="matrix" in="SourceGraphic" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
-</filter>
-<mask id="mask0">
-  <g filter="url(#alpha)">
-<rect x="0" y="0" width="30" height="30" style="fill:rgb(0%,0%,0%);fill-opacity:0.913725;stroke:none;"/>
-  </g>
-</mask>
-<clipPath id="clip1">
-  <rect x="0" y="0" width="30" height="30"/>
-</clipPath>
-<g id="surface5" clip-path="url(#clip1)">
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(96.862745%,98.431373%,99.215686%);fill-opacity:1;" d="M 12.359375 0.972656 C 20.851562 0.421875 26.265625 4.21875 28.609375 12.359375 C 29.292969 20.855469 25.542969 26.273438 17.359375 28.609375 C 8.863281 29.292969 3.449219 25.542969 1.109375 17.359375 C 0.460938 8.839844 4.210938 3.378906 12.359375 0.972656 Z M 12.359375 0.972656 "/>
-</g>
-</defs>
-<g id="surface1">
-<use xlink:href="#surface5" mask="url(#mask0)"/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(21.960784%,60.784314%,82.352941%);fill-opacity:1;" d="M 24.027344 5.972656 C 23.675781 6.496094 23.167969 6.773438 22.5 6.804688 C 17.027344 6.609375 11.5625 6.609375 6.109375 6.804688 C 5.753906 6.570312 5.800781 6.246094 6.25 5.832031 C 6.1875 5.722656 6.09375 5.675781 5.972656 5.695312 C 11.085938 1.34375 16.546875 0.925781 22.359375 4.445312 C 22.886719 5.019531 23.445312 5.527344 24.027344 5.972656 Z M 24.027344 5.972656 "/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(18.039216%,58.431373%,81.176471%);fill-opacity:1;" d="M 5.972656 5.695312 C 6.09375 5.675781 6.1875 5.722656 6.25 5.832031 C 5.800781 6.246094 5.753906 6.570312 6.109375 6.804688 C 11.5625 6.609375 17.027344 6.609375 22.5 6.804688 C 23.167969 6.773438 23.675781 6.496094 24.027344 5.972656 C 26.746094 8.632812 27.902344 11.875 27.5 15.695312 C 27.21875 15.925781 26.894531 16.019531 26.527344 15.972656 C 27.019531 13.636719 26.183594 12.847656 24.027344 13.609375 C 23.261719 14.738281 23.355469 15.804688 24.304688 16.804688 C 22.226562 17.269531 21.535156 16.4375 22.222656 14.304688 C 23.105469 13.191406 24.261719 12.636719 25.695312 12.640625 C 23 11.207031 21.148438 11.945312 20.140625 14.859375 C 20.046875 14.859375 19.953125 14.859375 19.859375 14.859375 C 20.230469 12.777344 19.398438 11.992188 17.359375 12.5 C 17.125 12.785156 16.847656 13.015625 16.527344 13.195312 C 15.71875 11.613281 14.652344 11.429688 13.332031 12.640625 C 13.15625 12.136719 12.832031 11.769531 12.359375 11.527344 C 11.746094 11.921875 11.328125 12.480469 11.109375 13.195312 C 10.804688 14.28125 10.621094 15.394531 10.554688 16.527344 C 10.273438 16.761719 9.949219 16.851562 9.582031 16.804688 C 9.453125 15.441406 9.640625 14.144531 10.140625 12.917969 C 10.132812 12.492188 9.945312 12.167969 9.582031 11.945312 C 8.515625 11.902344 7.40625 11.902344 6.25 11.945312 C 5.269531 12.601562 4.4375 13.386719 3.75 14.304688 C 3.769531 14.183594 3.722656 14.089844 3.609375 14.027344 C 3.414062 14.4375 3.089844 14.621094 2.640625 14.582031 C 2.683594 13.929688 2.636719 13.28125 2.5 12.640625 C 2.359375 14.023438 2.316406 15.414062 2.359375 16.804688 C 1.554688 12.46875 2.757812 8.765625 5.972656 5.695312 Z M 5.972656 5.695312 "/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(16.470588%,56.862745%,80.392157%);fill-opacity:1;" d="M 7.359375 12.917969 C 7.6875 12.855469 7.964844 12.949219 8.195312 13.195312 C 7.984375 14.105469 7.847656 15.03125 7.777344 15.972656 C 7.210938 17.085938 6.46875 17.273438 5.554688 16.527344 C 5.417969 14.949219 6.019531 13.746094 7.359375 12.917969 Z M 7.359375 12.917969 "/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(29.411765%,62.352941%,82.745098%);fill-opacity:1;" d="M 25.140625 14.304688 C 25.457031 14.386719 25.644531 14.617188 25.695312 15 C 25.601562 15.230469 25.507812 15.464844 25.417969 15.695312 C 25.152344 15.265625 25.058594 14.800781 25.140625 14.304688 Z M 25.140625 14.304688 "/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(55.686275%,75.686275%,89.019608%);fill-opacity:1;" d="M 19.859375 14.859375 C 19.953125 14.859375 20.046875 14.859375 20.140625 14.859375 C 20.222656 15.535156 20.132812 16.183594 19.859375 16.804688 C 19.5 16.117188 19.5 15.46875 19.859375 14.859375 Z M 19.859375 14.859375 "/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(14.117647%,55.686275%,79.607843%);fill-opacity:1;" d="M 3.75 14.304688 C 2.769531 17.253906 3.785156 18.59375 6.804688 18.332031 C 7.300781 18.117188 7.71875 17.792969 8.054688 17.359375 C 8.488281 18.441406 9.226562 18.71875 10.277344 18.195312 C 10.980469 18.90625 11.671875 18.90625 12.359375 18.195312 C 12.589844 17.09375 12.730469 15.984375 12.777344 14.859375 C 12.9375 13.96875 13.445312 13.507812 14.304688 13.472656 C 14.257812 15.140625 14.304688 16.808594 14.445312 18.472656 C 14.96875 18.710938 15.476562 18.617188 15.972656 18.195312 C 15.707031 16.613281 16.078125 15.179688 17.082031 13.890625 C 17.347656 13.753906 17.625 13.707031 17.917969 13.75 C 17.886719 14.679688 17.792969 15.605469 17.640625 16.527344 C 17.613281 17.203125 17.796875 17.804688 18.195312 18.332031 C 19.011719 18.433594 19.796875 18.292969 20.554688 17.917969 C 21.738281 18.46875 22.988281 18.609375 24.304688 18.332031 C 25.144531 17.492188 26.160156 17.167969 27.359375 17.359375 C 27.214844 18.480469 26.84375 19.5 26.25 20.417969 C 26.023438 20.160156 25.792969 19.878906 25.554688 19.582031 C 18.496094 19.882812 11.367188 19.882812 4.167969 19.582031 C 3.800781 19.757812 3.570312 20.035156 3.472656 20.417969 C 2.804688 19.332031 2.4375 18.128906 2.359375 16.804688 C 2.316406 15.414062 2.359375 14.023438 2.5 12.640625 C 2.636719 13.28125 2.683594 13.929688 2.640625 14.582031 C 3.089844 14.621094 3.414062 14.4375 3.609375 14.027344 C 3.722656 14.089844 3.769531 14.183594 3.75 14.304688 Z M 3.75 14.304688 "/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(7.058824%,53.333333%,78.431373%);fill-opacity:1;" d="M 26.25 20.417969 C 25.910156 21.402344 25.355469 22.234375 24.582031 22.917969 C 18.101562 22.546875 11.621094 22.546875 5.140625 22.917969 C 4.367188 22.234375 3.8125 21.402344 3.472656 20.417969 C 3.570312 20.035156 3.800781 19.757812 4.167969 19.582031 C 11.367188 19.882812 18.496094 19.882812 25.554688 19.582031 C 25.792969 19.878906 26.023438 20.160156 26.25 20.417969 Z M 26.25 20.417969 "/>
-<path style=" stroke:none;fill-rule:evenodd;fill:rgb(7.45098%,51.764706%,77.647059%);fill-opacity:1;" d="M 24.582031 22.917969 C 22.039062 26.15625 18.660156 27.730469 14.445312 27.640625 C 10.578125 27.488281 7.476562 25.914062 5.140625 22.917969 C 11.621094 22.546875 18.101562 22.546875 24.582031 22.917969 Z M 24.582031 22.917969 "/>
-</g>
-</svg>
-          </span>
-                      <span v-if="channel.type === 'bitrix24'" style="width: 30px">
-                 <svg width="30px" height="30px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="512" cy="512" r="512" style="fill:#2fc7f7"/>
-                    <path d="M877 499.07h-22v-22h-5.91V505H877zM852.07 543A43.93 43.93 0 1 1 896 499.07 44.17 44.17 0 0 1 852.07 543zm0-79.83a35.9 35.9 0 1 0 35.9 35.9 35.87 35.87 0 0 0-35.9-35.9zm-84.48 59.56v-70.12h-14.78l-56.18 73.07v13.94h50.69v27.88h20.27v-27.88h16.9v-16.9zm-20.27-16.47v16.04H733.8c-4.22 0-11.83.42-14.36.42l28.72-38.86c0 3.38-.84 13.52-.84 22.39zm-132.21 60.82h79v-17.32h-52.39c7.18-28.72 51.11-35.06 51.11-67.16 0-17.32-11.83-30-36.33-30a85.18 85.18 0 0 0-38 9.29L624 478c8.45-3.8 17.74-7.6 29.14-7.6 9.29 0 17.74 3.8 17.74 14.36.41 23.6-51.12 25.29-55.77 82.32zm-76.45-46.89-33.79-46.46h24.5l22 30.41 22.39-30.41h24.5L564 520.19l34.64 46.89h-24.5l-22.39-31.26-22.81 31.26h-24.5zm-73.92-75.61a14.36 14.36 0 0 1 28.72 0c0 7.6-6.34 13.94-14.78 13.94s-13.94-5.91-13.94-13.94zm2.53 29.14h23.65v93.35h-23.64zm-73.5 0h20.27l2.53 10.56c8.45-8.45 16.05-12.67 25.77-12.67a24.76 24.76 0 0 1 13.09 3.8L447 495.27a20.08 20.08 0 0 0-10.56-3c-6.34 0-11.4 2.53-19 9.29v65.94h-23.66zm-124.6-29.14a14.24 14.24 0 0 1 14.36-14.36c8 0 14.78 5.91 14.78 14.36 0 7.6-6.34 13.94-14.78 13.94s-14.36-5.91-14.36-13.94zm2.53 29.14h23.65v93.35h-23.64zm55.3 70.55v-52h-16.9v-18.54H327v-21.54l23.65-6.76v28.3H379l-5.91 18.59H350.7v46c0 8.87 3 11.83 9.29 11.83a26.42 26.42 0 0 0 14.36-4.65l7.18 16.05c-6.76 4.65-18.16 7.18-27.46 7.18-16.89.46-27.07-8.84-27.07-24.46zM164 437h38c27.88 0 40.55 16.05 40.55 32.95 0 11.4-5.49 21.54-15.63 27v.42c15.21 3.8 24.5 16.05 24.5 31.26 0 20.27-15.21 38.44-45.62 38.44H164zm35.06 54.49c13.09 0 20.27-7.18 20.27-17.32 0-9.71-6.34-17.32-20.27-17.32h-11v34.64zm3.8 56.18c15.63 0 24.5-5.91 24.5-19 0-11-8.45-17.74-21.54-17.74h-17.74v36.75z" style="fill:#fff"/>
-                 </svg>
-               </span>
-                   </span>
-                  {{ channel.title }}
-                  <span class="ml-auto" style="color: #19C927">{{ $t('connected') }}</span>
-                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="disconnectToBot(channel._id)"  />
-                </span>
-              </div>
-
-              <div class="chanel-list" v-if="availableChannels.length">
-                <h5 class="font-bold mb-2">{{ $t('availableChannels') }}</h5>
-                <span class="chanel-list__item" v-for="channel in availableChannels" :key="channel._id">
-                   <span class="mr-2">
-                      <i v-if="channel.type === 'telegram'" style="color: #3B82F6; font-size: 27px" class="pi pi-telegram" />
-                      <i v-if="channel.type === 'whatsapp'" style="color: #22c55e; font-size: 27px" class="pi pi-whatsapp" />
-                      <span v-if="channel.type === 'avito'" style="width: 30px">
-                         <svg width="30px" height="30px" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                         <circle cx="60" cy="140" r="40" fill="#59ff59"/>
-                        <circle cx="140" cy="140" r="30" fill="#ff5959"/>
-                        <circle cx="140" cy="80" r="50" fill="#59a1ff"/>
-                        <circle cx="80" cy="60" r="20" fill="#a159ff"/>
-                        </svg>
-                        </span>
-                      <span v-if="channel.type === 'amocrm'" style="width: 30px">
-                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="0 0 30 30" version="1.1">
-                          <defs>
-                            <filter id="alpha" filterUnits="objectBoundingBox" x="0%" y="0%" width="100%" height="100%">
-                              <feColorMatrix type="matrix" in="SourceGraphic" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
-                            </filter>
-                            <mask id="mask0">
-                              <g filter="url(#alpha)">
-                                <rect x="0" y="0" width="30" height="30" style="fill:rgb(0%,0%,0%);fill-opacity:0.913725;stroke:none;"/>
-                              </g>
-                            </mask>
-                            <clipPath id="clip1">
-                              <rect x="0" y="0" width="30" height="30"/>
-                            </clipPath>
-                            <g id="surface5" clip-path="url(#clip1)">
-                              <path style=" stroke:none;fill-rule:evenodd;fill:rgb(96.862745%,98.431373%,99.215686%);fill-opacity:1;" d="M 12.359375 0.972656 C 20.851562 0.421875 26.265625 4.21875 28.609375 12.359375 C 29.292969 20.855469 25.542969 26.273438 17.359375 28.609375 C 8.863281 29.292969 3.449219 25.542969 1.109375 17.359375 C 0.460938 8.839844 4.210938 3.378906 12.359375 0.972656 Z M 12.359375 0.972656 "/>
-                            </g>
-                          </defs>
-                          <g id="surface1">
-                            <use xlink:href="#surface5" mask="url(#mask0)"/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(21.960784%,60.784314%,82.352941%);fill-opacity:1;" d="M 24.027344 5.972656 C 23.675781 6.496094 23.167969 6.773438 22.5 6.804688 C 17.027344 6.609375 11.5625 6.609375 6.109375 6.804688 C 5.753906 6.570312 5.800781 6.246094 6.25 5.832031 C 6.1875 5.722656 6.09375 5.675781 5.972656 5.695312 C 11.085938 1.34375 16.546875 0.925781 22.359375 4.445312 C 22.886719 5.019531 23.445312 5.527344 24.027344 5.972656 Z M 24.027344 5.972656 "/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(18.039216%,58.431373%,81.176471%);fill-opacity:1;" d="M 5.972656 5.695312 C 6.09375 5.675781 6.1875 5.722656 6.25 5.832031 C 5.800781 6.246094 5.753906 6.570312 6.109375 6.804688 C 11.5625 6.609375 17.027344 6.609375 22.5 6.804688 C 23.167969 6.773438 23.675781 6.496094 24.027344 5.972656 C 26.746094 8.632812 27.902344 11.875 27.5 15.695312 C 27.21875 15.925781 26.894531 16.019531 26.527344 15.972656 C 27.019531 13.636719 26.183594 12.847656 24.027344 13.609375 C 23.261719 14.738281 23.355469 15.804688 24.304688 16.804688 C 22.226562 17.269531 21.535156 16.4375 22.222656 14.304688 C 23.105469 13.191406 24.261719 12.636719 25.695312 12.640625 C 23 11.207031 21.148438 11.945312 20.140625 14.859375 C 20.046875 14.859375 19.953125 14.859375 19.859375 14.859375 C 20.230469 12.777344 19.398438 11.992188 17.359375 12.5 C 17.125 12.785156 16.847656 13.015625 16.527344 13.195312 C 15.71875 11.613281 14.652344 11.429688 13.332031 12.640625 C 13.15625 12.136719 12.832031 11.769531 12.359375 11.527344 C 11.746094 11.921875 11.328125 12.480469 11.109375 13.195312 C 10.804688 14.28125 10.621094 15.394531 10.554688 16.527344 C 10.273438 16.761719 9.949219 16.851562 9.582031 16.804688 C 9.453125 15.441406 9.640625 14.144531 10.140625 12.917969 C 10.132812 12.492188 9.945312 12.167969 9.582031 11.945312 C 8.515625 11.902344 7.40625 11.902344 6.25 11.945312 C 5.269531 12.601562 4.4375 13.386719 3.75 14.304688 C 3.769531 14.183594 3.722656 14.089844 3.609375 14.027344 C 3.414062 14.4375 3.089844 14.621094 2.640625 14.582031 C 2.683594 13.929688 2.636719 13.28125 2.5 12.640625 C 2.359375 14.023438 2.316406 15.414062 2.359375 16.804688 C 1.554688 12.46875 2.757812 8.765625 5.972656 5.695312 Z M 5.972656 5.695312 "/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(16.470588%,56.862745%,80.392157%);fill-opacity:1;" d="M 7.359375 12.917969 C 7.6875 12.855469 7.964844 12.949219 8.195312 13.195312 C 7.984375 14.105469 7.847656 15.03125 7.777344 15.972656 C 7.210938 17.085938 6.46875 17.273438 5.554688 16.527344 C 5.417969 14.949219 6.019531 13.746094 7.359375 12.917969 Z M 7.359375 12.917969 "/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(29.411765%,62.352941%,82.745098%);fill-opacity:1;" d="M 25.140625 14.304688 C 25.457031 14.386719 25.644531 14.617188 25.695312 15 C 25.601562 15.230469 25.507812 15.464844 25.417969 15.695312 C 25.152344 15.265625 25.058594 14.800781 25.140625 14.304688 Z M 25.140625 14.304688 "/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(55.686275%,75.686275%,89.019608%);fill-opacity:1;" d="M 19.859375 14.859375 C 19.953125 14.859375 20.046875 14.859375 20.140625 14.859375 C 20.222656 15.535156 20.132812 16.183594 19.859375 16.804688 C 19.5 16.117188 19.5 15.46875 19.859375 14.859375 Z M 19.859375 14.859375 "/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(14.117647%,55.686275%,79.607843%);fill-opacity:1;" d="M 3.75 14.304688 C 2.769531 17.253906 3.785156 18.59375 6.804688 18.332031 C 7.300781 18.117188 7.71875 17.792969 8.054688 17.359375 C 8.488281 18.441406 9.226562 18.71875 10.277344 18.195312 C 10.980469 18.90625 11.671875 18.90625 12.359375 18.195312 C 12.589844 17.09375 12.730469 15.984375 12.777344 14.859375 C 12.9375 13.96875 13.445312 13.507812 14.304688 13.472656 C 14.257812 15.140625 14.304688 16.808594 14.445312 18.472656 C 14.96875 18.710938 15.476562 18.617188 15.972656 18.195312 C 15.707031 16.613281 16.078125 15.179688 17.082031 13.890625 C 17.347656 13.753906 17.625 13.707031 17.917969 13.75 C 17.886719 14.679688 17.792969 15.605469 17.640625 16.527344 C 17.613281 17.203125 17.796875 17.804688 18.195312 18.332031 C 19.011719 18.433594 19.796875 18.292969 20.554688 17.917969 C 21.738281 18.46875 22.988281 18.609375 24.304688 18.332031 C 25.144531 17.492188 26.160156 17.167969 27.359375 17.359375 C 27.214844 18.480469 26.84375 19.5 26.25 20.417969 C 26.023438 20.160156 25.792969 19.878906 25.554688 19.582031 C 18.496094 19.882812 11.367188 19.882812 4.167969 19.582031 C 3.800781 19.757812 3.570312 20.035156 3.472656 20.417969 C 2.804688 19.332031 2.4375 18.128906 2.359375 16.804688 C 2.316406 15.414062 2.359375 14.023438 2.5 12.640625 C 2.636719 13.28125 2.683594 13.929688 2.640625 14.582031 C 3.089844 14.621094 3.414062 14.4375 3.609375 14.027344 C 3.722656 14.089844 3.769531 14.183594 3.75 14.304688 Z M 3.75 14.304688 "/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(7.058824%,53.333333%,78.431373%);fill-opacity:1;" d="M 26.25 20.417969 C 25.910156 21.402344 25.355469 22.234375 24.582031 22.917969 C 18.101562 22.546875 11.621094 22.546875 5.140625 22.917969 C 4.367188 22.234375 3.8125 21.402344 3.472656 20.417969 C 3.570312 20.035156 3.800781 19.757812 4.167969 19.582031 C 11.367188 19.882812 18.496094 19.882812 25.554688 19.582031 C 25.792969 19.878906 26.023438 20.160156 26.25 20.417969 Z M 26.25 20.417969 "/>
-                            <path style=" stroke:none;fill-rule:evenodd;fill:rgb(7.45098%,51.764706%,77.647059%);fill-opacity:1;" d="M 24.582031 22.917969 C 22.039062 26.15625 18.660156 27.730469 14.445312 27.640625 C 10.578125 27.488281 7.476562 25.914062 5.140625 22.917969 C 11.621094 22.546875 18.101562 22.546875 24.582031 22.917969 Z M 24.582031 22.917969 "/>
-                          </g>
-                        </svg>
-                      </span>
-                      <span v-if="channel.type === 'bitrix24'" style="width: 30px">
-                      <svg width="30px" height="30px" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="512" cy="512" r="512" style="fill:#2fc7f7"/>
-                    <path d="M877 499.07h-22v-22h-5.91V505H877zM852.07 543A43.93 43.93 0 1 1 896 499.07 44.17 44.17 0 0 1 852.07 543zm0-79.83a35.9 35.9 0 1 0 35.9 35.9 35.87 35.87 0 0 0-35.9-35.9zm-84.48 59.56v-70.12h-14.78l-56.18 73.07v13.94h50.69v27.88h20.27v-27.88h16.9v-16.9zm-20.27-16.47v16.04H733.8c-4.22 0-11.83.42-14.36.42l28.72-38.86c0 3.38-.84 13.52-.84 22.39zm-132.21 60.82h79v-17.32h-52.39c7.18-28.72 51.11-35.06 51.11-67.16 0-17.32-11.83-30-36.33-30a85.18 85.18 0 0 0-38 9.29L624 478c8.45-3.8 17.74-7.6 29.14-7.6 9.29 0 17.74 3.8 17.74 14.36.41 23.6-51.12 25.29-55.77 82.32zm-76.45-46.89-33.79-46.46h24.5l22 30.41 22.39-30.41h24.5L564 520.19l34.64 46.89h-24.5l-22.39-31.26-22.81 31.26h-24.5zm-73.92-75.61a14.36 14.36 0 0 1 28.72 0c0 7.6-6.34 13.94-14.78 13.94s-13.94-5.91-13.94-13.94zm2.53 29.14h23.65v93.35h-23.64zm-73.5 0h20.27l2.53 10.56c8.45-8.45 16.05-12.67 25.77-12.67a24.76 24.76 0 0 1 13.09 3.8L447 495.27a20.08 20.08 0 0 0-10.56-3c-6.34 0-11.4 2.53-19 9.29v65.94h-23.66zm-124.6-29.14a14.24 14.24 0 0 1 14.36-14.36c8 0 14.78 5.91 14.78 14.36 0 7.6-6.34 13.94-14.78 13.94s-14.36-5.91-14.36-13.94zm2.53 29.14h23.65v93.35h-23.64zm55.3 70.55v-52h-16.9v-18.54H327v-21.54l23.65-6.76v28.3H379l-5.91 18.59H350.7v46c0 8.87 3 11.83 9.29 11.83a26.42 26.42 0 0 0 14.36-4.65l7.18 16.05c-6.76 4.65-18.16 7.18-27.46 7.18-16.89.46-27.07-8.84-27.07-24.46zM164 437h38c27.88 0 40.55 16.05 40.55 32.95 0 11.4-5.49 21.54-15.63 27v.42c15.21 3.8 24.5 16.05 24.5 31.26 0 20.27-15.21 38.44-45.62 38.44H164zm35.06 54.49c13.09 0 20.27-7.18 20.27-17.32 0-9.71-6.34-17.32-20.27-17.32h-11v34.64zm3.8 56.18c15.63 0 24.5-5.91 24.5-19 0-11-8.45-17.74-21.54-17.74h-17.74v36.75z" style="fill:#fff"/>
-                 </svg>
-               </span>
-                   </span>
-                  {{ channel.title }}
-                  <span class="ml-auto">{{ $t('connectToBot') }}</span>
-                  <InputSwitch style="margin-left: 30px" v-model="channel.connected" @change="connectToBot(channel._id)" :disabled="connectedChannels?.some((channel) => channel.type === 'amocrm' || channel.type === 'bitrix24')"  />
-                </span>
-              </div>
+              <BotGeneralChannels />
             </TabPanel>
 
             <TabPanel :header="t('knowledgeBase')">
-              <div class="flex gap-2 mt-5" style="margin-left: 1rem">
-                <Button :label="t('createFile')" @click="createKnowledgeBase(route.params.id)"/>
-                <Button :label="t('uploadFail')"/>
-                <Button :label="t('delete')" :disabled="!knowledgeBaseSelectedKey" />
-              </div>
-              <div class="table-container">
-                <TreeTable v-model:selectionKeys="knowledgeBaseSelectedKey" :value="files" selectionMode="checkbox" tableStyle="min-width: 100rem">
-                  <template #header>
-                    <div class="text-left">
-                      <InputText v-model="filters['global']" :placeholder="t('searchBase')" />
-                    </div>
-                  </template>
-                  <Column field="label" :header="t('title')" :expander="true" style="width: 40%"></Column>
-                  <Column field="notification" :header="t('notifications')" class="ml-auto">
-                    <template #body="slotProps">
-                      <div>
-                        <i v-if="slotProps?.node?.data?.notification" class="pi pi-check-circle"></i>
-                        <i v-else class="pi pi-circle"></i>
-                      </div>
-                    </template>
-                  </Column>
-                  <Column field="notification" :header="t('stopBotButton')">
-                    <template #body="slotProps">
-                      <div>
-                        <i v-if="!slotProps?.node?.data?.notification" class="pi pi-check-circle"></i>
-                        <i v-else class="pi pi-circle"></i>
-                      </div>
-                    </template>
-                  </Column>
-                  <Column field="notification" :header="t('reminders')">
-                    <template #body="slotProps">
-                      <div>
-                        <i class="pi pi-check-circle"></i>
-                      </div>
-                    </template>
-                  </Column>
-
-                  <Column field="actions">
-                    <template #body="slotProps">
-                      <div class="flex flex-row-reverse gap-3 ml-auto">
-                        <i style="cursor: pointer; color: #EE9186;" class="pi pi-trash" @click="deleteKnowledgeFile(slotProps?.node?.key)" />
-                        <i style="cursor: pointer" class="pi pi-file-edit" @click="editKnowledgeFile(slotProps?.node?.key)" />
-                        <i style="cursor: pointer; color: #187CF9" class="pi pi-download" />
-                      </div>
-                    </template>
-                  </Column>
-                </TreeTable>
-              </div>
+              <BotGeneralKnowledge />
             </TabPanel>
 
             <TabPanel :header="t('notifications')">
-              <div class="notification-wrapper">
-                <div class="notification-card">
-                  <div class="flex flex-column gap-2">
-                    <h5>{{ $t('telegram') }}</h5>
-                    <span style="color: #0f172a;">{{ $t('subscribeBotLink') }}
-                    </span>
-                    <Button severity="secondary" raised :label="t('subscribe')" class="mt-3 connect-btn" @click="openTelegram"/>
-                  </div>
-                </div>
-                <div class="notification-card">
-                  <div class="flex flex-column gap-2">
-                    <h5>{{ $t('email') }}</h5>
-                    <span style="color: #0f172a;">{{ $t('enterEmailForNotifications') }}</span>
-                    <InputText class="mt-3" style="max-width: 500px" :placeholder="t('email')" id="email" type="text" />
-                  </div>
-                </div>
-                <div class="notification-card">
-                  <div class="flex align-items-end webhooks">
-                    <div class="flex flex-column gap-2 w-3/4">
-                      <h5>{{ $t('webhooks') }}</h5>
-                      <span style="color: #0f172a;">{{ $t('webhookUrl') }}</span>
-                      <InputText class="mt-3" style="max-width: 500px" placeholder="Url" id="site" type="text" />
-                    </div>
-                    <div class="json-snippet">
-                      <span class="font-bold">json</span>
-                      <span class="ml-2 font-bold">fghj</span>
-                      <span class="ml-4 font-bold">"ghjkl;'"</span>
-                      <span class="ml-2 font-bold">"hjbnmpokl"</span>
-                      <span class="font-bold">end</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <BotGeneralNotification />
             </TabPanel>
           </TabView>
         </div>
       </div>
 
-      <div v-if="chatVisible" class="chat">
-        <div class="layout-chat">
-          <div class="card-chat h-full">
-            <div class="flex justify-content-between align-items-center chat-header">
-              <div>{{ $t('chatWithBot') }} <br>"<span style="font-weight: 500">{{ bot?.name }}</span>"</div>
-              <i style="cursor: pointer; font-size: 18px;" class="pi pi-trash" @click="clearChat" />
-            </div>
-            <div class="chat-messages h-full">
-              <div v-for="(message, index) in state.messages" :key="index" :class="{'user-message': message.sender === 'Me', 'bot-message': message.sender === 'Bot'}">
-                {{ message.message }}
-              </div>
-            </div>
-            <div class="mt-auto flex justify-content-between align-items-center gap-3 pb-3 px-2">
-              <Textarea style="max-height: 80px" type="text" id="message" class="w-full" maxlength="1000" :autoResize="true" rows="1" cols="2" v-model="message" @keydown="handleKeyDown" />
-              <i style="cursor: pointer; font-size: 18px; margin-right: 10px" class="pi pi-send" @click="sendMessage" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <BotChat v-if="chatVisible" :bot-name="bot?.name" :api-key-type="currentBot.apiKeyType" />
     </div>
   </div>
 </template>
@@ -1705,21 +610,6 @@ const addParameter = (indexBotFunction: number) => {
   }
   .connect-btn {
     width: 100%
-  }
-  .chat {
-    position: fixed;
-    top: 70px;
-    width: 100%;
-    left: 0;
-    bottom: 0;
-    background: white;
-    z-index: 1000;
-  }
-  .layout-chat {
-    width: 100% !important;
-    min-width: 100% !important;
-    left: 0;
-    height: calc(100vh - 70px) !important;
   }
   @supports (height: 100dvh) {
     .layout-chat {
@@ -1764,38 +654,7 @@ const addParameter = (indexBotFunction: number) => {
   flex-direction: column;
   justify-content: center;
 }
-.user-message {
-  text-align: right;
-  color: white;
-  padding: 9px;
-  background-color: #175CCA;
-  border-radius: 8px;
-  display: inline-block;
-  max-width: 80%;
-  align-self: flex-end;
-}
-.bot-message {
-  text-align: left;
-  color: white;
-  padding: 8px;
-  background-color: green;
-  border-radius: 8px;
-  display: inline-block;
-  max-width: 80%;
-  align-self: flex-start;
-}
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column-reverse;
-  padding: 10px;
-  background-color: #fff;
-  gap: 12px;
-}
-.table-container {
-  overflow-x: auto;
-}
+
 .add-btn {
   width: 25%
 }
@@ -1842,9 +701,10 @@ const addParameter = (indexBotFunction: number) => {
 .task-wrapper {
   border: 1px solid #0f172a;
   border-radius: 6px;
-  padding: 8px 16px;
+  padding: 8px 0;
 }
 .task-panel {
+  padding: 0 16px;
   @media (max-width: 1530px) {
     width: 100% !important;
     max-width: 640px;
@@ -1860,9 +720,5 @@ const addParameter = (indexBotFunction: number) => {
 
 .success-tab-title {
   color: #11B981;
-}
-
-.blue-tab-title {
-  color: #0769E1;
 }
 </style>

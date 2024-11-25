@@ -1,0 +1,1 @@
+export { default as BotGeneralReminders } from './ui.vue'

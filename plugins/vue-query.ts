@@ -1,14 +1,5 @@
-import type {
-    DehydratedState,
-    VueQueryPluginOptions,
-} from '@tanstack/vue-query';
-import {
-    VueQueryPlugin,
-    QueryClient,
-    hydrate,
-    dehydrate,
-    useQuery,
-} from '@tanstack/vue-query';
+import type {DehydratedState, VueQueryPluginOptions,} from '@tanstack/vue-query';
+import {dehydrate, hydrate, QueryClient, useQuery, VueQueryPlugin,} from '@tanstack/vue-query';
 
 export default defineNuxtPlugin((nuxtApp) => {
     const vueQueryClient = useState<DehydratedState | null>('vue-query');
@@ -23,8 +14,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (process.server) {
         nuxtApp.hooks.hook('app:rendered', () => {
             // FIX Cannot stringify arbitrary non-POJOs
-            const json = JSON.parse(JSON.stringify(dehydrate(queryClient)));
-            vueQueryClient.value = json;
+            vueQueryClient.value = JSON.parse(JSON.stringify(dehydrate(queryClient)));
         });
     }
 

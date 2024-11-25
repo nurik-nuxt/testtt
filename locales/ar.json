@@ -318,5 +318,17 @@
   "paymentUsingTokens": "الدفع مقابل استخدام الرموز",
   "ifYouUseYourAPI": "إذا كنت تستخدم مفتاح API السري الخاص بك، فلن تحتاج إلى زيادة رصيدك خلال 7 ثوانٍ.",
   "yourBalance": "رصيدك",
-  "topUpBalance": "تعبئة الرصيد"
+  "topUpBalance": "تعبئة الرصيد",
+  "restApiSettings": "إعدادات واجهة برمجة تطبيقات REST",
+  "requestMethod": "طريقة الطلب",
+  "requestUrl": "عنوان الطلب",
+  "apiParams": "معلمات استدعاء واجهة برمجة التطبيقات",
+  "taskParameters": "معلمات المهمة",
+  "variableName": "اسم متغير",
+  "action": "فعل",
+  "apiHeaders": "طلب رؤوس",
+  "apiBody": "هيئة الطلب",
+  "newParameter": "معلمة جديدة",
+  "value": "معنى",
+  "valueToPass": "القيمة التي سيتم تمريرها"
 }

@@ -318,5 +318,17 @@
   "paymentUsingTokens": "Pago por usar tokens",
   "ifYouUseYourAPI": "Si utiliza su clave secreta API, no necesita recargar su saldo en 7 segundos.",
   "yourBalance": "Tu saldo",
-  "topUpBalance": "Recargar saldo"
+  "topUpBalance": "Recargar saldo",
+  "restApiSettings": "Configuración de la API REST",
+  "requestMethod": "Método de solicitud",
+  "requestUrl": "Solicitar dirección",
+  "apiParams": "Parámetros de llamada API",
+  "taskParameters": "Parámetros de la tarea",
+  "variableName": "Nombre de la variable",
+  "action": "Acción",
+  "apiHeaders": "Solicitar encabezados",
+  "apiBody": "Cuerpo de la solicitud",
+  "newParameter": "Nuevo parámetro",
+  "value": "Significado",
+  "valueToPass": "Valor a pasar"
 }

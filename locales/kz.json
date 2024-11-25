@@ -316,5 +316,17 @@
   "paymentUsingTokens": "Токендерді пайдаланғаны үшін төлем",
   "ifYouUseYourAPI": "Егер сіз API құпия кілтін пайдалансаңыз, теңгерімді 7 секундта толтырудың қажеті жоқ.",
   "yourBalance": "Сіздің балансыңыз",
-  "topUpBalance": "Баланс толтыру"
+  "topUpBalance": "Баланс толтыру",
+  "restApiSettings": "REST API параметрлері",
+  "requestMethod": "Сұраныс әдісі",
+  "requestUrl": "Мекенжайды сұрау",
+  "apiParams": "API шақыру параметрлері",
+  "taskParameters": "Тапсырма параметрлері",
+  "variableName": "Айнымалы атауы",
+  "action": "Әрекет",
+  "apiHeaders": "Тақырыптарды сұрау",
+  "apiBody": "Сұраныс органы",
+  "newParameter": "Жаңа параметр",
+  "value": "Мағынасы",
+  "valueToPass": "Өткізілетін мән"
 }
