@@ -1,576 +1,9 @@
-<template>
-  <div class="card-form p-fluid" style="margin-top: 16px">
-    <!-- Bot Instructions -->
-    <div class="field">
-      <div class="flex justify-content-between align-items-end">
-        <div class="flex flex-column">
-          <label style="font-weight: 700">{{ t('botInstructionPrompt') }}</label>
-          <span class="mb-2 mt-2">{{ t('promptUsageTip') }}</span>
-        </div>
-        <span style="color: #076AE1; margin-bottom: 7px">{{ t('variables') }}</span>
-      </div>
-      <Textarea
-          :placeholder="t('youBotConsultant')"
-          :autoResize="false"
-          rows="25"
-          cols="2"
-          v-model="currentBot.instructions"
-      />
-    </div>
-
-    <!-- Bot helloOnFirst -->
-    <span class="bot-card__activate">
-      {{ t('welcomeMessageStart') }}
-      <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px" />
-    </span>
-
-    <!-- Bot helloMessage -->
-    <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
-      <div class="field" style="margin-top: 12px">
-        <Textarea
-            :placeholder="t('autoMessageNote')"
-            :autoResize="true"
-            rows="3"
-            cols="30"
-            v-model="currentBot.helloMessage"
-        />
-      </div>
-    </div>
-
-    <!-- Bot Tasks -->
-    <div v-if="botFunctions && botFunctions.length" class="mt-5 flex flex-column gap-4">
-      <div v-for="(botFunction, index) in botFunctions" :key="index" class="task-wrapper">
-        <div class="mt-3 mb-4 flex flex-column gap-3">
-          <!-- Task Header -->
-          <div class="flex flex-column gap-2" style="padding: 0 16px">
-            <div class="flex justify-content-between w-full align-items-center mb-4">
-              <div class="flex gap-3 align-items-center">
-                <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
-                <label style="font-weight: 700">{{ t('botTask') }}</label>
-              </div>
-              <i
-                  class="pi pi-trash ml-auto"
-                  style="cursor: pointer; color: #EE9186; font-size: 18px"
-                  @click="showDeleteConfirmModal(index)"
-              ></i>
-
-              <!-- Delete Task Confirmation Dialog -->
-              <Dialog v-model:visible="showFunctionDeleteModal" :header="t('deleteBotTask')">
-                <span class="text-surface-500 dark:text-surface-400 block mb-4">
-                  {{ t('confirmDeleteBotTask') }}
-                </span>
-                <div class="flex justify-content-center gap-2 w-full">
-                  <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunction"></Button>
-                  <Button type="button" :label="t('cancel')" @click="showFunctionDeleteModal = false"></Button>
-                </div>
-              </Dialog>
-            </div>
-            <!-- Task Prompt -->
-            <Textarea rows="2" cols="30" v-model="botFunction.prompt" />
-          </div>
-
-          <!-- Actions After Task -->
-          <span style="font-weight: 700; padding: 0 16px">{{ t('actionsAfterTask') }}</span>
-          <div class="flex align-items-center gap-4" style="padding: 0 16px">
-            <span class="bot-card__activate">
-              {{ t('endDialogue') }}
-              <InputSwitch v-model="getInterruptDialogue(index).value" style="margin-left: 24px" />
-            </span>
-            <span class="bot-card__activate">
-              {{ t('isReminderStop') }}
-              <InputSwitch v-model="getStopReminder(index).value" style="margin-left: 24px" />
-            </span>
-          </div>
-
-          <div style="margin: 0 8px">
-            <div class="flex flex-column gap-3" style="padding: 16px; background: #FFEFE5; border-radius: 6px">
-              <span style="font-weight: 700">{{ t('taskParameters') }}</span>
-              <div v-for="(parameter, parameterIndex) in botFunction?.parameters" :key="parameterIndex" class="flex gap-3 align-items-baseline">
-                <InputText id="parameterName" type="text" v-model="parameter.name" placeholder="Имя параметра"/>
-                <Dropdown id="parameterType" v-model="parameter.type" :options="parameterTypes" optionLabel="title" option-value="value" :placeholder="t('chooseOption')"></Dropdown>
-                <Textarea placeholder="Описание параметра" :autoResize="true" rows="3" cols="2" v-model="parameter.description" />
-                <i class="pi pi-trash ml-auto" style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteBotParameter(index, parameterIndex)"></i>
-              </div>
-              <Button label="+" style="background-color: #71BA76; width:50px; border: none" class="add-btn" @click="addParameter(index)"/>
-            </div>
-          </div>
-
-          <!-- Task Parameters -->
-          <div class="task-panel">
-            <TabView :scrollable="true">
-              <!-- Send FileInMessage Tab -->
-              <TabPanel>
-                <template #header>
-                  <span
-                      class="white-space-nowrap"
-                      :class="{
-                      'success-tab-title': botFunction?.actions?.some(
-                        (item) => item?.name === 'send_file' && item?.parameters?.fileName
-                      ),
-                    }"
-                  >
-                    {{ t('sendFileInMessage') }}
-                  </span>
-                </template>
-                <div class="mt-4 flex flex-column gap-4">
-                  <span>{{ t('fileSendingRestrictions') }}</span>
-                  <div class="flex w-full gap-3 align-items-center manage-files">
-                    <Button
-                        :label="t('attachFile')"
-                        icon="pi pi-plus"
-                        class="file-btn"
-                        @click="openFileUploader(index)"
-                    ></Button>
-                    <input
-                        :id="`file-upload-${index}`"
-                        hidden
-                        type="file"
-                        @change="addFile($event, index)"
-                    />
-                    <span>{{ t('maxFileSize5MB') }}</span>
-                  </div>
-                  <div
-                      v-if="
-                      botFunction?.actions?.filter(
-                        (action) => action?.name === 'send_file'
-                      )?.length
-                    "
-                      class="files"
-                  >
-                    <div
-                        class="flex flex-column gap-3"
-                        v-for="(file, fileIndex) in botFunction?.actions?.filter(
-                        (action) => action?.name === 'send_file' && action?.parameters?.fileName
-                      )"
-                        :key="fileIndex"
-                    >
-                      <div v-if="file?.parameters?.fileName">
-                        <BaseFile
-                            :type="file?.parameters?.type"
-                            :file-name="file?.parameters?.fileName"
-                            :picture="`https://api.7sales.ai/public/${file?.parameters?.fileName}`"
-                            @delete="showFileDeleteModal = true"
-                        />
-                      </div>
-                      <!-- Delete File Confirmation Dialog -->
-                      <Dialog v-model:visible="showFileDeleteModal" :header="t('deleteFile')">
-                        <span class="text-surface-500 dark:text-surface-400 block mb-4">
-                          {{ t('confirmDeleteFile') }}
-                        </span>
-                        <div class="flex justify-content-center gap-2 w-full">
-                          <Button
-                              type="button"
-                              :label="t('delete')"
-                              severity="danger"
-                              @click="deleteFunctionSendFile(file, index, fileIndex)"
-                          ></Button>
-                          <Button
-                              type="button"
-                              :label="t('cancel')"
-                              @click="showFileDeleteModal = false"
-                          ></Button>
-                        </div>
-                      </Dialog>
-                    </div>
-                  </div>
-                </div>
-              </TabPanel>
-
-              <!-- CRM Tab -->
-              <TabPanel>
-                <template #header>
-                  <span
-                      class="white-space-nowrap"
-                      :class="{
-                      'success-tab-title': botFunction?.actions?.some(
-                        (item) =>
-                          (item?.name === 'add_note' && item?.parameters?.text) ||
-                          (item?.name === 'edit_lead_card' &&
-                            item?.parameters?.custom_fields_values?.some(
-                              (field) =>
-                                field?.field_id ||
-                                field.values.some((val) => val.value)
-                            ))
-                      ),
-                    }"
-                  >
-                    CRM
-                  </span>
-                </template>
-                <h5 class="mt-4">
-                  {{
-                    currentBot?.channels?.some((channel) => channel.type === 'bitrix24')
-                        ? t('changeDealStageBitrix')
-                        : t('changeDealStage')
-                  }}
-                </h5>
-
-                <div class="mt-4 flex justify-content-between gap-4 fields">
-                  <!-- Choose Pipeline -->
-                  <div class="flex flex-column w-full gap-2">
-                    <label for="funnel">{{ t('choosePipeline') }}:</label>
-                    <Dropdown
-                        style="margin-top: 8px"
-                        id="funnel"
-                        :model-value="getFunnelId(index).value"
-                        @update:model-value="getFunnelId(index).value = $event"
-                        :options="funnels"
-                        optionLabel="name"
-                        optionValue="id"
-                        :placeholder="t('chooseField')"
-                    ></Dropdown>
-                  </div>
-
-                  <!-- Change Status -->
-                  <div class="flex flex-column w-full gap-2">
-                    <label for="statusId">{{ t('changeStatus') }}:</label>
-                    <Dropdown
-                        v-if="currentBot?.channels?.some((channel) => channel.type === 'bitrix24')"
-                        style="margin-top: 8px"
-                        id="statusId"
-                        :model-value="getStatusId(index).value"
-                        @update:model-value="getStatusId(index).value = $event"
-                        :options="
-                        funnels
-                          ?.find((funnel) => funnel.id === getFunnelId(index).value)
-                          ?.statuses
-                      "
-                        optionLabel="name"
-                        optionValue="status_id"
-                        :placeholder="t('chooseField')"
-                    ></Dropdown>
-
-                    <Dropdown
-                        v-else
-                        style="margin-top: 8px"
-                        id="statusId"
-                        :model-value="getStatusId(index).value"
-                        @update:model-value="getStatusId(index).value = $event"
-                        :options="
-                        funnels
-                          ?.find(
-                            (funnel) =>
-                              funnel?.id ===
-                              botFunction?.actions?.find(
-                                (action) => action?.name === 'move_in_pipeline'
-                              )?.parameters?.pipeline_id
-                          )
-                          ?._embedded?.statuses
-                      "
-                        optionLabel="name"
-                        optionValue="id"
-                        :placeholder="t('chooseField')"
-                    ></Dropdown>
-                  </div>
-                </div>
-
-                <!-- Write Deal Note -->
-                <div class="flex flex-column mt-3">
-                  <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">
-                    {{ t('writeDealNote') }}
-                  </label>
-                  <Textarea
-                      :placeholder="t('dealNoteText')"
-                      :autoResize="true"
-                      rows="3"
-                      cols="2"
-                      v-model="getDealNoteText(index).value"
-                  />
-                </div>
-
-                <!-- Set Field Value -->
-                <div class="flex flex-column mt-3">
-                  <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">
-                    {{ t('setFieldValue') }}
-                  </label>
-                  <div class="flex align-items-center gap-4 fields">
-                    <!-- Choose Field -->
-                    <div class="flex flex-column gap-2 w-full">
-                      <label for="chooseField">{{ t('chooseField') }}</label>
-                      <Dropdown
-                          id="chooseField"
-                          :model-value="getFieldId(index).value"
-                          @update:model-value="getFieldId(index).value = $event"
-                          :options="fields"
-                          optionLabel="name"
-                          :option-value="
-                          currentBot?.channels?.some((channel) => channel.type === 'bitrix24')
-                            ? 'key'
-                            : 'id'
-                        "
-                          :placeholder="t('chooseField')"
-                      ></Dropdown>
-                    </div>
-
-                    <!-- Enter Field Value -->
-                    <div class="flex flex-column gap-2 w-full">
-                      <label for="enterFieldValue">{{ t('enterFieldValue') }}</label>
-                      <InputText
-                          id="enterFieldValue"
-                          type="text"
-                          :model-value="getFieldValue(index).value"
-                          @update:model-value="getFieldValue(index).value = $event"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </TabPanel>
-
-              <!-- Notification Tab -->
-              <TabPanel>
-                <template #header>
-                  <span
-                      class="white-space-nowrap"
-                      :class="{
-                      'success-tab-title': botFunction?.actions?.some(
-                        (item) => item?.name === 'notify_operator' && item?.parameters?.text
-                      ),
-                    }"
-                  >
-                    {{ t('notification') }}
-                  </span>
-                </template>
-                <div class="flex flex-column gap-3">
-                  <span style="font-weight: 700" class="mt-5">
-                    {{ t('notificationText') }}
-                  </span>
-                  <Textarea
-                      :autoResize="true"
-                      rows="3"
-                      cols="2"
-                      v-model="getNotifyOperatorText(index).value"
-                  />
-                </div>
-              </TabPanel>
-
-              <!-- Webhook Tab -->
-              <TabPanel>
-                <template #header>
-                  <span
-                      class="white-space-nowrap"
-                      :class="{
-                      'success-tab-title': botFunction?.actions?.some(
-                        (item) =>
-                          item?.name === 'send_webhook' &&
-                          item?.parameters?.webhook_url &&
-                          item?.parameters?.webhook_text
-                      ),
-                    }"
-                  >
-                    Webhook
-                  </span>
-                </template>
-                <div class="flex flex-column gap-3">
-                  <div class="flex flex-column gap-2 mt-5">
-                    <span style="font-weight: 700">URL</span>
-                    <InputText
-                        style="margin-bottom: 8px"
-                        id="webhookUrl"
-                        type="text"
-                        v-model="getWebhookUrl(index).value"
-                        :placeholder="t('requestUrl')"
-                    />
-                  </div>
-                  <div class="flex flex-column gap-2">
-                    <span style="font-weight: 700">{{ t('text') }}</span>
-                    <Textarea
-                        rows="3"
-                        cols="30"
-                        v-model="getWebhookText(index).value"
-                        :placeholder="t('webhookTextPlaceholder')"
-                    />
-                  </div>
-                </div>
-              </TabPanel>
-
-              <!-- CUSTOM API Tab -->
-              <TabPanel>
-                <template #header>
-                  <span
-                      class="white-space-nowrap"
-                      :class="{
-                      'success-tab-title': botFunction?.actions?.some(
-                        (item) => item?.name === 'send_to_webhook' && item?.parameters?.url
-                      ),
-                    }"
-                  >
-                    CUSTOM API
-                  </span>
-                </template>
-                <div class="mx-2">
-                  <div
-                      class="flex flex-column mt-3 mb-3 px-2 py-2"
-                      style="background: #FFEFE5; border-radius: 6px"
-                  >
-                    <label
-                        for="customApi"
-                        style="font-weight: 700; margin-bottom: 12px;"
-                    >
-                      CUSTOM API
-                    </label>
-                    <div class="flex flex-column gap-2">
-                      <span>{{ t('restApiSettings') }}</span>
-                      <div class="flex gap-2 align-items-center">
-                        <Dropdown
-                            style="margin-top: 8px; margin-bottom: 8px"
-                            id="customApiMethod"
-                            v-model="getCustomApiMethod(index).value"
-                            :options="customApiMethods"
-                            optionLabel="title"
-                            optionValue="value"
-                            :placeholder="t('requestMethod')"
-                        ></Dropdown>
-                        <InputText
-                            id="customApiUrl"
-                            type="text"
-                            v-model="getCustomApiUrl(index).value"
-                            :placeholder="t('requestUrl')"
-                        />
-                      </div>
-                    </div>
-
-                    <!-- API Parameters -->
-                    <div class="mt-3">
-                      <span class="mb-2">{{ t('apiParams') }} (params):</span>
-                      <div
-                          v-for="(parameter, paramIndex) in getCustomApiParams(index).value"
-                          :key="paramIndex"
-                          class="flex align-items-center gap-2 mt-2"
-                      >
-                        <InputText
-                            id="parameterTitle"
-                            type="text"
-                            v-model="parameter.title"
-                            :placeholder="t('variableName')"
-                        />
-                        <Dropdown
-                            style="margin-top: 8px; margin-bottom: 8px"
-                            id="parameterAction"
-                            v-model="parameter.kind"
-                            :options="parameterActions"
-                            optionLabel="title"
-                            optionValue="value"
-                            :placeholder="t('action')"
-                        ></Dropdown>
-                        <template v-if="parameter.kind === 'static'">
-                          <InputText
-                              :placeholder="t('valueToPass')"
-                              id="parameterActionText"
-                              v-model="parameter.value"
-                          ></InputText>
-                        </template>
-                        <i
-                            class="pi pi-trash ml-auto"
-                            style="cursor: pointer; color: #EE9186; font-size: 18px"
-                            @click="deleteCustomApiParameter(index, paramIndex, 'queryParams')"
-                        ></i>
-                      </div>
-                      <Button
-                          class="mt-3 text-center"
-                          @click="addCustomApiParameter(index, 'queryParams')"
-                          :label="`+ ${t('newParameter')}`"
-                      ></Button>
-                    </div>
-
-                    <!-- API Headers -->
-                    <div class="mt-3">
-                      <span class="mb-2">{{ t('apiHeaders') }} (headers):</span>
-                      <div
-                          v-for="(header, headerIndex) in getCustomApiHeaders(index).value"
-                          :key="headerIndex"
-                          class="flex align-items-center gap-2 mt-2"
-                      >
-                        <InputText
-                            id="headerTitle"
-                            type="text"
-                            v-model="header.title"
-                            :placeholder="t('name')"
-                        />
-                        <InputText
-                            id="headerValue"
-                            type="text"
-                            v-model="header.value"
-                            :placeholder="t('value')"
-                        />
-                        <i
-                            class="pi pi-trash ml-auto"
-                            style="cursor: pointer; color: #EE9186; font-size: 18px"
-                            @click="deleteCustomApiParameter(index, headerIndex, 'headers')"
-                        ></i>
-                      </div>
-                      <Button
-                          class="mt-3 text-center"
-                          @click="addCustomApiParameter(index, 'headers')"
-                          :label="`+ ${t('newParameter')}`"
-                      ></Button>
-                    </div>
-
-                    <!-- API Body -->
-                    <div class="mt-3">
-                      <span class="mb-2">{{ t('apiBody') }} (body):</span>
-                      <div
-                          v-for="(bodyParam, bodyIndex) in getCustomApiBody(index).value"
-                          :key="bodyIndex"
-                          class="flex align-items-center gap-2 mt-2"
-                      >
-                        <InputText
-                            id="bodyParamTitle"
-                            type="text"
-                            v-model="bodyParam.title"
-                            :placeholder="t('variableName')"
-                        />
-                        <Dropdown
-                            style="margin-top: 8px; margin-bottom: 8px"
-                            id="bodyParamAction"
-                            v-model="bodyParam.kind"
-                            :options="parameterActions"
-                            optionLabel="title"
-                            optionValue="value"
-                            :placeholder="t('action')"
-                        ></Dropdown>
-                        <template v-if="bodyParam.kind === 'static'">
-                          <InputText
-                              :placeholder="t('valueToPass')"
-                              id="bodyParamActionText"
-                              v-model="bodyParam.value"
-                          ></InputText>
-                        </template>
-                        <i
-                            class="pi pi-trash ml-auto"
-                            style="cursor: pointer; color: #EE9186; font-size: 18px"
-                            @click="deleteCustomApiParameter(index, bodyIndex, 'bodyParams')"
-                        ></i>
-                      </div>
-                      <Button
-                          class="mt-3 text-center"
-                          @click="addCustomApiParameter(index, 'bodyParams')"
-                          :label="`+ ${t('newParameter')}`"
-                      ></Button>
-                    </div>
-                  </div>
-                </div>
-              </TabPanel>
-            </TabView>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Add Task Button -->
-    <Button
-        :label="t('addTask')"
-        style="background-color: #F9753E; border: none"
-        class="add-btn mt-3"
-        @click="addTask"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { defineProps, defineEmits } from 'vue';
-import { useRoute } from 'vue-router';
+import { queryGetUserDataFields } from "~/src/shared/repository/dictionaries";
 
+const { data: userDataFields, suspense: suspenseFields } = queryGetUserDataFields();
+
+suspenseFields();
 // Import PrimeVue components
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -833,110 +266,156 @@ const getDealNoteText = (index: number) => {
   });
 };
 
-// Computed property to get and set field_id
-const getFieldId = (index: number) => {
+const getFieldId = (functionIndex, customFieldIndex) => {
   return computed({
     get() {
-      const action = props.botFunctions[index]?.actions?.find(
-          (action: any) => action.name === 'edit_lead_card'
+      const action = props.botFunctions[functionIndex]?.actions?.find(
+          (action) => action.name === 'edit_lead_card'
       );
       if (
           action?.parameters?.custom_fields_values &&
-          action.parameters.custom_fields_values.length > 0
+          action.parameters.custom_fields_values.length > customFieldIndex
       ) {
-        return action.parameters.custom_fields_values[0].field_id || '';
+        return action.parameters.custom_fields_values[customFieldIndex].field_id || '';
       }
       return '';
     },
-    set(value: string) {
-      // Ensure the actions array exists
-      if (!props.botFunctions[index].actions) {
-        props.botFunctions[index].actions = [];
+    set(value) {
+      // Убедитесь, что actions существует
+      if (!props.botFunctions[functionIndex].actions) {
+        props.botFunctions[functionIndex].actions = [];
       }
 
-      let action = props.botFunctions[index].actions.find(
-          (action: any) => action.name === 'edit_lead_card'
+      let action = props.botFunctions[functionIndex].actions.find(
+          (action) => action.name === 'edit_lead_card'
       );
 
       if (!action) {
-        // Create the action if it doesn't exist
+        // Создайте действие, если оно не существует
         action = {
           name: 'edit_lead_card',
           parameters: {
-            custom_fields_values: [{ field_id: value, values: [{ value: '' }] }],
+            custom_fields_values: [],
           },
         };
-        props.botFunctions[index].actions.push(action);
-      } else {
-        // Update the existing action
-        if (!action.parameters.custom_fields_values) {
-          action.parameters.custom_fields_values = [];
-        }
-        if (action.parameters.custom_fields_values.length === 0) {
-          action.parameters.custom_fields_values.push({ field_id: value, values: [{ value: '' }] });
-        } else {
-          action.parameters.custom_fields_values[0].field_id = value;
-        }
+        props.botFunctions[functionIndex].actions.push(action);
       }
+
+      // Убедитесь, что custom_fields_values существует
+      if (!action.parameters.custom_fields_values) {
+        action.parameters.custom_fields_values = [];
+      }
+
+      // Убедитесь, что есть элемент на customFieldIndex
+      while (action.parameters.custom_fields_values.length <= customFieldIndex) {
+        action.parameters.custom_fields_values.push({ field_id: '', values: [{ value: '' }] });
+      }
+
+      action.parameters.custom_fields_values[customFieldIndex].field_id = value;
     },
   });
 };
 
-// Computed property to get and set field value
-const getFieldValue = (index: number) => {
+const getFieldValue = (functionIndex, customFieldIndex) => {
   return computed({
     get() {
-      const action = props.botFunctions[index]?.actions?.find(
-          (action: any) => action.name === 'edit_lead_card'
+      const action = props.botFunctions[functionIndex]?.actions?.find(
+          (action) => action.name === 'edit_lead_card'
       );
       if (
           action?.parameters?.custom_fields_values &&
-          action.parameters.custom_fields_values.length > 0 &&
-          action.parameters.custom_fields_values[0].values &&
-          action.parameters.custom_fields_values[0].values.length > 0
+          action.parameters.custom_fields_values.length > customFieldIndex &&
+          action.parameters.custom_fields_values[customFieldIndex].values &&
+          action.parameters.custom_fields_values[customFieldIndex].values.length > 0
       ) {
-        return action.parameters.custom_fields_values[0].values[0].value || '';
+        return action.parameters.custom_fields_values[customFieldIndex].values[0].value || '';
       }
       return '';
     },
-    set(value: string) {
-      // Ensure the actions array exists
-      if (!props.botFunctions[index].actions) {
-        props.botFunctions[index].actions = [];
+    set(value) {
+      // Убедитесь, что actions существует
+      if (!props.botFunctions[functionIndex].actions) {
+        props.botFunctions[functionIndex].actions = [];
       }
 
-      let action = props.botFunctions[index].actions.find(
-          (action: any) => action.name === 'edit_lead_card'
+      let action = props.botFunctions[functionIndex].actions.find(
+          (action) => action.name === 'edit_lead_card'
       );
 
       if (!action) {
-        // Create the action if it doesn't exist
+        // Создайте действие, если оно не существует
         action = {
           name: 'edit_lead_card',
           parameters: {
-            custom_fields_values: [{ field_id: '', values: [{ value: value }] }],
+            custom_fields_values: [],
           },
         };
-        props.botFunctions[index].actions.push(action);
-      } else {
-        // Update the existing action
-        if (!action.parameters.custom_fields_values) {
-          action.parameters.custom_fields_values = [{ field_id: '', values: [{ value: value }] }];
-        } else if (action.parameters.custom_fields_values.length === 0) {
-          action.parameters.custom_fields_values.push({ field_id: '', values: [{ value: value }] });
-        } else {
-          if (!action.parameters.custom_fields_values[0].values) {
-            action.parameters.custom_fields_values[0].values = [{ value: value }];
-          } else if (action.parameters.custom_fields_values[0].values.length === 0) {
-            action.parameters.custom_fields_values[0].values.push({ value: value });
-          } else {
-            action.parameters.custom_fields_values[0].values[0].value = value;
-          }
-        }
+        props.botFunctions[functionIndex].actions.push(action);
       }
+
+      // Убедитесь, что custom_fields_values существует
+      if (!action.parameters.custom_fields_values) {
+        action.parameters.custom_fields_values = [];
+      }
+
+      // Убедитесь, что есть элемент на customFieldIndex
+      while (action.parameters.custom_fields_values.length <= customFieldIndex) {
+        action.parameters.custom_fields_values.push({ field_id: '', values: [{ value: '' }] });
+      }
+
+      // Убедитесь, что values существует
+      if (!action.parameters.custom_fields_values[customFieldIndex].values) {
+        action.parameters.custom_fields_values[customFieldIndex].values = [{ value: '' }];
+      }
+
+      action.parameters.custom_fields_values[customFieldIndex].values[0].value = value;
     },
   });
 };
+
+const addCustomFieldsValues = (functionIndex) => {
+  // Убедитесь, что actions существует
+  if (!props.botFunctions[functionIndex].actions) {
+    props.botFunctions[functionIndex].actions = [];
+  }
+
+  let action = props.botFunctions[functionIndex].actions.find(
+      (action) => action.name === 'edit_lead_card'
+  );
+
+  if (!action) {
+    // Создайте действие, если оно не существует
+    action = {
+      name: 'edit_lead_card',
+      parameters: {
+        custom_fields_values: [],
+      },
+    };
+    props.botFunctions[functionIndex].actions.push(action);
+  }
+
+  // Убедитесь, что custom_fields_values существует
+  if (!action.parameters.custom_fields_values) {
+    action.parameters.custom_fields_values = [];
+  }
+
+  // Добавьте новое поле
+  action.parameters.custom_fields_values.push({
+    field_id: '',
+    values: [{ value: '' }],
+  });
+};
+
+const deleteCustomFieldValue = (functionIndex, customFieldIndex) => {
+  let action = props.botFunctions[functionIndex].actions.find(
+      (action) => action.name === 'edit_lead_card'
+  );
+
+  if (action && action.parameters && action.parameters.custom_fields_values) {
+    action.parameters.custom_fields_values.splice(customFieldIndex, 1);
+  }
+};
+
 
 // Methods for managing task parameters
 const deleteBotParameter = (indexBotFunction: number, indexParameter: number) => {
@@ -1307,6 +786,637 @@ const deleteCustomApiParameter = (
   }
 };
 </script>
+
+<template>
+  <div class="card-form p-fluid" style="margin-top: 16px">
+    <!-- Bot Instructions -->
+    <div class="field">
+      <div class="flex justify-content-between align-items-end">
+        <div class="flex flex-column">
+          <label style="font-weight: 700">{{ t('botInstructionPrompt') }}</label>
+          <span class="mb-2 mt-2">{{ t('promptUsageTip') }}</span>
+        </div>
+        <span style="color: #076AE1; margin-bottom: 7px">{{ t('variables') }}</span>
+      </div>
+      <Textarea
+          :placeholder="t('youBotConsultant')"
+          :autoResize="false"
+          rows="25"
+          cols="2"
+          v-model="currentBot.instructions"
+      />
+    </div>
+
+    <!-- Bot helloOnFirst -->
+    <span class="bot-card__activate">
+      {{ t('welcomeMessageStart') }}
+      <InputSwitch v-model="currentBot.hello_on_first" style="margin-left: 8px" />
+    </span>
+
+    <!-- Bot helloMessage -->
+    <div v-if="currentBot.hello_on_first" class="card-form p-fluid">
+      <div class="field" style="margin-top: 12px">
+        <Textarea
+            :placeholder="t('autoMessageNote')"
+            :autoResize="true"
+            rows="3"
+            cols="30"
+            v-model="currentBot.helloMessage"
+        />
+      </div>
+    </div>
+
+    <!-- Bot Tasks -->
+    <div v-if="botFunctions && botFunctions.length" class="mt-5 flex flex-column gap-4">
+      <div v-for="(botFunction, index) in botFunctions" :key="index" class="task-wrapper">
+        <div class="mt-3 mb-4 flex flex-column gap-3">
+          <!-- Task Header -->
+          <div class="flex flex-column gap-2" style="padding: 0 16px">
+            <div class="flex justify-content-between w-full align-items-center mb-4">
+              <div class="flex gap-3 align-items-center">
+                <Badge :value="index + 1" size="large" style="background-color: #F9753E; border: none;"></Badge>
+                <label style="font-weight: 700">{{ t('botTask') }}</label>
+              </div>
+              <i
+                  class="pi pi-trash ml-auto"
+                  style="cursor: pointer; color: #EE9186; font-size: 18px"
+                  @click="showDeleteConfirmModal(index)"
+              ></i>
+
+              <!-- Delete Task Confirmation Dialog -->
+              <Dialog v-model:visible="showFunctionDeleteModal" :header="'Удалить задачу бота?'">
+                <span class="text-surface-500 dark:text-surface-400 block mb-4">
+                  Вы действительно хотите удалить эту задачу?
+                </span>
+                <div class="flex justify-content-center gap-2 w-full">
+                  <Button type="button" :label="t('delete')" severity="danger" @click="deleteFunction"></Button>
+                  <Button type="button" :label="t('cancel')" @click="showFunctionDeleteModal = false"></Button>
+                </div>
+              </Dialog>
+            </div>
+            <!-- Task Prompt -->
+            <Textarea rows="2" cols="30" v-model="botFunction.prompt" />
+          </div>
+
+          <!-- Actions After Task -->
+          <span style="font-weight: 700; padding: 0 16px">{{ t('actionsAfterTask') }}</span>
+          <div class="flex align-items-center gap-4" style="padding: 0 16px">
+            <span class="bot-card__activate">
+              {{ t('endDialogue') }}
+              <InputSwitch v-model="getInterruptDialogue(index).value" style="margin-left: 24px" />
+            </span>
+            <span class="bot-card__activate">
+              {{ t('isReminderStop') }}
+              <InputSwitch v-model="getStopReminder(index).value" style="margin-left: 24px" />
+            </span>
+          </div>
+
+          <div style="margin: 0 8px">
+            <div class="flex flex-column gap-3" style="padding: 16px; background: #FFEFE5; border-radius: 6px">
+              <span style="font-weight: 700">{{ t('taskParameters') }}</span>
+              <div v-for="(parameter, parameterIndex) in botFunction?.parameters" :key="parameterIndex" class="flex gap-3 align-items-baseline">
+                <InputText id="parameterName" type="text" v-model="parameter.name" placeholder="Имя параметра"/>
+                <Dropdown id="parameterType" v-model="parameter.type" :options="parameterTypes" optionLabel="title" option-value="value" :placeholder="t('chooseOption')"></Dropdown>
+                <Textarea placeholder="Описание параметра" :autoResize="true" rows="3" cols="2" v-model="parameter.description" />
+                <i class="pi pi-trash ml-auto" style="cursor: pointer; color: #EE9186; font-size: 18px" @click="deleteBotParameter(index, parameterIndex)"></i>
+              </div>
+              <Button label="+" style="background-color: #71BA76; width:50px; border: none" class="add-btn" @click="addParameter(index)"/>
+            </div>
+          </div>
+
+          <!-- Task Parameters -->
+          <div class="task-panel">
+            <TabView :scrollable="true">
+              <!-- Send FileInMessage Tab -->
+              <TabPanel>
+                <template #header>
+                  <span
+                      class="white-space-nowrap"
+                      :class="{
+                      'success-tab-title': botFunction?.actions?.some(
+                        (item) => item?.name === 'send_file' && item?.parameters?.fileName
+                      ),
+                    }"
+                  >
+                    {{ t('sendFileInMessage') }}
+                  </span>
+                </template>
+                <div class="mt-4 flex flex-column gap-4">
+                  <span>{{ t('fileSendingRestrictions') }}</span>
+                  <div class="flex w-full gap-3 align-items-center manage-files">
+                    <Button
+                        :label="t('attachFile')"
+                        icon="pi pi-plus"
+                        class="file-btn"
+                        @click="openFileUploader(index)"
+                    ></Button>
+                    <input
+                        :id="`file-upload-${index}`"
+                        hidden
+                        type="file"
+                        @change="addFile($event, index)"
+                    />
+                    <span>{{ t('maxFileSize5MB') }}</span>
+                  </div>
+                  <div
+                      v-if="
+                      botFunction?.actions?.filter(
+                        (action) => action?.name === 'send_file'
+                      )?.length
+                    "
+                      class="files"
+                  >
+                    <div
+                        class="flex flex-column gap-3"
+                        v-for="(file, fileIndex) in botFunction?.actions?.filter(
+                        (action) => action?.name === 'send_file' && action?.parameters?.fileName
+                      )"
+                        :key="fileIndex"
+                    >
+                      <div v-if="file?.parameters?.fileName">
+                        <BaseFile
+                            :type="file?.parameters?.type"
+                            :file-name="file?.parameters?.fileName"
+                            :picture="`https://api.7sales.ai/public/${file?.parameters?.fileName}`"
+                            @delete="showFileDeleteModal = true"
+                        />
+                      </div>
+                      <!-- Delete File Confirmation Dialog -->
+                      <Dialog v-model:visible="showFileDeleteModal" :header="t('deleteFile')">
+                        <span class="text-surface-500 dark:text-surface-400 block mb-4">
+                          {{ t('confirmDeleteFile') }}
+                        </span>
+                        <div class="flex justify-content-center gap-2 w-full">
+                          <Button
+                              type="button"
+                              :label="t('delete')"
+                              severity="danger"
+                              @click="deleteFunctionSendFile(file, index, fileIndex)"
+                          ></Button>
+                          <Button
+                              type="button"
+                              :label="t('cancel')"
+                              @click="showFileDeleteModal = false"
+                          ></Button>
+                        </div>
+                      </Dialog>
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+
+              <!-- CRM Tab -->
+              <TabPanel>
+                <template #header>
+                  <span
+                      class="white-space-nowrap"
+                      :class="{
+                      'success-tab-title': botFunction?.actions?.some(
+                        (item) =>
+                          (item?.name === 'add_note' && item?.parameters?.text) ||
+                          (item?.name === 'edit_lead_card' &&
+                            item?.parameters?.custom_fields_values?.some(
+                              (field) =>
+                                field?.field_id ||
+                                field.values.some((val) => val.value)
+                            ))
+                      ),
+                    }"
+                  >
+                    CRM
+                  </span>
+                </template>
+                <h5 class="mt-4">
+                  {{
+                    currentBot?.channels?.some((channel) => channel.type === 'bitrix24')
+                        ? t('changeDealStageBitrix')
+                        : t('changeDealStage')
+                  }}
+                </h5>
+
+                <div class="mt-4 flex justify-content-between gap-4 fields">
+                  <!-- Choose Pipeline -->
+                  <div class="flex flex-column w-full gap-2">
+                    <label for="funnel">{{ t('choosePipeline') }}:</label>
+                    <Dropdown
+                        style="margin-top: 8px"
+                        id="funnel"
+                        :model-value="getFunnelId(index).value"
+                        @update:model-value="getFunnelId(index).value = $event"
+                        :options="funnels"
+                        optionLabel="name"
+                        optionValue="id"
+                        :placeholder="t('chooseField')"
+                    ></Dropdown>
+                  </div>
+
+                  <!-- Change Status -->
+                  <div class="flex flex-column w-full gap-2">
+                    <label for="statusId">{{ t('changeStatus') }}:</label>
+                    <Dropdown
+                        v-if="currentBot?.channels?.some((channel) => channel.type === 'bitrix24')"
+                        style="margin-top: 8px"
+                        id="statusId"
+                        :model-value="getStatusId(index).value"
+                        @update:model-value="getStatusId(index).value = $event"
+                        :options="
+                        funnels
+                          ?.find((funnel) => funnel.id === getFunnelId(index).value)
+                          ?.statuses
+                      "
+                        optionLabel="name"
+                        optionValue="status_id"
+                        :placeholder="t('chooseField')"
+                    ></Dropdown>
+
+                    <Dropdown
+                        v-else
+                        style="margin-top: 8px"
+                        id="statusId"
+                        :model-value="getStatusId(index).value"
+                        @update:model-value="getStatusId(index).value = $event"
+                        :options="
+                        funnels
+                          ?.find(
+                            (funnel) =>
+                              funnel?.id ===
+                              botFunction?.actions?.find(
+                                (action) => action?.name === 'move_in_pipeline'
+                              )?.parameters?.pipeline_id
+                          )
+                          ?._embedded?.statuses
+                      "
+                        optionLabel="name"
+                        optionValue="id"
+                        :placeholder="t('chooseField')"
+                    ></Dropdown>
+                  </div>
+                </div>
+
+                <!-- Write Deal Note -->
+                <div class="flex flex-column mt-3">
+                  <label for="writeDealNote" style="font-weight: 700; margin-bottom: 12px;">
+                    {{ t('writeDealNote') }}
+                  </label>
+                  <Textarea
+                      :placeholder="t('dealNoteText')"
+                      :autoResize="true"
+                      rows="3"
+                      cols="2"
+                      v-model="getDealNoteText(index).value"
+                  />
+                </div>
+
+                <!-- Установить значение поля -->
+                <div class="flex flex-column mt-3">
+                  <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">
+                    {{ t('setFieldValue') }}
+                  </label>
+
+                  <div
+                      v-for="(customField, customFieldIndex) in botFunction?.actions?.find(action => action.name === 'edit_lead_card')?.parameters?.custom_fields_values || []"
+                      :key="customFieldIndex"
+                      class="fields mt-3"
+                  >
+                    <div class="flex align-items-center gap-4">
+                      <!-- Выбрать поле -->
+                      <div class="flex flex-column gap-2 w-full">
+                        <label for="chooseField">{{ t('chooseField') }}</label>
+                        <Dropdown
+                            id="chooseField"
+                            :model-value="getFieldId(index, customFieldIndex).value"
+                            @update:model-value="getFieldId(index, customFieldIndex).value = $event"
+                            :options="fields"
+                            optionLabel="name"
+                            :option-value="
+            currentBot?.channels?.some((channel) => channel.type === 'bitrix24')
+              ? 'key'
+              : 'id'
+          "
+                            :placeholder="t('chooseField')"
+                        ></Dropdown>
+                      </div>
+
+                      <!-- Ввести значение поля -->
+                      <div class="flex flex-column gap-2 w-full">
+                        <label for="enterFieldValue">{{ t('enterFieldValue') }}</label>
+                        <Dropdown
+                            id="enterFieldValue"
+                            editable
+                            :options="botFunction.parameters"
+                            optionLabel="name"
+                            optionValue="name"
+                            :model-value="getFieldValue(index, customFieldIndex).value"
+                            @update:model-value="getFieldValue(index, customFieldIndex).value = $event"
+                        ></Dropdown>
+<!--                        <InputText-->
+<!--                            id="enterFieldValue"-->
+<!--                            type="text"-->
+<!--                            :model-value="getFieldValue(index, customFieldIndex).value"-->
+<!--                            @update:model-value="getFieldValue(index, customFieldIndex).value = $event"-->
+<!--                        />-->
+                      </div>
+                      <i
+                          class="pi pi-trash ml-auto"
+                          style="cursor: pointer; color: #EE9186; font-size: 18px"
+                          @click="deleteCustomFieldValue(index, customFieldIndex)"
+                      ></i>
+                    </div>
+                  </div>
+
+                  <!-- Кнопка для добавления нового поля -->
+                  <Button
+                      label="+"
+                      style="background-color: #71BA76; width:50px; border: none"
+                      class="add-btn mt-3"
+                      @click="addCustomFieldsValues(index)"
+                  />
+                </div>
+              </TabPanel>
+
+              <!-- Notification Tab -->
+              <TabPanel>
+                <template #header>
+                  <span
+                      class="white-space-nowrap"
+                      :class="{
+                      'success-tab-title': botFunction?.actions?.some(
+                        (item) => item?.name === 'notify_operator' && item?.parameters?.text
+                      ),
+                    }"
+                  >
+                    {{ t('notification') }}
+                  </span>
+                </template>
+                <div class="flex flex-column gap-3">
+                  <span style="font-weight: 700" class="mt-5">
+                    {{ t('notificationText') }}
+                  </span>
+                  <Textarea
+                      :autoResize="true"
+                      rows="3"
+                      cols="2"
+                      v-model="getNotifyOperatorText(index).value"
+                  />
+                </div>
+              </TabPanel>
+
+              <!-- Webhook Tab -->
+              <TabPanel>
+                <template #header>
+                  <span
+                      class="white-space-nowrap"
+                      :class="{
+                      'success-tab-title': botFunction?.actions?.some(
+                        (item) =>
+                          item?.name === 'send_webhook' &&
+                          item?.parameters?.webhook_url &&
+                          item?.parameters?.webhook_text
+                      ),
+                    }"
+                  >
+                    Webhook
+                  </span>
+                </template>
+                <div class="flex flex-column gap-3">
+                  <div class="flex flex-column gap-2 mt-5">
+                    <span style="font-weight: 700">URL</span>
+                    <InputText
+                        style="margin-bottom: 8px"
+                        id="webhookUrl"
+                        type="text"
+                        v-model="getWebhookUrl(index).value"
+                        :placeholder="t('requestUrl')"
+                    />
+                  </div>
+                  <div class="flex flex-column gap-2">
+                    <span style="font-weight: 700">{{ t('text') }}</span>
+                    <Textarea
+                        rows="3"
+                        cols="30"
+                        v-model="getWebhookText(index).value"
+                    />
+                  </div>
+                </div>
+              </TabPanel>
+
+              <!-- CUSTOM API Tab -->
+              <TabPanel>
+                <template #header>
+                  <span
+                      class="white-space-nowrap"
+                      :class="{
+                      'success-tab-title': botFunction?.actions?.some(
+                        (item) => item?.name === 'send_to_webhook' && item?.parameters?.url
+                      ),
+                    }"
+                  >
+                    CUSTOM API
+                  </span>
+                </template>
+                <div class="mx-2">
+                  <div
+                      class="flex flex-column mt-3 mb-3 px-2 py-2"
+                      style="background: #FFEFE5; border-radius: 6px"
+                  >
+                    <label
+                        for="customApi"
+                        style="font-weight: 700; margin-bottom: 12px;"
+                    >
+                      CUSTOM API
+                    </label>
+                    <div class="flex flex-column gap-2">
+                      <span>{{ t('restApiSettings') }}</span>
+                      <div class="flex gap-2 align-items-center">
+                        <Dropdown
+                            style="margin-top: 8px; margin-bottom: 8px"
+                            id="customApiMethod"
+                            v-model="getCustomApiMethod(index).value"
+                            :options="customApiMethods"
+                            optionLabel="title"
+                            optionValue="value"
+                            :placeholder="t('requestMethod')"
+                        ></Dropdown>
+                        <InputText
+                            id="customApiUrl"
+                            type="text"
+                            v-model="getCustomApiUrl(index).value"
+                            :placeholder="t('requestUrl')"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- API Parameters -->
+                    <div class="mt-3">
+                      <span class="mb-2">{{ t('apiParams') }} (params):</span>
+                      <div
+                          v-for="(parameter, paramIndex) in getCustomApiParams(index).value"
+                          :key="paramIndex"
+                          class="flex align-items-center gap-2 mt-2"
+                      >
+                        <InputText
+                            id="parameterTitle"
+                            type="text"
+                            v-model="parameter.title"
+                            :placeholder="t('variableName')"
+                        />
+                        <Dropdown
+                            style="margin-top: 8px; margin-bottom: 8px"
+                            id="parameterAction"
+                            v-model="parameter.kind"
+                            :options="parameterActions"
+                            optionLabel="title"
+                            optionValue="value"
+                            :placeholder="t('action')"
+                        ></Dropdown>
+                        <template v-if="parameter.kind === 'static'">
+                          <InputText
+                              :placeholder="t('valueToPass')"
+                              id="parameterActionText"
+                              v-model="parameter.value"
+                          ></InputText>
+                        </template>
+                        <template v-if="parameter.kind === 'user_data'">
+                          <Dropdown
+                              v-model="parameter.value"
+                              :options="userDataFields"
+                              optionLabel="rus_name"
+                              optionValue="value"
+                              :placeholder="t('valueToPass')"
+                          ></Dropdown>
+                        </template>
+                        <template v-if="parameter.kind === 'function_parameter'">
+                          <Dropdown
+                              v-model="parameter.value"
+                              :options="botFunction.parameters"
+                              optionLabel="name"
+                              optionValue="name"
+                              :placeholder="t('valueToPass')"
+                          ></Dropdown>
+                        </template>
+                        <i
+                            class="pi pi-trash ml-auto"
+                            style="cursor: pointer; color: #EE9186; font-size: 18px"
+                            @click="deleteCustomApiParameter(index, paramIndex, 'queryParams')"
+                        ></i>
+                      </div>
+                      <Button
+                          class="mt-3 text-center"
+                          @click="addCustomApiParameter(index, 'queryParams')"
+                          :label="`+ ${t('newParameter')}`"
+                      ></Button>
+                    </div>
+
+                    <!-- API Headers -->
+                    <div class="mt-3">
+                      <span class="mb-2">{{ t('apiHeaders') }} (headers):</span>
+                      <div
+                          v-for="(header, headerIndex) in getCustomApiHeaders(index).value"
+                          :key="headerIndex"
+                          class="flex align-items-center gap-2 mt-2"
+                      >
+                        <InputText
+                            id="headerTitle"
+                            type="text"
+                            v-model="header.title"
+                            :placeholder="t('name')"
+                        />
+                        <InputText
+                            id="headerValue"
+                            type="text"
+                            v-model="header.value"
+                            :placeholder="t('value')"
+                        />
+                        <i
+                            class="pi pi-trash ml-auto"
+                            style="cursor: pointer; color: #EE9186; font-size: 18px"
+                            @click="deleteCustomApiParameter(index, headerIndex, 'headers')"
+                        ></i>
+                      </div>
+                      <Button
+                          class="mt-3 text-center"
+                          @click="addCustomApiParameter(index, 'headers')"
+                          :label="`+ ${t('newParameter')}`"
+                      ></Button>
+                    </div>
+
+                    <!-- API Body -->
+                    <div class="mt-3">
+                      <span class="mb-2">{{ t('apiBody') }} (body):</span>
+                      <div
+                          v-for="(bodyParam, bodyIndex) in getCustomApiBody(index).value"
+                          :key="bodyIndex"
+                          class="flex align-items-center gap-2 mt-2"
+                      >
+                        <InputText
+                            id="bodyParamTitle"
+                            type="text"
+                            v-model="bodyParam.title"
+                            :placeholder="t('variableName')"
+                        />
+                        <Dropdown
+                            style="margin-top: 8px; margin-bottom: 8px"
+                            id="bodyParamAction"
+                            v-model="bodyParam.kind"
+                            :options="parameterActions"
+                            optionLabel="title"
+                            optionValue="value"
+                            :placeholder="t('action')"
+                        ></Dropdown>
+                        <template v-if="bodyParam.kind === 'static'">
+                          <InputText
+                              :placeholder="t('valueToPass')"
+                              id="bodyParamActionText"
+                              v-model="bodyParam.value"
+                          ></InputText>
+                        </template>
+                        <template v-if="bodyParam.kind === 'user_data'">
+                          <Dropdown
+                              v-model="bodyParam.value"
+                              :options="userDataFields"
+                              optionLabel="rus_name"
+                              optionValue="value"
+                              :placeholder="t('valueToPass')"
+                          ></Dropdown>
+                        </template>
+                        <template v-if="bodyParam.kind === 'function_parameter'">
+                          <Dropdown
+                              v-model="bodyParam.value"
+                              :options="botFunction.parameters"
+                              optionLabel="name"
+                              optionValue="name"
+                              :placeholder="t('valueToPass')"
+                          ></Dropdown>
+                        </template>
+                        <i
+                            class="pi pi-trash ml-auto"
+                            style="cursor: pointer; color: #EE9186; font-size: 18px"
+                            @click="deleteCustomApiParameter(index, bodyIndex, 'bodyParams')"
+                        ></i>
+                      </div>
+                      <Button
+                          class="mt-3 text-center"
+                          @click="addCustomApiParameter(index, 'bodyParams')"
+                          :label="`+ ${t('newParameter')}`"
+                      ></Button>
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+            </TabView>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Add Task Button -->
+    <Button
+        :label="t('addTask')"
+        style="background-color: #F9753E; border: none"
+        class="add-btn mt-3"
+        @click="addTask"
+    />
+  </div>
+</template>
 
 <style scoped>
 .bot-card__activate {

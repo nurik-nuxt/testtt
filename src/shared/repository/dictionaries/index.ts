@@ -10,4 +10,13 @@ export function queryGetModelList() {
         }
     })
 }
+export function queryGetUserDataFields() {
+    return useQuery({
+        queryKey: ["userFields"],
+        queryFn: () => useApi('/info/user_data_fields', { method: 'GET' }),
+        select: (data) => {
+            return data || []
+        }
+    })
+}
 
