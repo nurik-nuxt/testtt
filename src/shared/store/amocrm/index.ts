@@ -64,11 +64,44 @@ export const useAmoCrmStore = defineStore('amocrm', {
 
         async fetchAmoCrmFields() {
             try {
-                this.fields = await useApi(`/amocrm/fields`, {
+                const data = await useApi(`/amocrm/crm_fields`, {
                     method: 'GET'
                 });
+                console.log(data);
+
+                // Map data and add 'value' field as item.id
+                this.fields = [
+                    {
+                        name: 'Контакты',
+                        code: 'contact_fields',
+                        items: [
+                            ...data.contact_fields.standard_fields.map(item => ({
+                                ...item,
+                                value: item.id // Add value as item.id
+                            })),
+                            ...data.contact_fields.custom_fields.map(item => ({
+                                ...item,
+                                value: item.id // Add value as item.id
+                            }))
+                        ]
+                    },
+                    {
+                        name: 'Лид поли',
+                        code: 'lead_fields',
+                        items: [
+                            ...data.lead_fields.standard_fields.map(item => ({
+                                ...item,
+                                value: item.id // Add value as item.id
+                            })),
+                            ...data.lead_fields.custom_fields.map(item => ({
+                                ...item,
+                                value: item.id // Add value as item.id
+                            }))
+                        ]
+                    }
+                ];
             } catch (e) {
-                console.log(e)
+                console.log(e);
             }
         }
     }

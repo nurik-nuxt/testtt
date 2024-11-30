@@ -113,7 +113,7 @@ onMounted(async () => {
       // const delay = res.actions?.find((action) => action.name ==='delay')?.parameters?.timers
       const moveInPipline = res.actions?.find((action) => action.name ==='move_in_pipeline')?.parameters
       const sendFile = res.actions?.find((action) => action.name ==='send_file')?.parameters
-      const editLeadCard = res.actions?.find((action) => action.name ==='edit_lead_card')?.parameters
+      const editLeadCard = res.actions?.find((action) => action.name ==='edit_crm_fields')?.parameters
       if (addNote?.length) {
         writeDealNote.value = addNote
       }
@@ -207,7 +207,7 @@ const saveKnowledge = async () => {
         }
         if (fieldId.value) {
           const editLeadCard = {
-            name: "edit_lead_card",
+            name: "edit_crm_fields",
             parameters: {
               custom_fields_values: [
                 {
