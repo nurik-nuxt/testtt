@@ -214,18 +214,27 @@ function ensureAllActionsExist(botFunction: any) {
     {
       name: 'edit_crm_fields',
       parameters: {
-        custom_fields_values: [
-          {
-            field: null,
-            field_id: null,
-            code: null,
-            values: [
-              {
-                value: ''
-              }
-            ]
-          }
-        ]
+        lead_fields: {
+          standard_fields: [
+            {
+              name: '',
+              kind: '',
+              value: ''
+            }
+          ],
+          custom_fields: [
+            {
+              field: null,
+              field_id: null,
+              code: null,
+              values: [
+                {
+                  value: ''
+                }
+              ]
+            }
+          ]
+        }
       }
     },
     {
@@ -341,7 +350,7 @@ function filterEmptyActions(actions: any[]) {
     if (action.name === 'notify_operator' && !action.parameters.text) {
       return false;
     }
-    if (action.name === 'edit_crm_fields' && (!action.parameters.custom_fields_values[0].field_id || !action.parameters.custom_fields_values[0].values[0].value)) {
+    if (action.name === 'edit_crm_fields' && (!action.parameters.lead_fields.custom_fields[0].field_id || !action.parameters.lead_fields.custom_fields[0].values[0].value)) {
       return false;
     }
     if (action.name === 'add_note' && !action.parameters.text) {
@@ -428,18 +437,27 @@ const addTask = () => {
           {
             name: 'edit_crm_fields',
             parameters: {
-              custom_fields_values: [
-                {
-                  field: null,
-                  field_id: null,
-                  code: null,
-                  values: [
-                    {
-                      value: ''
-                    }
-                  ]
-                }
-              ]
+              lead_fields: {
+                standard_fields: [
+                  {
+                    name: '',
+                    kind: '',
+                    value: ''
+                  }
+                ],
+                custom_fields: [
+                  {
+                    field: null,
+                    field_id: null,
+                    code: null,
+                    values: [
+                      {
+                        value: ''
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           },
           {

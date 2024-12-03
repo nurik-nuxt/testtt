@@ -286,10 +286,10 @@ const getFieldId = (functionIndex, customFieldIndex) => {
           (action) => action.name === 'edit_crm_fields'
       );
       if (
-          action?.parameters?.custom_fields_values &&
-          action.parameters.custom_fields_values.length > customFieldIndex
+          action?.parameters?.lead_fields?.custom_fields &&
+          action.parameters.lead_fields?.custom_fields.length > customFieldIndex
       ) {
-        return action.parameters.custom_fields_values[customFieldIndex].field || '';
+        return action.parameters.lead_fields?.custom_fields[customFieldIndex].field || '';
       }
       return '';
     },
@@ -309,49 +309,50 @@ const getFieldId = (functionIndex, customFieldIndex) => {
         action = {
           name: 'edit_crm_fields',
           parameters: {
-            custom_fields_values: [],
+            lead_fields: {
+              custom_fields: [],
+            }
           },
         };
         props.botFunctions[functionIndex].actions.push(action);
       }
 
       // Убедитесь, что custom_fields_values существует
-      if (!action.parameters.custom_fields_values) {
-        action.parameters.custom_fields_values = [];
+      if (!action.parameters.lead_fields?.custom_fields) {
+        action.parameters.lead_fields.custom_fields = [];
       }
 
       // Убедитесь, что есть элемент на customFieldIndex
-      while (action.parameters.custom_fields_values.length <= customFieldIndex) {
-        action.parameters.custom_fields_values.push({ field_id: '', kind: '', code: '', values: [{ value: '' }] });
+      while (action.parameters.lead_fields?.custom_fields.length <= customFieldIndex) {
+        action.parameters.lead_fields?.custom_fields.push({ field_id: '', code: '', values: [{ value: '' }] });
       }
 
       // action.parameters.custom_fields_values[customFieldIndex].field = value;
-      action.parameters.custom_fields_values[customFieldIndex].field_id = value.value;
-      action.parameters.custom_fields_values[customFieldIndex].field = value;
+      action.parameters.lead_fields.custom_fields[customFieldIndex].field_id = value.value;
+      action.parameters.lead_fields.custom_fields[customFieldIndex].field = value;
       const test = getCodeByFieldId(fields.value, value.value);
       console.log(test, 'test')
-      action.parameters.custom_fields_values[customFieldIndex].code = getCodeByFieldId(fields.value, value.value);
+      action.parameters.lead_fields.custom_fields[customFieldIndex].code = getCodeByFieldId(fields.value, value.value);
     },
   });
 };
 
-const getFieldType = (functionIndex, customFieldIndex) => {
+const getFieldType = (functionIndex, standardFieldIndex) => {
   return computed({
     get() {
       const action = props.botFunctions[functionIndex]?.actions?.find(
           (action) => action.name === 'edit_crm_fields'
       );
       if (
-          action?.parameters?.custom_fields_values &&
-          action.parameters.custom_fields_values.length > customFieldIndex
+          action?.parameters?.lead_fields?.standard_fields &&
+          action.parameters.lead_fields.standard_fields.length > standardFieldIndex
       ) {
-        return action.parameters.custom_fields_values[customFieldIndex].kind || '';
+        return action.parameters.lead_fields.standard_fields[standardFieldIndex].kind || '';
       }
       return '';
     },
     set(value) {
-      console.log(value, 'value')
-      // Убедитесь, что actions существует
+      // Ensure actions exist
       if (!props.botFunctions[functionIndex].actions) {
         props.botFunctions[functionIndex].actions = [];
       }
@@ -361,27 +362,30 @@ const getFieldType = (functionIndex, customFieldIndex) => {
       );
 
       if (!action) {
-        // Создайте действие, если оно не существует
+        // Create the action if it doesn't exist
         action = {
           name: 'edit_crm_fields',
           parameters: {
-            custom_fields_values: [],
+            lead_fields: {
+              standard_fields: [],
+              custom_fields: [],
+            },
           },
         };
         props.botFunctions[functionIndex].actions.push(action);
       }
 
-      // Убедитесь, что custom_fields_values существует
-      if (!action.parameters.custom_fields_values) {
-        action.parameters.custom_fields_values = [];
+      // Ensure standard_fields exists
+      if (!action.parameters.lead_fields.standard_fields) {
+        action.parameters.lead_fields.standard_fields = [];
       }
 
-      // Убедитесь, что есть элемент на customFieldIndex
-      while (action.parameters.custom_fields_values.length <= customFieldIndex) {
-        action.parameters.custom_fields_values.push({ field_id: '', kind: '', code: '', values: [{ value: '' }] });
+      // Ensure there is an element at standardFieldIndex
+      while (action.parameters.lead_fields.standard_fields.length <= standardFieldIndex) {
+        action.parameters.lead_fields.standard_fields.push({ name: '', kind: '', value: '' });
       }
 
-      action.parameters.custom_fields_values[customFieldIndex].kind = value;
+      action.parameters.lead_fields.standard_fields[standardFieldIndex].kind = value;
     },
   });
 };
@@ -393,12 +397,12 @@ const getFieldValue = (functionIndex, customFieldIndex) => {
           (action) => action.name === 'edit_crm_fields'
       );
       if (
-          action?.parameters?.custom_fields_values &&
-          action.parameters.custom_fields_values.length > customFieldIndex &&
-          action.parameters.custom_fields_values[customFieldIndex].values &&
-          action.parameters.custom_fields_values[customFieldIndex].values.length > 0
+          action?.parameters?.lead_fields?.custom_fields &&
+          action.parameters.lead_fields.custom_fields.length > customFieldIndex &&
+          action.parameters.lead_fields.custom_fields[customFieldIndex].values &&
+          action.parameters.lead_fields.custom_fields[customFieldIndex].values.length > 0
       ) {
-        return action.parameters.custom_fields_values[customFieldIndex].values[0].value || '';
+        return action.parameters.lead_fields.custom_fields[customFieldIndex].values[0].value || '';
       }
       return '';
     },
@@ -417,28 +421,30 @@ const getFieldValue = (functionIndex, customFieldIndex) => {
         action = {
           name: 'edit_crm_fields',
           parameters: {
-            custom_fields_values: [],
+            lead_fields: {
+              custom_fields: [],
+            }
           },
         };
         props.botFunctions[functionIndex].actions.push(action);
       }
 
       // Убедитесь, что custom_fields_values существует
-      if (!action.parameters.custom_fields_values) {
-        action.parameters.custom_fields_values = [];
+      if (!action.parameters.lead_fields.custom_fields) {
+        action.parameters.lead_fields.custom_fields = [];
       }
 
       // Убедитесь, что есть элемент на customFieldIndex
-      while (action.parameters.custom_fields_values.length <= customFieldIndex) {
-        action.parameters.custom_fields_values.push({ field_id: '', code: '', kind: '', values: [{ value: '' }] });
+      while (action.parameters.lead_fields.custom_fields.length <= customFieldIndex) {
+        action.parameters.lead_fields.custom_fields.push({ field_id: '', code: '', values: [{ value: '' }] });
       }
 
       // Убедитесь, что values существует
-      if (!action.parameters.custom_fields_values[customFieldIndex].values) {
-        action.parameters.custom_fields_values[customFieldIndex].values = [{ value: '' }];
+      if (!action.parameters.lead_fields.custom_fields[customFieldIndex].values) {
+        action.parameters.lead_fields.custom_fields[customFieldIndex].values = [{ value: '' }];
       }
 
-      action.parameters.custom_fields_values[customFieldIndex].values[0].value = value;
+      action.parameters.lead_fields.custom_fields[customFieldIndex].values[0].value = value;
     },
   });
 };
@@ -458,22 +464,23 @@ const addCustomFieldsValues = (functionIndex) => {
     action = {
       name: 'edit_crm_fields',
       parameters: {
-        custom_fields_values: [],
+        lead_fields: {
+          custom_fields: [],
+        }
       },
     };
     props.botFunctions[functionIndex].actions.push(action);
   }
 
   // Убедитесь, что custom_fields_values существует
-  if (!action.parameters.custom_fields_values) {
-    action.parameters.custom_fields_values = [];
+  if (!action.parameters.lead_fields.custom_fields) {
+    action.parameters.lead_fields.custom_fields = [];
   }
 
   // Добавьте новое поле
-  action.parameters.custom_fields_values.push({
+  action.parameters.lead_fields.custom_fields.push({
     field: '',
     code: '',
-    kind: '',
     values: [{ value: '' }],
   });
 };
@@ -483,8 +490,8 @@ const deleteCustomFieldValue = (functionIndex, customFieldIndex) => {
       (action) => action.name === 'edit_crm_fields'
   );
 
-  if (action && action.parameters && action.parameters.custom_fields_values) {
-    action.parameters.custom_fields_values.splice(customFieldIndex, 1);
+  if (action && action.parameters && action.parameters.lead_fields.custom_fields) {
+    action.parameters.lead_fields.custom_fields.splice(customFieldIndex, 1);
   }
 };
 
@@ -1047,7 +1054,7 @@ const deleteCustomApiParameter = (
                         (item) =>
                           (item?.name === 'add_note' && item?.parameters?.text) ||
                           (item?.name === 'edit_crm_fields' &&
-                            item?.parameters?.custom_fields_values?.some(
+                            item?.parameters?.lead_fields?.custom_fields?.some(
                               (field) =>
                                 field?.field_id ||
                                 field.values.some((val) => val.value)
@@ -1146,7 +1153,7 @@ const deleteCustomApiParameter = (
                   </label>
 
                   <div
-                      v-for="(customField, customFieldIndex) in botFunction?.actions?.find(action => action.name === 'edit_crm_fields')?.parameters?.custom_fields_values || []"
+                      v-for="(customField, customFieldIndex) in botFunction?.actions?.find(action => action.name === 'edit_crm_fields')?.parameters?.lead_fields?.custom_fields || []"
                       :key="customFieldIndex"
                       class="fields mt-3"
                   >
@@ -1174,6 +1181,7 @@ const deleteCustomApiParameter = (
 
                       <div class="flex flex-column gap-2 w-full">
                         <label for="chooseField">{{ t('action') }}</label>
+                        <!-- Adjusted Dropdown for Field Type -->
                         <Dropdown
                             id="bodyParamAction"
                             :model-value="getFieldType(index, customFieldIndex).value"
