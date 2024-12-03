@@ -1258,43 +1258,43 @@ const deleteCustomApiParameter = (
               </TabPanel>
 
               <!-- Webhook Tab -->
-              <TabPanel>
-                <template #header>
-                  <span
-                      class="white-space-nowrap"
-                      :class="{
-                      'success-tab-title': botFunction?.actions?.some(
-                        (item) =>
-                          item?.name === 'send_webhook' &&
-                          item?.parameters?.webhook_url &&
-                          item?.parameters?.webhook_text
-                      ),
-                    }"
-                  >
-                    Webhook
-                  </span>
-                </template>
-                <div class="flex flex-column gap-3">
-                  <div class="flex flex-column gap-2 mt-5">
-                    <span style="font-weight: 700">URL</span>
-                    <InputText
-                        style="margin-bottom: 8px"
-                        id="webhookUrl"
-                        type="text"
-                        v-model="getWebhookUrl(index).value"
-                        :placeholder="t('requestUrl')"
-                    />
-                  </div>
-                  <div class="flex flex-column gap-2">
-                    <span style="font-weight: 700">{{ t('text') }}</span>
-                    <Textarea
-                        rows="3"
-                        cols="30"
-                        v-model="getWebhookText(index).value"
-                    />
-                  </div>
-                </div>
-              </TabPanel>
+<!--              <TabPanel>-->
+<!--                <template #header>-->
+<!--                  <span-->
+<!--                      class="white-space-nowrap"-->
+<!--                      :class="{-->
+<!--                      'success-tab-title': botFunction?.actions?.some(-->
+<!--                        (item) =>-->
+<!--                          item?.name === 'send_webhook' &&-->
+<!--                          item?.parameters?.webhook_url &&-->
+<!--                          item?.parameters?.webhook_text-->
+<!--                      ),-->
+<!--                    }"-->
+<!--                  >-->
+<!--                    Webhook-->
+<!--                  </span>-->
+<!--                </template>-->
+<!--                <div class="flex flex-column gap-3">-->
+<!--                  <div class="flex flex-column gap-2 mt-5">-->
+<!--                    <span style="font-weight: 700">URL</span>-->
+<!--                    <InputText-->
+<!--                        style="margin-bottom: 8px"-->
+<!--                        id="webhookUrl"-->
+<!--                        type="text"-->
+<!--                        v-model="getWebhookUrl(index).value"-->
+<!--                        :placeholder="t('requestUrl')"-->
+<!--                    />-->
+<!--                  </div>-->
+<!--                  <div class="flex flex-column gap-2">-->
+<!--                    <span style="font-weight: 700">{{ t('text') }}</span>-->
+<!--                    <Textarea-->
+<!--                        rows="3"-->
+<!--                        cols="30"-->
+<!--                        v-model="getWebhookText(index).value"-->
+<!--                    />-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </TabPanel>-->
 
               <!-- CUSTOM API Tab -->
               <TabPanel>
@@ -1307,7 +1307,7 @@ const deleteCustomApiParameter = (
                       ),
                     }"
                   >
-                    CUSTOM API
+                    Webhook
                   </span>
                 </template>
                 <div class="mx-2">
