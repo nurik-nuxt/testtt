@@ -67,8 +67,6 @@ export const useAmoCrmStore = defineStore('amocrm', {
                 const data = await useApi(`/amocrm/crm_fields`, {
                     method: 'GET'
                 });
-                console.log(data);
-
                 // Map data and add 'value' field as item.id
                 this.fields = [
                     {
@@ -77,11 +75,13 @@ export const useAmoCrmStore = defineStore('amocrm', {
                         items: [
                             ...data.contact_fields.standard_fields.map(item => ({
                                 ...item,
-                                value: item.id // Add value as item.id
+                                category: 'contact_fields',
+                                type: 'standard_fields',
                             })),
                             ...data.contact_fields.custom_fields.map(item => ({
                                 ...item,
-                                value: item.id // Add value as item.id
+                                category: 'contact_fields',
+                                type: 'custom_fields',
                             }))
                         ]
                     },
@@ -91,11 +91,13 @@ export const useAmoCrmStore = defineStore('amocrm', {
                         items: [
                             ...data.lead_fields.standard_fields.map(item => ({
                                 ...item,
-                                value: item.id // Add value as item.id
+                                category: 'lead_fields',
+                                type: 'standard_fields',
                             })),
                             ...data.lead_fields.custom_fields.map(item => ({
                                 ...item,
-                                value: item.id // Add value as item.id
+                                category: 'lead_fields',
+                                type: 'custom_fields',
                             }))
                         ]
                     }

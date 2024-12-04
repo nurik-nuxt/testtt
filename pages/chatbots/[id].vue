@@ -6,20 +6,19 @@ import {useMainStore} from "~/src/shared/store/main";
 import {useNotificationStore} from "~/src/shared/store/notification";
 import {useToast} from "primevue/usetoast";
 import {useLayout} from '~/composable';
-import {useUploadFileStore} from "~/src/shared/store/upload";
 import {useAmoCrmStore} from "~/src/shared/store/amocrm";
 import {useBitrix24} from "~/src/shared/store/bitrix24";
 import {useLoaderStore} from "~/src/shared/store/loader";
 import {useBotReminder} from "~/src/shared/store/reminder";
-import { useUserStore } from "~/src/shared/store/user";
+import {useUserStore} from "~/src/shared/store/user";
 import {convertToBrowserTimezone} from "~/src/shared/utils/helpers";
-import { BotGeneralSettings } from "~/src/features/bot-general-settings";
-import { BotGeneralChannels } from "~/src/features/bot-general-channels";
-import { BotGeneralKnowledge } from "~/src/features/bot-general-knowledge";
-import { BotGeneralNotification } from "~/src/features/bot-general-notification/index";
-import { BotGeneralReminders } from "~/src/features/bot-general-reminders";
-import { BotChat } from "~/src/features/bot-chat";
-import { BotGeneralPromt } from "~/src/features/bot-general-promt";
+import {BotGeneralSettings} from "~/src/features/bot-general-settings";
+import {BotGeneralChannels} from "~/src/features/bot-general-channels";
+import {BotGeneralKnowledge} from "~/src/features/bot-general-knowledge";
+import {BotGeneralNotification} from "~/src/features/bot-general-notification/index";
+import {BotGeneralReminders} from "~/src/features/bot-general-reminders";
+import {BotChat} from "~/src/features/bot-chat";
+import {BotGeneralPromt} from "~/src/features/bot-general-promt";
 
 const { isMobileOrTablet } = useDevice();
 
@@ -189,6 +188,70 @@ function getUTCOffsetString() {
 
 const telegramLink = ref<string>('')
 
+// function ensureAllActionsExist(botFunction: any) {
+//   const requiredActions = [
+//     {
+//       name: 'send_file',
+//       parameters: {
+//         fileName: null,
+//         type: null
+//       }
+//     },
+//     {
+//       name: 'send_webhook',
+//       parameters: {
+//         webhook_url: '',
+//         webhook_text: ''
+//       }
+//     },
+//     {
+//       name: 'notify_operator',
+//       parameters: {
+//         text: ''
+//       }
+//     },
+//     {
+//       name: 'edit_crm_fields',
+//       parameters: {
+//         fields: []
+//       }
+//     },
+//     {
+//       name: 'add_note',
+//       parameters: {
+//         text: ''
+//       }
+//     },
+//     {
+//       name: 'move_in_pipeline',
+//       parameters: {
+//         pipeline_id: '',
+//         status_id: ''
+//       }
+//     },
+//     {
+//       name: 'send_to_webhook',
+//       parameters: {
+//         url: '',
+//         method: undefined,
+//         isOn: true,
+//         queryParams: [],
+//         headers: [],
+//         bodyParams: []
+//       }
+//     }
+//   ];
+//
+//   requiredActions.forEach(requiredAction => {
+//     const exists = botFunction.actions.some(action => action?.name === requiredAction.name);
+//     if (!exists) {
+//       botFunction.actions.push({ ...requiredAction });
+//     }
+//   });
+//
+//   return botFunction;
+// }
+
 function ensureAllActionsExist(botFunction: any) {
   const requiredActions = [
     {
@@ -214,27 +277,7 @@ function ensureAllActionsExist(botFunction: any) {
     {
       name: 'edit_crm_fields',
       parameters: {
-        lead_fields: {
-          standard_fields: [
-            {
-              name: '',
-              kind: '',
-              value: ''
-            }
-          ],
-          custom_fields: [
-            {
-              field: null,
-              field_id: null,
-              code: null,
-              values: [
-                {
-                  value: ''
-                }
-              ]
-            }
-          ]
-        }
+        fields: []
       }
     },
     {
@@ -264,9 +307,105 @@ function ensureAllActionsExist(botFunction: any) {
   ];
 
   requiredActions.forEach(requiredAction => {
-    const exists = botFunction.actions.some(action => action?.name === requiredAction.name);
-    if (!exists) {
+    const existingAction = botFunction.actions.find(
+        action => action?.name === requiredAction.name
+    );
+
+    if (!existingAction) {
+      // If the action doesn't exist, add it with default parameters
       botFunction.actions.push({ ...requiredAction });
+    } else if (requiredAction.name === 'edit_crm_fields') {
+      // If it's the 'edit_crm_fields' action, process its parameters
+      const parameters = existingAction.parameters || {};
+
+      const fields = [];
+
+      // Process lead_fields if they exist
+      if (parameters.lead_fields) {
+        const { lead_fields } = parameters;
+
+        // Standard Fields
+        if (lead_fields.standard_fields && Array.isArray(lead_fields.standard_fields)) {
+          lead_fields.standard_fields.forEach((field: any) => {
+            fields.push({
+              ...field,
+              category: 'lead_fields',
+              type: 'standard_fields',
+              field_values: field.value,
+              field: field.field,
+              code: field.code || '',
+            });
+          });
+        }
+
+        // Custom Fields
+        if (lead_fields.custom_fields && Array.isArray(lead_fields.custom_fields)) {
+          lead_fields.custom_fields.forEach((field: any) => {
+            fields.push({
+              ...field,
+              category: 'lead_fields',
+              type: 'custom_fields',
+              field_values: field.values[0]?.value || '',
+              field: field.field,
+              code: field.code || '',
+            });
+          });
+        }
+      }
+
+      // Process contact_fields if they exist
+      if (parameters.contact_fields) {
+        const { contact_fields } = parameters;
+
+        // Standard Fields
+        if (contact_fields.standard_fields && Array.isArray(contact_fields.standard_fields)) {
+          contact_fields.standard_fields.forEach((field: any) => {
+            fields.push({
+              ...field,
+              category: 'contact_fields',
+              type: 'standard_fields',
+              field_values: field.value,
+              field: {
+                name: field.name,
+                rus_name: field.rus_name || '',
+                eng_name: field.eng_name || '',
+                entity_type: 'contacts',
+                type: 'standard_fields',
+                enums: field.enums || null,
+                category: 'contact_fields',
+              },
+              code: field.code || '',
+            });
+          });
+        }
+
+        // Custom Fields
+        if (contact_fields.custom_fields && Array.isArray(contact_fields.custom_fields)) {
+          contact_fields.custom_fields.forEach((field: any) => {
+            fields.push({
+              ...field,
+              category: 'contact_fields',
+              type: 'custom_fields',
+              field_values: field.values[0]?.value || '',
+              field: {
+                name: field.name || '',
+                rus_name: field.rus_name || '',
+                eng_name: field.eng_name || '',
+                entity_type: 'contacts',
+                type: 'custom_fields',
+                enums: field.enums || null,
+                category: 'contact_fields',
+              },
+              code: field.code || '',
+            });
+          });
+        }
+      }
+
+      // Replace the parameters with the reconstructed fields array
+      existingAction.parameters = {
+        fields,
+      };
     }
   });
 
@@ -350,7 +489,8 @@ function filterEmptyActions(actions: any[]) {
     if (action.name === 'notify_operator' && !action.parameters.text) {
       return false;
     }
-    if (action.name === 'edit_crm_fields' && (!action.parameters.lead_fields.custom_fields[0].field_id || !action.parameters.lead_fields.custom_fields[0].values[0].value)) {
+    // if (action.name === 'edit_crm_fields' && (!action.parameters.lead_fields.custom_fields[0].field_id || !action.parameters.lead_fields.standard_fields[0].name || !action.parameters.contact_fields.custom_fields[0].field_id || !action.parameters.contact_fields.standard_fields[0].name)) {
+    if (action.name === 'edit_crm_fields' && !action.parameters.fields) {
       return false;
     }
     if (action.name === 'add_note' && !action.parameters.text) {
@@ -362,10 +502,90 @@ function filterEmptyActions(actions: any[]) {
 }
 
 const confirmBotMainSettings = async () => {
-  botFunctions.value = botFunctions.value.map((botFunction: any) => ({
-    ...botFunction,
-    actions: filterEmptyActions(botFunction.actions)
-  }));
+  botFunctions.value = botFunctions.value.map((botFunction: any) => {
+    // Filter empty actions first
+    const filteredActions = filterEmptyActions(botFunction.actions);
+
+    // Map over the actions to transform them
+    const transformedActions = filteredActions.map((action: any) => {
+      if (action.name === "edit_crm_fields") {
+        // Initialize the lead_fields and contact_fields structures
+        const lead_fields = {
+          standard_fields: [] as any[],
+          custom_fields: [] as any[],
+        };
+        const contact_fields = {
+          standard_fields: [] as any[],
+          custom_fields: [] as any[],
+        };
+
+        // Process each field in the action
+        action.parameters.fields.forEach((field: any) => {
+          const category = field.category; // "contact_fields" or "lead_fields"
+          const type = field.type; // "standard_fields" or "custom_fields"
+          let targetFields;
+
+          if (category === "contact_fields") {
+            targetFields = contact_fields;
+          } else if (category === "lead_fields") {
+            targetFields = lead_fields;
+          } else {
+            // Unknown category, skip or handle error
+            return;
+          }
+
+          if (type === "standard_fields") {
+            const newField = {
+              kind: field.kind,
+              ...field.field,
+              ...field,
+              value: field.field_values,
+            };
+            targetFields.standard_fields.push(newField);
+          } else if (type === "custom_fields") {
+            const newField = {
+              ...field,
+              field_id: field.field_id,
+              code: field.code,
+              enums: field.field.enums,
+              kind: field.kind,
+              values: [
+                {
+                  value: field.field_values,
+                },
+              ],
+            };
+            targetFields.custom_fields.push(newField);
+          } else {
+            // Unknown type, skip or handle error
+            return;
+          }
+        });
+
+        // Construct the new action with the transformed parameters
+        return {
+          name: action.name,
+          parameters: {
+            lead_fields,
+            contact_fields,
+          },
+        };
+      } else {
+        // Return the action unchanged if it's not "edit_crm_fields"
+        return action;
+      }
+    });
+
+    // Create the new botFunction with transformed actions
+    const newBotFunction = {
+      ...botFunction,
+      actions: transformedActions,
+    };
+
+    console.log(newBotFunction, 'newBotFunction');
+    return newBotFunction;
+  });
+
   await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
     toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
     if (reminders.value) {
@@ -437,27 +657,7 @@ const addTask = () => {
           {
             name: 'edit_crm_fields',
             parameters: {
-              lead_fields: {
-                standard_fields: [
-                  {
-                    name: '',
-                    kind: '',
-                    value: ''
-                  }
-                ],
-                custom_fields: [
-                  {
-                    field: null,
-                    field_id: null,
-                    code: null,
-                    values: [
-                      {
-                        value: ''
-                      }
-                    ]
-                  }
-                ]
-              }
+              fields: []
             }
           },
           {
@@ -529,7 +729,6 @@ const reminders = ref<{
     end?: string
   }
 }[]>([]);
-
 </script>
 
 <template>

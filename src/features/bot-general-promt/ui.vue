@@ -268,10 +268,8 @@ const getDealNoteText = (index: number) => {
 
 function getCodeByFieldId(list, fieldId) {
   for (const group of list) {
-    console.log(group)
     const items = group?.items || [];
     const field = items.find(item => item.id === fieldId);
-    console.log(field)
     if (field) {
       return field?.code || null; // Return the code or null if not available
     }
@@ -286,15 +284,15 @@ const getFieldId = (functionIndex, customFieldIndex) => {
           (action) => action.name === 'edit_crm_fields'
       );
       if (
-          action?.parameters?.lead_fields?.custom_fields &&
-          action.parameters.lead_fields?.custom_fields.length > customFieldIndex
+          action?.parameters?.fields &&
+          action.parameters.fields.length > customFieldIndex
       ) {
-        return action.parameters.lead_fields?.custom_fields[customFieldIndex].field || '';
+        return action.parameters.fields[customFieldIndex].field || '';
       }
       return '';
     },
     set(value) {
-      console.log(value.value, 'value')
+      console.log(value, 'value');
       // Убедитесь, что actions существует
       if (!props.botFunctions[functionIndex].actions) {
         props.botFunctions[functionIndex].actions = [];
@@ -309,30 +307,49 @@ const getFieldId = (functionIndex, customFieldIndex) => {
         action = {
           name: 'edit_crm_fields',
           parameters: {
-            lead_fields: {
-              custom_fields: [],
-            }
+            fields: []
           },
         };
         props.botFunctions[functionIndex].actions.push(action);
       }
 
       // Убедитесь, что custom_fields_values существует
-      if (!action.parameters.lead_fields?.custom_fields) {
-        action.parameters.lead_fields.custom_fields = [];
+      if (!action.parameters.fields) {
+        action.parameters.fields = [];
+      }
+      if (value?.category === 'contact_fields') {
+        if (value?.type === 'custom_fields') {
+          action.parameters.fields[customFieldIndex].field = value
+          action.parameters.fields[customFieldIndex].field_id = value.id
+          action.parameters.fields[customFieldIndex].code = value.code
+          action.parameters.fields[customFieldIndex].category = 'contact_fields'
+          action.parameters.fields[customFieldIndex].type = 'custom_fields'
+        }
+        if (value.type === 'standard_fields') {
+          action.parameters.fields[customFieldIndex].field_id = ''
+          action.parameters.fields[customFieldIndex].code = ''
+          action.parameters.fields[customFieldIndex].field = value
+          action.parameters.fields[customFieldIndex].category = 'contact_fields'
+          action.parameters.fields[customFieldIndex].type = 'standard_fields'
+        }
       }
 
-      // Убедитесь, что есть элемент на customFieldIndex
-      while (action.parameters.lead_fields?.custom_fields.length <= customFieldIndex) {
-        action.parameters.lead_fields?.custom_fields.push({ field_id: '', code: '', values: [{ value: '' }] });
+      if (value.category === 'lead_fields') {
+        if (value.type === 'custom_fields') {
+          action.parameters.fields[customFieldIndex].field = value
+          action.parameters.fields[customFieldIndex].field_id = value.id
+          action.parameters.fields[customFieldIndex].code = value.code
+          action.parameters.fields[customFieldIndex].category = 'lead_fields'
+          action.parameters.fields[customFieldIndex].type = 'custom_fields'
+        }
+        if (value.type === 'standard_fields') {
+          action.parameters.fields[customFieldIndex].field_id = ''
+          action.parameters.fields[customFieldIndex].code = ''
+          action.parameters.fields[customFieldIndex].field = value
+          action.parameters.fields[customFieldIndex].category = 'lead_fields'
+          action.parameters.fields[customFieldIndex].type = 'standard_fields'
+        }
       }
-
-      // action.parameters.custom_fields_values[customFieldIndex].field = value;
-      action.parameters.lead_fields.custom_fields[customFieldIndex].field_id = value.value;
-      action.parameters.lead_fields.custom_fields[customFieldIndex].field = value;
-      const test = getCodeByFieldId(fields.value, value.value);
-      console.log(test, 'test')
-      action.parameters.lead_fields.custom_fields[customFieldIndex].code = getCodeByFieldId(fields.value, value.value);
     },
   });
 };
@@ -344,15 +361,14 @@ const getFieldType = (functionIndex, standardFieldIndex) => {
           (action) => action.name === 'edit_crm_fields'
       );
       if (
-          action?.parameters?.lead_fields?.standard_fields &&
-          action.parameters.lead_fields.standard_fields.length > standardFieldIndex
+          action?.parameters?.fields &&
+          action.parameters.fields.length > standardFieldIndex
       ) {
-        return action.parameters.lead_fields.standard_fields[standardFieldIndex].kind || '';
+        return action.parameters.fields[standardFieldIndex].kind || '';
       }
       return '';
     },
     set(value) {
-      // Ensure actions exist
       if (!props.botFunctions[functionIndex].actions) {
         props.botFunctions[functionIndex].actions = [];
       }
@@ -362,30 +378,16 @@ const getFieldType = (functionIndex, standardFieldIndex) => {
       );
 
       if (!action) {
-        // Create the action if it doesn't exist
         action = {
           name: 'edit_crm_fields',
           parameters: {
-            lead_fields: {
-              standard_fields: [],
-              custom_fields: [],
-            },
+            fields: []
           },
         };
         props.botFunctions[functionIndex].actions.push(action);
       }
 
-      // Ensure standard_fields exists
-      if (!action.parameters.lead_fields.standard_fields) {
-        action.parameters.lead_fields.standard_fields = [];
-      }
-
-      // Ensure there is an element at standardFieldIndex
-      while (action.parameters.lead_fields.standard_fields.length <= standardFieldIndex) {
-        action.parameters.lead_fields.standard_fields.push({ name: '', kind: '', value: '' });
-      }
-
-      action.parameters.lead_fields.standard_fields[standardFieldIndex].kind = value;
+      action.parameters.fields[standardFieldIndex].kind = value
     },
   });
 };
@@ -397,17 +399,14 @@ const getFieldValue = (functionIndex, customFieldIndex) => {
           (action) => action.name === 'edit_crm_fields'
       );
       if (
-          action?.parameters?.lead_fields?.custom_fields &&
-          action.parameters.lead_fields.custom_fields.length > customFieldIndex &&
-          action.parameters.lead_fields.custom_fields[customFieldIndex].values &&
-          action.parameters.lead_fields.custom_fields[customFieldIndex].values.length > 0
+          action?.parameters?.fields &&
+          action.parameters.fields.length > customFieldIndex
       ) {
-        return action.parameters.lead_fields.custom_fields[customFieldIndex].values[0].value || '';
+        return action.parameters.fields[customFieldIndex].field_values || '';
       }
       return '';
     },
     set(value) {
-      // Убедитесь, что actions существует
       if (!props.botFunctions[functionIndex].actions) {
         props.botFunctions[functionIndex].actions = [];
       }
@@ -417,34 +416,22 @@ const getFieldValue = (functionIndex, customFieldIndex) => {
       );
 
       if (!action) {
-        // Создайте действие, если оно не существует
         action = {
           name: 'edit_crm_fields',
           parameters: {
-            lead_fields: {
-              custom_fields: [],
-            }
+            fields: []
           },
         };
         props.botFunctions[functionIndex].actions.push(action);
       }
 
-      // Убедитесь, что custom_fields_values существует
-      if (!action.parameters.lead_fields.custom_fields) {
-        action.parameters.lead_fields.custom_fields = [];
+      if (!action.parameters.fields) {
+        action.parameters.fields = [];
       }
 
-      // Убедитесь, что есть элемент на customFieldIndex
-      while (action.parameters.lead_fields.custom_fields.length <= customFieldIndex) {
-        action.parameters.lead_fields.custom_fields.push({ field_id: '', code: '', values: [{ value: '' }] });
-      }
+      action.parameters.fields[customFieldIndex].field_values = value
 
-      // Убедитесь, что values существует
-      if (!action.parameters.lead_fields.custom_fields[customFieldIndex].values) {
-        action.parameters.lead_fields.custom_fields[customFieldIndex].values = [{ value: '' }];
-      }
-
-      action.parameters.lead_fields.custom_fields[customFieldIndex].values[0].value = value;
+      console.log(value, 'value');
     },
   });
 };
@@ -464,24 +451,20 @@ const addCustomFieldsValues = (functionIndex) => {
     action = {
       name: 'edit_crm_fields',
       parameters: {
-        lead_fields: {
-          custom_fields: [],
-        }
+        fields: []
       },
     };
     props.botFunctions[functionIndex].actions.push(action);
   }
 
-  // Убедитесь, что custom_fields_values существует
-  if (!action.parameters.lead_fields.custom_fields) {
-    action.parameters.lead_fields.custom_fields = [];
-  }
-
   // Добавьте новое поле
-  action.parameters.lead_fields.custom_fields.push({
+  action.parameters.fields.push({
+    field_id: '',
+    kind: '',
+    field_values: '',
+    category: '',
+    type: '',
     field: '',
-    code: '',
-    values: [{ value: '' }],
   });
 };
 
@@ -490,8 +473,8 @@ const deleteCustomFieldValue = (functionIndex, customFieldIndex) => {
       (action) => action.name === 'edit_crm_fields'
   );
 
-  if (action && action.parameters && action.parameters.lead_fields.custom_fields) {
-    action.parameters.lead_fields.custom_fields.splice(customFieldIndex, 1);
+  if (action && action.parameters && action.parameters.fields) {
+    action.parameters.fields.splice(customFieldIndex, 1);
   }
 };
 
@@ -837,11 +820,9 @@ const getCustomApiBody = (index: number) => {
 
 // Methods to add and delete Custom API parameters
 const addCustomApiParameter = (functionIndex: number, paramType: 'queryParams' | 'headers' | 'bodyParams') => {
-  console.log('addCustomApiParameter')
   let action = props.botFunctions[functionIndex]?.actions?.find(
       (action: any) => action.name === 'send_to_webhook'
   );
-  console.log(action, 'addCustomApiParameter')
   if (!action) {
     action = {
       name: 'send_to_webhook',
@@ -864,6 +845,7 @@ const deleteCustomApiParameter = (
     action.parameters[paramType].splice(paramIndex, 1);
   }
 };
+
 </script>
 
 <template>
@@ -1152,13 +1134,13 @@ const deleteCustomApiParameter = (
                     {{ t('setFieldValue') }}
                   </label>
 
+<!--                  <pre>{{ botFunction?.actions?.find(action => action.name === 'edit_crm_fields')?.parameters.fields }}</pre>-->
                   <div
-                      v-for="(customField, customFieldIndex) in botFunction?.actions?.find(action => action.name === 'edit_crm_fields')?.parameters?.lead_fields?.custom_fields || []"
+                      v-for="(field, customFieldIndex) in botFunction?.actions?.find(action => action.name === 'edit_crm_fields')?.parameters.fields"
                       :key="customFieldIndex"
                       class="fields mt-3"
                   >
                     <div class="flex align-items-center gap-4">
-                      <!-- Выбрать поле -->
                       <div class="flex flex-column gap-2 w-full">
                         <label for="chooseField">{{ t('chooseField') }}</label>
                         <Dropdown
@@ -1193,10 +1175,10 @@ const deleteCustomApiParameter = (
                         ></Dropdown>
                       </div>
 
-                      <!-- Ввести значение поля -->
                       <div class="flex flex-column gap-2 w-full">
                         <label for="enterFieldValue">{{ t('enterFieldValue') }}</label>
                         <Dropdown
+                            :disabled="!field.category.length"
                             id="enterFieldValue"
                             editable
                             :options="botFunction.parameters"
@@ -1205,13 +1187,8 @@ const deleteCustomApiParameter = (
                             :model-value="getFieldValue(index, customFieldIndex).value"
                             @update:model-value="getFieldValue(index, customFieldIndex).value = $event"
                         ></Dropdown>
-<!--                        <InputText-->
-<!--                            id="enterFieldValue"-->
-<!--                            type="text"-->
-<!--                            :model-value="getFieldValue(index, customFieldIndex).value"-->
-<!--                            @update:model-value="getFieldValue(index, customFieldIndex).value = $event"-->
-<!--                        />-->
                       </div>
+
                       <i
                           class="pi pi-trash ml-auto"
                           style="cursor: pointer; color: #EE9186; font-size: 18px"
@@ -1219,6 +1196,75 @@ const deleteCustomApiParameter = (
                       ></i>
                     </div>
                   </div>
+
+
+<!--                  <div-->
+<!--                      v-for="(customField, customFieldIndex) in botFunction?.actions?.find(action => action.name === 'edit_crm_fields')?.parameters?.lead_fields?.custom_fields || []"-->
+<!--                      :key="customFieldIndex"-->
+<!--                      class="fields mt-3"-->
+<!--                  >-->
+<!--                    <div class="flex align-items-center gap-4">-->
+                      <!-- Выбрать поле -->
+<!--                      <div class="flex flex-column gap-2 w-full">-->
+<!--                        <label for="chooseField">{{ t('chooseField') }}</label>-->
+<!--                        <Dropdown-->
+<!--                            id="chooseField"-->
+<!--                            :model-value="getFieldId(index, customFieldIndex).value"-->
+<!--                            @update:model-value="getFieldId(index, customFieldIndex).value = $event"-->
+<!--                            :options="fields"-->
+<!--                            optionLabel="name"-->
+<!--                            optionGroupLabel="name"-->
+<!--                            optionGroupChildren="items"-->
+<!--                            :placeholder="t('chooseField')"-->
+<!--                        >-->
+<!--                          <template #optiongroup="slotProps">-->
+<!--                            <div class="flex align-items-center">-->
+<!--                              <div>{{ slotProps.option.name }}</div>-->
+<!--                            </div>-->
+<!--                          </template>-->
+<!--                        </Dropdown>-->
+<!--                      </div>-->
+
+<!--                      <div class="flex flex-column gap-2 w-full">-->
+<!--                        <label for="chooseField">{{ t('action') }}</label>-->
+<!--                        &lt;!&ndash; Adjusted Dropdown for Field Type &ndash;&gt;-->
+<!--                        <Dropdown-->
+<!--                            id="bodyParamAction"-->
+<!--                            :model-value="getFieldType(index, customFieldIndex).value"-->
+<!--                            @update:model-value="getFieldType(index, customFieldIndex).value = $event"-->
+<!--                            :options="parameterActions"-->
+<!--                            optionLabel="title"-->
+<!--                            optionValue="value"-->
+<!--                            :placeholder="t('action')"-->
+<!--                        ></Dropdown>-->
+<!--                      </div>-->
+
+<!--                      &lt;!&ndash; Ввести значение поля &ndash;&gt;-->
+<!--                      <div class="flex flex-column gap-2 w-full">-->
+<!--                        <label for="enterFieldValue">{{ t('enterFieldValue') }}</label>-->
+<!--                        <Dropdown-->
+<!--                            id="enterFieldValue"-->
+<!--                            editable-->
+<!--                            :options="botFunction.parameters"-->
+<!--                            optionLabel="name"-->
+<!--                            optionValue="name"-->
+<!--                            :model-value="getFieldValue(index, customFieldIndex).value"-->
+<!--                            @update:model-value="getFieldValue(index, customFieldIndex).value = $event"-->
+<!--                        ></Dropdown>-->
+<!--&lt;!&ndash;                        <InputText&ndash;&gt;-->
+<!--&lt;!&ndash;                            id="enterFieldValue"&ndash;&gt;-->
+<!--&lt;!&ndash;                            type="text"&ndash;&gt;-->
+<!--&lt;!&ndash;                            :model-value="getFieldValue(index, customFieldIndex).value"&ndash;&gt;-->
+<!--&lt;!&ndash;                            @update:model-value="getFieldValue(index, customFieldIndex).value = $event"&ndash;&gt;-->
+<!--&lt;!&ndash;                        />&ndash;&gt;-->
+<!--                      </div>-->
+<!--                      <i-->
+<!--                          class="pi pi-trash ml-auto"-->
+<!--                          style="cursor: pointer; color: #EE9186; font-size: 18px"-->
+<!--                          @click="deleteCustomFieldValue(index, customFieldIndex)"-->
+<!--                      ></i>-->
+<!--                    </div>-->
+<!--                  </div>-->
 
                   <!-- Кнопка для добавления нового поля -->
                   <Button
