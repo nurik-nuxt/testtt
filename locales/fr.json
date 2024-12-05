@@ -330,5 +330,7 @@
   "apiBody": "Corps de la demande",
   "newParameter": "Nouveau paramètre",
   "value": "Signification",
-  "valueToPass": "Valeur à transmettre"
+  "valueToPass": "Valeur à transmettre",
+  "contact": "Contact",
+  "deal": "Accord"
 }

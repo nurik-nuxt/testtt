@@ -6,6 +6,7 @@ interface ActiveStatusItem {
     active_statuses: number[];
 }
 
+
 export const useAmoCrmStore = defineStore('amocrm', {
 
     state: () => {
@@ -63,6 +64,7 @@ export const useAmoCrmStore = defineStore('amocrm', {
         },
 
         async fetchAmoCrmFields() {
+            const { t } = useI18n();
             try {
                 const data = await useApi(`/amocrm/crm_fields`, {
                     method: 'GET'
@@ -70,7 +72,7 @@ export const useAmoCrmStore = defineStore('amocrm', {
                 // Map data and add 'value' field as item.id
                 this.fields = [
                     {
-                        name: 'Контакты',
+                        name: t('contact'),
                         code: 'contact_fields',
                         items: [
                             ...data.contact_fields.standard_fields.map(item => ({
@@ -86,7 +88,7 @@ export const useAmoCrmStore = defineStore('amocrm', {
                         ]
                     },
                     {
-                        name: 'Лид поли',
+                        name: t('deal'),
                         code: 'lead_fields',
                         items: [
                             ...data.lead_fields.standard_fields.map(item => ({

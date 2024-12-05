@@ -328,5 +328,7 @@
   "apiBody": "Request body",
   "newParameter": "New parameter",
   "value": "Meaning",
-  "valueToPass": "Value to be passed"
+  "valueToPass": "Value to be passed",
+  "contact": "Contact",
+  "deal": "Deal"
 }

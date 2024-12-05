@@ -329,5 +329,7 @@
   "apiBody": "Anforderungstext",
   "newParameter": "Neuer Parameter",
   "value": "Bedeutung",
-  "valueToPass": "Zu übergebender Wert"
+  "valueToPass": "Zu übergebender Wert",
+  "contact": "Kontakt",
+  "deal": "Handeln"
 }

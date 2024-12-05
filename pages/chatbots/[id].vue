@@ -382,8 +382,8 @@ function ensureAllActionsExist(botFunction: any) {
         // Custom Fields
         if (contact_fields.custom_fields && Array.isArray(contact_fields.custom_fields)) {
           contact_fields.custom_fields.forEach((field: any) => {
+            console.log(field);
             fields.push({
-              ...field,
               category: 'contact_fields',
               type: 'custom_fields',
               field_values: field.values[0]?.value || '',
@@ -397,6 +397,7 @@ function ensureAllActionsExist(botFunction: any) {
                 category: 'contact_fields',
               },
               code: field.code || '',
+              ...field,
             });
           });
         }
