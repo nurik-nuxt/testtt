@@ -90,6 +90,8 @@ watch(
     },
     { deep: true }
 );
+
+const time = ref('22:00')
 </script>
 
 <template>
@@ -169,18 +171,21 @@ watch(
         </span>
         <span class="bot-card__activate">
           {{ $t('setWorkingHours') }}
+
+
           <InputSwitch v-model="currentBot.schedule.isSchedule" style="margin-left: 8px"/>
         </span>
-        <!--                  <pre>{{ currentBot }}</pre>-->
         <Dropdown style="margin-top: 8px; margin-bottom: 8px" id="workingZone" v-model="currentBot.schedule.timezone" :options="workingZones" optionLabel="title" option-value="id" :placeholder="t('chooseOption')"></Dropdown>
         <div v-if="currentBot.schedule.isSchedule" class="flex flex-column gap-2 mt-3">
           <div class="flex align-items-center gap-2" v-for="(workingHour, index) in currentBot.schedule.workingHours" :key="index">
+
             <span style="width: 25px">{{ workingHour.title }}:</span>
-            <Calendar :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.start" />
+
+            <Calendar :dateFormat="'HH:mm'" :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.start" />
             <span>-</span>
-            <Calendar :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.end" />
+            <Calendar :dateFormat="'HH:mm'" :disabled="!workingHour.isWork" id="calendar-timeonly" timeOnly v-model="workingHour.end" />
             <span class="bot-card__activate" >
-              Работает
+              {{ $t('works') }}
               <InputSwitch v-model="workingHour.isWork" style="margin-left: 8px"/>
             </span>
           </div>

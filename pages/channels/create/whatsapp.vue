@@ -38,7 +38,7 @@ onMounted(async () => {
       <div class="card">
         <div v-if="!isPayWhatsapp" class="flex gap-4 align-items-center">
           <span style="color: #ef4444">У вас не оплачено подключение канала WhatsApp</span>
-          <Button label="Оплатить" @click="payWhatsapp"></Button>
+          <Button :label="t('pay')" @click="payWhatsapp"></Button>
         </div>
         <h5 class="mt-4 mb-4">WhatsApp</h5>
         <div class="flex flex-column gap-2 mb-4">

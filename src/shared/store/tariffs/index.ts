@@ -105,6 +105,28 @@ export const useTariffsStore = defineStore('tariffs', {
             } catch (e) {
                 console.error(e)
             }
+        },
+
+        async assignServiceByAdmin(data: any) {
+            try {
+                return await useApi(`/subscription/assign-service`, {
+                    method: 'POST',
+                    body: data
+                })
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async assignTariffByAdmin(data: any) {
+            try {
+                return await useApi(`/subscription/assign-tariff`, {
+                    method: 'POST',
+                    body: data
+                })
+            } catch (e) {
+                console.error(e)
+            }
         }
     }
 })

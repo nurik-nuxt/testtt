@@ -353,7 +353,7 @@ onUnmounted(() => {
                 <div class="flex align-items-center gap-4 fields">
                   <div class="flex flex-column gap-2 w-full">
                     <label for="chooseField">{{ $t('chooseField') }}</label>
-                    <Dropdown style="margin-top: 8px" id="funnel" v-model="fieldId" :options="fields" optionLabel="name" option-value="id" placeholder="Выберите один"></Dropdown>
+                    <Dropdown style="margin-top: 8px" id="funnel" v-model="fieldId" :options="fields" optionLabel="name" option-value="id" :placeholder="t('chooseOne')"></Dropdown>
                   </div>
                   <div class="flex flex-column gap-2 w-full">
                     <label for="enterFieldValue">{{ $t('enterFieldValue') }}</label>

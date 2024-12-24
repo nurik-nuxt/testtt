@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useDashboardStore } from "~/src/shared/store/dashboard";
-import {thousandSeparator} from "~/src/shared/utils/helpers";
-
+import { thousandSeparator } from "~/src/shared/utils/helpers";
+import { useDashboardBalanceStore } from "~/src/shared/store/dashboard/balance";
 
 const dashboardStore = useDashboardStore();
+const dashboardBalanceStore = useDashboardBalanceStore();
 
 onMounted(async () => {
   await Promise.all([
@@ -12,7 +13,8 @@ onMounted(async () => {
     dashboardStore.loadLeadsStatistics(),
     dashboardStore.loadTariffStatistics(),
     dashboardStore.loadTariffStatisticsSums(),
-    dashboardStore.loadUsersTariffPayCount()
+    dashboardStore.loadUsersTariffPayCount(),
+    dashboardBalanceStore.loadBalanceStatistics()
   ])
 })
 
@@ -39,6 +41,18 @@ const paidUsersCount = computed(() => {
 })
 const paidUsersCountLoading = computed(() => {
   return dashboardStore.getLoadingPaidUsersCount
+})
+
+const balanceToday = computed(() => {
+  return dashboardBalanceStore.getTodaySum
+})
+
+const balanceMonth = computed(() => {
+  return dashboardBalanceStore.getMonthSum
+})
+
+const balanceYear = computed(() => {
+  return dashboardBalanceStore.getYearSum
 })
 </script>
 
@@ -95,11 +109,33 @@ const paidUsersCountLoading = computed(() => {
     </div>
 
     <div class="section technical">
-      <h2>Технические</h2>
+      <h2>Внутерные токены</h2>
       <ul>
-        <li>Нагрузка на серверы?</li>
-        <li>Отказы?</li>
+        <li>Оплат за сегодня: <span class="font-bold ml-2">
+          <span>{{ thousandSeparator(balanceToday) }} рублей</span>
+<!--          <ProgressSpinner v-if="balanceToday" style="width: 20px; height: 20px"  />-->
+<!--          <span v-else>( {{ thousandSeparator(balanceToday) }} рублей)</span>-->
+        </span></li>
+        <li>Оплат за текущий месяц: <span class="font-bold ml-2">
+          <span>{{ thousandSeparator(balanceMonth) }} рублей</span>
+<!--          <ProgressSpinner v-if="balanceMonth" style="width: 20px; height: 20px"  />-->
+<!--          <span v-else>( {{ thousandSeparator(tariffStatisticsSums.newUsersThisMonth) }} рублей)</span>-->
+        </span></li>
+        <li>Оплат с начала года: <span class="font-bold ml-2">
+          <span>{{ thousandSeparator(balanceYear) }} рублей</span>
+<!--          <ProgressSpinner v-if="sumsLoading" style="width: 20px; height: 20px"  />-->
+<!--          <span v-else>( {{ thousandSeparator(tariffStatisticsSums.newUsersThisYear) }} рублей)</span>-->
+        </span></li>
+<!--        <li>Пользователей которые оплатили: <span class="font-bold ml-2">-->
+<!--          <ProgressSpinner v-if="paidUsersCountLoading" style="width: 20px; height: 20px"  />-->
+<!--          <span v-else>{{ paidUsersCount }}</span>-->
+<!--        </span></li>-->
       </ul>
+<!--      <h2>Технические</h2>-->
+<!--      <ul>-->
+<!--        <li>Нагрузка на серверы?</li>-->
+<!--        <li>Отказы?</li>-->
+<!--      </ul>-->
     </div>
   </div>
 </template>

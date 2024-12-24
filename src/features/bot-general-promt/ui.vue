@@ -49,8 +49,8 @@ const selectedBotTaskIndex = ref<number | null>(null);
 
 // Define parameter types
 const parameterTypes = ref<{ title: string; value: 'string' | 'number' }[]>([
-  { title: 'Строка', value: 'string' },
-  { title: 'Число', value: 'number' },
+  { title: t('line'), value: 'string' },
+  { title: t('number'), value: 'number' },
 ]);
 
 // Define custom API methods
@@ -61,9 +61,9 @@ const customApiMethods = ref<{ title: string; value: string }[]>([
 
 // Define parameter actions
 const parameterActions = ref([
-  { title: 'Текст', value: 'static' },
-  { title: 'Параметр из функции', value: 'function_parameter' },
-  { title: 'Данные пользователя', value: 'user_data' },
+  { title: t('text'), value: 'static' },
+  { title: t('functionParams'), value: 'function_parameter' },
+  { title: t('userData'), value: 'user_data' },
 ]);
 
 // Computed property for funnels
@@ -1129,7 +1129,7 @@ const deleteCustomApiParameter = (
                 </div>
 
                 <!-- Установить значение поля -->
-                <div class="flex flex-column mt-3">
+                <div v-if="currentBot?.channels?.some((item) => item.type === 'amocrm')" class="flex flex-column mt-3">
                   <label for="setFieldValue" style="font-weight: 700; margin-bottom: 12px;">
                     {{ t('setFieldValue') }}
                   </label>

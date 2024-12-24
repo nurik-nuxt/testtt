@@ -78,7 +78,7 @@ const copyWebhook = async () => {
             </div>
             <p>5. Нажмите на кнопку "Скопировать WEBHOOK" и вставьте его в поле "URL обработчика бота".</p>
           </div>
-          <Button label="Скопировать WEBHOOK" class="webhook-btn" @click="copyWebhook"></Button>
+          <Button :label="t('copyWebhook')" class="webhook-btn" @click="copyWebhook"></Button>
           <div class="flex flex-column gap-1 mt-4 mb-4">
             <p>6. Выберите тип бота: "Чат-бот для Открытых линий".</p>
             <p>7. Снимите галку "Исходящий вебхук"</p>

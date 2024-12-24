@@ -1,18 +1,24 @@
 <script setup lang="ts">
 console.log('Inside Tokens')
 import { useDashboardStore } from "~/src/shared/store/dashboard";
+import { useTariffsStore } from "~/src/shared/store/tariffs";
 
 const { t } = useI18n();
 
 const dashboardStore = useDashboardStore();
+const tariffsStore = useTariffsStore();
 
 onMounted(async () => {
-  await dashboardStore.loadTariffsToken();
+  await Promise.all([
+    dashboardStore.loadTariffsToken(),
+    tariffsStore.loadTariffs()
+  ])
 })
 
 const insideTokens = computed(() => {
   return dashboardStore.getInsideTokens
 })
+
 
 const isEditModal = ref<boolean>(false)
 const selectedTariffId = ref<string | null>(null);
@@ -40,6 +46,8 @@ const updateTariff = async () => {
     }
   })
 }
+
+
 </script>
 
 <template>

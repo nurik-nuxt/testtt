@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {useChannelStore} from "~/src/shared/store/channel";
-import {useAmoCrmStore} from "~/src/shared/store/amocrm";
+import { useChannelStore } from "~/src/shared/store/channel";
+import { useAmoCrmStore } from "~/src/shared/store/amocrm";
 
 const channelStore = useChannelStore();
 const amoCrmStore = useAmoCrmStore();
@@ -42,10 +42,10 @@ const refreshCrm = () => {
 
 onMounted(() => {
   Promise.all([
-      fetchChannel(),
-      fetchVoronki(),
-      fetchActiveFunnels()
-  ])
+    fetchChannel(),
+    fetchVoronki(),
+    fetchActiveFunnels(),
+  ]);
 });
 
 const getStatusKey = (idFunnel: number, idStatus: number) => {
@@ -77,7 +77,7 @@ const computedStatus = (idFunnel: number, idStatus: number) => {
     },
     set(value) {
       statusMap.value.set(key, value);
-    }
+    },
   });
 };
 
@@ -96,19 +96,56 @@ const saveStatusMap = async () => {
 
   const requestBody = Array.from(pipelineStatusMap.entries()).map(([pipeline_id, active_statuses]) => ({
     pipeline_id,
-    active_statuses
+    active_statuses,
   }));
 
-  await amoCrmStore.changeActiveStatus(requestBody,<string>route.params.id)
+  await amoCrmStore.changeActiveStatus(requestBody, <string>route.params.id);
 };
 
-const channelTitle = ref<string>('')
+const channelTitle = ref<string>('');
 
 const changeChannel = async () => {
   await channelStore.changeStatusChannelById(<string>route.params.id, channelStatus.value, channelTitle.value).then(() => {
     fetchChannel();
-  })
-}
+  });
+};
+
+// Voronka toggle logic
+const voronkaToggleMap = ref(new Map());
+
+const initializeVoronkaToggleMap = () => {
+  voronkas.value.forEach((voronka) => {
+    const allActive = voronka?._embedded?.statuses.every((status) =>
+        isActiveStatus(voronka.id, status.id)
+    );
+    voronkaToggleMap.value.set(voronka.id, allActive);
+  });
+};
+
+watch(voronkas, initializeVoronkaToggleMap);
+
+const getVoronkaToggle = (voronkaId: number) => {
+  return voronkaToggleMap.value.get(voronkaId) || false;
+};
+
+const setVoronkaToggle = (voronkaId: number, value: boolean) => {
+  voronkaToggleMap.value.set(voronkaId, value);
+  voronkas.value.forEach((voronka) => {
+    if (voronka.id === voronkaId) {
+      voronka?._embedded?.statuses.forEach((status) => {
+        const key = getStatusKey(voronkaId, status.id);
+        statusMap.value.set(key, value);
+      });
+    }
+  });
+};
+
+const voronkaToggle = (voronkaId: number) => {
+  return computed({
+    get: () => getVoronkaToggle(voronkaId),
+    set: (value: boolean) => setVoronkaToggle(voronkaId, value),
+  });
+};
 </script>
 
 <template>
@@ -151,7 +188,15 @@ const changeChannel = async () => {
         <div class="flex flex-column mt-5 gap-3">
           <h5 class="font-bold">{{ $t('funnelInAmoCRM') }}</h5>
           <div class="voronka" v-for="voronka in voronkas" :key="voronka.id">
-            <span style="background: #F0F4F9; padding: 4px 4px 4px 0" class="font-bold">{{ voronka.name }}</span>
+            <div class="flex align-items-center justify-content-between" style="background: #F0F4F9;">
+              <span style="padding: 4px 4px 4px 0" class="font-bold w-full">
+                {{ voronka.name }}
+              </span>
+              <InputSwitch
+                  :model-value="voronkaToggle(voronka.id).value"
+                  @update:model-value="voronkaToggle(voronka.id).value = $event"
+              />
+            </div>
             <span>{{ $t('stageAmo') }}:</span>
             <span v-for="status in voronka?._embedded?.statuses" :key="status.id" class="flex align-items-center justify-content-between">
               <span class="mr-2">{{ status.name }}</span>
@@ -174,11 +219,11 @@ const changeChannel = async () => {
   width: 100%;
   gap: 32px;
 }
-@media (max-width: 601px){
+@media (max-width: 601px) {
   .channel-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 8px
+    gap: 8px;
   }
   .voronka {
     width: 100% !important;
@@ -188,6 +233,6 @@ const changeChannel = async () => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 27%
+  width: 27%;
 }
 </style>

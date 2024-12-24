@@ -58,13 +58,14 @@ export const useSubscriptionStore = defineStore('subscription', {
     },
 
     actions: {
-        async addSubscription(tariff_id: string, recurrence: Recurrence) {
+        async addSubscription(tariff_id: string, recurrence: Recurrence, currency: string) {
             try {
                 return await useApi(`/subscription`, {
                     method: 'POST',
                     body: {
                         tariff_id,
-                        recurrence
+                        recurrence,
+                        currency
                     }
                 });
             } catch (e) {
@@ -72,28 +73,30 @@ export const useSubscriptionStore = defineStore('subscription', {
             }
         },
 
-        async addSubscriptionService(service_id: string, recurrence: Recurrence) {
-            try {
-                return await useApi(`/subscription`, {
-                    method: 'POST',
-                    body: {
-                        service_id,
-                        recurrence
-                    }
-                });
-            } catch (e) {
-                console.error(e)
-            }
-        },
-
-        async addSubscriptionServiceWhatsapp(service_id: string, recurrence: Recurrence, quantity: number) {
+        async addSubscriptionService(service_id: string, recurrence: Recurrence, currency: string) {
             try {
                 return await useApi(`/subscription`, {
                     method: 'POST',
                     body: {
                         service_id,
                         recurrence,
-                        quantity
+                        currency
+                    }
+                });
+            } catch (e) {
+                console.error(e)
+            }
+        },
+
+        async addSubscriptionServiceWhatsapp(service_id: string, recurrence: Recurrence, quantity: number, currency: string) {
+            try {
+                return await useApi(`/subscription`, {
+                    method: 'POST',
+                    body: {
+                        service_id,
+                        recurrence,
+                        quantity,
+                        currency
                     }
                 })
             } catch (e) {
@@ -174,13 +177,14 @@ export const useSubscriptionStore = defineStore('subscription', {
             }
         },
 
-        async upgradeTariff(tariff_id: string, recurrence: Recurrence) {
+        async upgradeTariff(tariff_id: string, recurrence: Recurrence, currency: string) {
             try {
                 return  await useApi(`/subscription/upgrade`, {
                     method: 'PATCH',
                     body: {
                         tariff_id,
-                        recurrence
+                        recurrence,
+                        currency
                     }
                 })
             } catch (e) {

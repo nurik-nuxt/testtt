@@ -1,54 +1,79 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+
+// Props
+const props = defineProps({
+  reminders: {
+    type: Array,
+    required: true,
+  },
+});
+
+// Emits
+const emit = defineEmits(['update-reminders']);
+
 const { t } = useI18n();
 
 const showReminderDeleteModal = ref<boolean>(false);
+const reminderId = ref<number>(0); // Keep only one declaration of reminderId
 
-const reminders = ref<{
-  id: number,
-  quantity: number,
-  message: string,
-  timeframe: string,
-  type: string,
-  isSchedule: boolean,
-  isActiveReminder: boolean,
-  schedule: {
-    start?: string,
-    end?: string
-  }
-}[]>([]);
+const timeList = ref([
+  {
+    id: 'minutes',
+    title: t('perMinutes'),
+  },
+  {
+    id: 'hours',
+    title: t('perHour'),
+  },
+]);
 
-const deleteReminder = (id: number) => {
-  reminders.value = reminders.value.filter(message => message.id !== id);
-  showReminderDeleteModal.value = false;
-  reminderId.value = 0;
-}
+const messageTypes = ref([
+  {
+    id: 'message',
+    title: t('sendMyMessage'),
+  },
+  {
+    id: 'prompt',
+    title: t('generateUsingAI'),
+  },
+]);
 
-const reminderId = ref<number>(0)
+const deleteReminder = () => {
+  const updatedReminders = props.reminders.filter(
+      (reminder) => reminder.id !== reminderId.value
+  );
+  emit('update-reminders', updatedReminders);
+  hideDeleteReminderModal();
+};
+
 const showDeleteReminderModal = (id: number) => {
   showReminderDeleteModal.value = true;
   reminderId.value = id;
-}
+};
 
 const hideDeleteReminderModal = () => {
   showReminderDeleteModal.value = false;
-  reminderId.value = 0
-}
+  reminderId.value = 0;
+};
 
 const addReminder = () => {
-  reminders.value.push({
-    id: reminders.value.length + 1,
+  const newReminder = {
+    id: props.reminders.length + 1,
     quantity: 10,
     message: '',
     timeframe: 'minutes',
     type: 'message',
-    isSchedule:false,
+    isSchedule: false,
     isActiveReminder: true,
     schedule: {
       start: '',
-      end: ''
-    }
-  })
-}
+      end: '',
+    },
+  };
+  emit('update-reminders', [...props.reminders, newReminder]);
+};
 </script>
 
 <template>
@@ -93,11 +118,11 @@ const addReminder = () => {
             <div v-if="message.isSchedule" class="flex align-items-center gap-2 mt-3">
               <div class="flex flex-column gap-1">
                 <span>Начало:</span>
-                <Calendar id="calendar-timeonly" timeOnly v-model="message.schedule.start" />
+                <Calendar :dateFormat="'HH:mm'" id="calendar-timeonly" timeOnly v-model="message.schedule.start" />
               </div>
               <div class="flex flex-column gap-1">
                 <span>Конец:</span>
-                <Calendar id="calendar-timeonly" timeOnly v-model="message.schedule.end" />
+                <Calendar :dateFormat="'HH:mm'" id="calendar-timeonly" timeOnly v-model="message.schedule.end" />
               </div>
             </div>
           </div>

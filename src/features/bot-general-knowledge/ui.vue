@@ -2,6 +2,7 @@
 
 import { useKnowledgeStore } from "~/src/shared/store/knowledge";
 const { t } = useI18n();
+const route = useRoute();
 
 const knowledgeStore = useKnowledgeStore();
 const filters = ref({});

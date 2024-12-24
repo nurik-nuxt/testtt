@@ -157,7 +157,7 @@ const saveStatusMap = async () => {
             <div class="flex flex-column gap-2 mb-4">
               <label for="channelTitle" style="font-weight: 700">{{ $t('channelNameOnly') }} <span style="color: red">*</span></label>
               <InputText id="channelTitle" type="text" v-model="channelTitle" />
-              <Button :label="t('save')" @click="changeChannel" :disabled="!channelTitle?.length"></Button>
+              <Button :label="t('change')" @click="changeChannel" :disabled="!channelTitle?.length"></Button>
             </div>
           </div>
           <div class="flex flex-column gap-4">
@@ -166,7 +166,7 @@ const saveStatusMap = async () => {
           </div>
         </div>
         <div class="flex flex-column mt-5 gap-3">
-          <h5 class="font-bold">Воронки в Bitrix24</h5>
+<!--          <h5 class="font-bold">Воронки в Bitrix24</h5>-->
           <div class="voronka" v-for="voronka in funnels" :key="voronka.ID">
             <span style="background: #F0F4F9; padding: 4px 4px 4px 0" class="font-bold">{{ voronka.NAME }}</span>
             <span>{{ $t('stageAmo') }}:</span>

@@ -40,12 +40,12 @@ const currencyList = ref<{ title: string; value: string; diff: number }[]>(
       },
       {
         title: 'Тнг',
-        value: 'tng',
+        value: 'kzt',
         diff: 5.5
       },
       {
         title: '$',
-        value: 'dollar',
+        value: 'usd',
         diff: 0.01
       }
     ]
@@ -55,11 +55,11 @@ const totalTariffTime = ref<'per_month' | 'per_year'>('per_month')
 const tariffTimeList = ref<{ title: string; value: string }[]>(
     [
       {
-        title: 'в мес',
+        title: t('perMonth'),
         value: 'per_month'
       },
       {
-        title: 'в год',
+        title: t('perYear'),
         value: 'per_year'
       }
     ]
@@ -103,9 +103,9 @@ const basicClientCountList = ref<{ title: string; value: number; priceInMonth: n
 
 const basicTariffSum = computed(() => {
   if (totalTariffTime.value === 'per_month') {
-    return basicClientCountList.value?.find((item) => item.value === basicClientCount.value)?.priceInMonth
+    return basicPlans.value?.find((item) => item?.limits?.leads === basicClientCount.value)?.prices?.[`${currencyValue.value}`]?.price_per_month
   } else {
-    return basicClientCountList.value?.find((item) => item.value === basicClientCount.value)?.priceInYear
+    return basicClientCountList.value?.find((item) => item.value === basicClientCount.value)?.prices?.[`${currencyValue.value}`]?.price_per_year
   }
 })
 const proClientCount = ref<number>(20000)
@@ -121,22 +121,23 @@ const proClientCountList = ref<{ title: string; value: number; priceInMonth: num
 )
 const proTariffSum = computed(() => {
   if (totalTariffTime.value === 'per_month') {
-    return proClientCountList.value?.find((item) => item.value === proClientCount.value)?.priceInMonth
+    return proPlans.value?.find((item) => item?.limits?.leads === proClientCount.value)?.prices?.[`${currencyValue.value}`]?.price_per_month
   } else {
-    return proClientCountList.value?.find((item) => item.value === proClientCount.value)?.priceInYear
+    return proPlans.value?.find((item) => item?.limits?.leads === proClientCount.value)?.prices?.[`${currencyValue.value}`]?.price_per_year
   }
 })
-const premiumClientCount = ref<string>('unlimited')
-const premiumClientCountList = ref<{ title: string; value: string; priceInMonth: number; priceInYear: number }[]>(
-    [
-      {
-        title: 'Не ограничено ∞',
-        value: 'unlimited',
-        priceInMonth: 15990,
-        priceInYear: 159900,
-      }
-    ]
-)
+
+// const premiumClientCount = ref<string>('unlimited')
+// const premiumClientCountList = ref<{ title: string; value: string; priceInMonth: number; priceInYear: number }[]>(
+//     [
+//       {
+//         title: 'Не ограничено ∞',
+//         value: 'unlimited',
+//         priceInMonth: 15990,
+//         priceInYear: 159900,
+//       }
+//     ]
+// )
 
 
 const totalAnalyticsTariffTime = ref<'per_month' | 'per_year'>('per_month')
@@ -144,11 +145,11 @@ const totalAnalyticsTariffTime = ref<'per_month' | 'per_year'>('per_month')
 const tariffAnalyticsTimeList = ref<{ title: string; value: string }[]>(
     [
       {
-        title: 'в мес',
+        title: t('perMonth'),
         value: 'per_month'
       },
       {
-        title: 'в год',
+        title: t('perYear'),
         value: 'per_year'
       }
     ]
@@ -182,10 +183,17 @@ const analyticsPriceList = ref([
 ])
 
 const analyticsPriceSum = computed(() => {
+  console.log(analyticsPrice.value)
   if (totalAnalyticsTariffTime.value === 'per_month') {
-    return analyticsPriceList.value?.find((item) => item.value === analyticsPrice.value)?.priceInMonth
+    if (analyticsPrice.value === 'unlimited') {
+      return callAnalytics.value?.find((item) => item.unlimited)?.prices?.[`${currencyValue.value}`]?.price_per_month
+    }
+    return callAnalytics.value?.find((item) => item.quantity === analyticsPrice.value)?.prices?.[`${currencyValue.value}`]?.price_per_month
   } else {
-    return analyticsPriceList.value?.find((item) => item.value === analyticsPrice.value)?.priceInYear
+    if (analyticsPrice.value === 'unlimited') {
+      return callAnalytics.value?.find((item) => item.unlimited)?.prices?.[`${currencyValue.value}`]?.price_per_year
+    }
+    return callAnalytics.value?.find((item) => item.quantity === analyticsPrice.value)?.prices?.[`${currencyValue.value}`]?.price_per_year
   }
 })
 
@@ -194,11 +202,11 @@ const totalWhatsAppTariffTime = ref<'per_month' | 'per_year'>('per_month')
 const tariffWhatsAppTimeList = ref<{ title: string; value: string }[]>(
     [
       {
-        title: 'в мес',
+        title: t('perMonth'),
         value: 'per_month'
       },
       {
-        title: 'в год',
+        title: t('perYear'),
         value: 'per_year'
       }
     ]
@@ -208,9 +216,9 @@ const whatsAppChannelCount = ref<number>(1)
 
 const whatsAppChannelPrice = computed(() => {
   if (totalWhatsAppTariffTime.value === 'per_month') {
-    return whatsAppChannelCount.value * 1990
+    return whatsAppChannelCount.value * services.value?.find((item) => item.type === 'whatsapp')?.prices?.[`${currencyValue.value}`]?.price_per_month
   } else {
-    return whatsAppChannelCount.value * 19900
+    return whatsAppChannelCount.value * services.value?.find((item) => item.type === 'whatsapp')?.prices?.[`${currencyValue.value}`]?.price_per_year
   }
 })
 
@@ -231,10 +239,13 @@ const proPlans = computed(() => {
   return test?.value?.filter(plan => plan.name.startsWith('pro'))
 })
 
+const callAnalytics = computed(() => {
+  return services?.value?.filter(plan => plan.name.startsWith('call_analytics'))
+})
 
 
 const analyticsServices = computed(() =>
-    services?.value?.filter(service => service.type === 'call_analytics')
+    services?.value?.filter(service => service.type === 'call_analytics' && service.quantity !== 10)
         .map(service => ({
           id: service._id,
           title: service.unlimited ? '∞' : service.quantity,
@@ -273,7 +284,7 @@ const payBasicPlan = async () => {
    }
 
    try {
-     const initialResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+     const initialResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value, currencyValue.value);
 
      if (initialResponse?.success) {
        window.open(initialResponse?.dataForFront?.paymentUrl, '_blank');
@@ -284,7 +295,7 @@ const payBasicPlan = async () => {
        const cancelResponse = await subscriptionStore.cancelSubscription(initialResponse?.subscriction_id);
 
        if (cancelResponse?.success) {
-         const retryResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+         const retryResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value, currencyValue.value);
 
          if (retryResponse?.success) {
            window.open(retryResponse?.dataForFront?.paymentUrl, '_blank');
@@ -314,7 +325,7 @@ const payProPlan = async () => {
     }
 
     try {
-      const initialResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+      const initialResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value, currencyValue.value);
 
       if (initialResponse?.success) {
         window.open(initialResponse?.dataForFront?.paymentUrl, '_blank');
@@ -325,7 +336,7 @@ const payProPlan = async () => {
         const cancelResponse = await subscriptionStore.cancelSubscription(initialResponse?.subscriction_id);
 
         if (cancelResponse?.success) {
-          const retryResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value);
+          const retryResponse = await subscriptionStore.addSubscription(planId, totalTariffTime.value, currencyValue.value);
 
           if (retryResponse?.success) {
             window.open(retryResponse?.dataForFront?.paymentUrl, '_blank');
@@ -351,13 +362,13 @@ const payAnalyticsService = async () => {
           (analyticsPrice.value === 'unlimited' && service.unlimited)
   )?._id;
   if (serviceId) {
-    await subscriptionStore.addSubscriptionService(serviceId, totalAnalyticsTariffTime.value).then(async (res) => {
+    await subscriptionStore.addSubscriptionService(serviceId, totalAnalyticsTariffTime.value, currencyValue.value).then(async (res) => {
       if (res?.success) {
         window.open(res?.dataForFront?.paymentUrl, '_blank');
       } else {
         await subscriptionStore.cancelSubscription(serviceId).then(async () => {
           if (res?.success) {
-            await subscriptionStore.addSubscriptionService(serviceId, totalAnalyticsTariffTime.value)
+            await subscriptionStore.addSubscriptionService(serviceId, totalAnalyticsTariffTime.value, currencyValue.value)
           }
         })
       }
@@ -391,7 +402,7 @@ const subscriptionsWhatsapp = computed(() => {
 const payWhatsappService = async () => {
   const serviceId = services?.value?.find((service) => service.type === 'whatsapp')?._id;
   if (serviceId) {
-    await subscriptionStore.addSubscriptionServiceWhatsapp(serviceId, totalWhatsAppTariffTime.value, whatsAppChannelCount.value).then((res) => {
+    await subscriptionStore.addSubscriptionServiceWhatsapp(serviceId, totalWhatsAppTariffTime.value, whatsAppChannelCount.value, currencyValue.value).then((res) => {
       if (res?.success) {
         window.open(res?.dataForFront?.paymentUrl, '_blank');
       }
@@ -429,7 +440,7 @@ const upgradedTariffs = computed(() => {
 
 const payUpgradeTariff = async () => {
   if (selectedUpgradeTariffId.value) {
-    await subscriptionStore.upgradeTariff(selectedUpgradeTariffId.value, totalUpgradeTariffTime.value).then((res) => {
+    await subscriptionStore.upgradeTariff(selectedUpgradeTariffId.value, totalUpgradeTariffTime.value, currencyValue.value).then((res) => {
       window.open(res?.paymentUrl, '_blank');
       showUpgradeModal.value = false
     })
@@ -441,11 +452,11 @@ const totalUpgradeTariffTime = ref<'per_month' | 'per_year'>('per_month')
 const tariffUpgradeTimeList = ref<{ title: string; value: string }[]>(
     [
       {
-        title: 'в мес',
+        title: t('perMonth'),
         value: 'per_month'
       },
       {
-        title: 'в год',
+        title: t('perYear'),
         value: 'per_year'
       }
     ]
@@ -606,10 +617,10 @@ const changeRecurrence = () => {
                         <InputNumber style="margin-bottom: 16px; margin-top: 4px; width: 100%;" id="input-balance" min="1000" step="1000" v-model="inputBalance" fluid/>
                         <div v-if="inputBalance > 0" class="flex flex-column gap-2 mb-1">
                           <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'rub' )?.diff) }} Руб</span>
-                          <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'tng' )?.diff) }} Тнг</span>
-                          <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'dollar' )?.diff) }} $</span>
+                          <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'kzt' )?.diff) }} Тнг</span>
+                          <span>{{ inputBalance }} ~ {{ thousandSeparator(inputBalance * currencyList?.find((item) => item.value === 'usd' )?.diff) }} $</span>
                         </div>
-                        <Button label="Оплатить" class="p-3 w-full mt-auto" @click="consumeBalance"/>
+                        <Button :label="t('pay')" class="p-3 w-full mt-auto" @click="consumeBalance"/>
                       </div>
                     </div>
                   </div>
@@ -644,11 +655,10 @@ const changeRecurrence = () => {
                         </li>
                       </ul>
                       <div class="flex flex-column gap-1 mb-4">
-                        <span>К оплате</span>
-                        <span class="font-bold text-2xl">{{ thousandSeparator(basicTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
+                        <span>{{ $t('forPayment') }}</span>
+                        <span v-if="basicTariffSum" class="font-bold text-2xl">{{ thousandSeparator(basicTariffSum) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-<!--                      <pre>{{ subscriptions }}</pre>-->
-                      <Button :label="`${subscriptions.length && subscriptions.some((item) => item.tariff_id !== '66eeb318ca68fc027c7a867b') ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payBasicPlan" ></Button>
+                      <Button :label="`${subscriptions.length && subscriptions.some((item) => item.tariff_id !== '66eeb318ca68fc027c7a867b') ? `${t('updateTariff')}` : `${t('pay')}`}`" class="p-3 w-full mt-auto" @click="payBasicPlan" ></Button>
                     </div>
                   </div>
                 </div>
@@ -685,11 +695,10 @@ const changeRecurrence = () => {
                         </li>
                       </ul>
                       <div class="flex flex-column gap-1 mb-4">
-                        <span>К оплате</span>
-                        <span class="font-bold text-2xl">{{ thousandSeparator(proTariffSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
+                        <span>{{ $t('forPayment') }}</span>
+                        <span v-if="proTariffSum" class="font-bold text-2xl">{{ thousandSeparator(proTariffSum) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-<!--                      <pre>{{ subscriptions }}</pre>-->
-                      <Button :label="`${subscriptions.length && subscriptions.some((item) => item.tariff_id !== '66eeb318ca68fc027c7a867b') ? 'Обновить тариф' : 'Оплатит'}`" class="p-3 w-full mt-auto" @click="payProPlan"></Button>
+                      <Button :label="`${subscriptions.length && subscriptions.some((item) => item.tariff_id !== '66eeb318ca68fc027c7a867b') ? `${t('updateTariff')}` : `${t('pay')}`}`" class="p-3 w-full mt-auto" @click="payProPlan"></Button>
                     </div>
                   </div>
                 </div>
@@ -711,16 +720,16 @@ const changeRecurrence = () => {
                 <div class="col-12 lg:col-4">
                   <div class="h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #DCE7FA !important;">
-                      <div class="text-900 font-medium text-xl mb-2">Количество звонков в мес.</div>
+                      <div class="text-900 font-medium text-xl mb-2">{{ $t('numberOfCallPerMonth') }}</div>
                       <div class="mb-2 mt-2">
                         <SelectButton v-model="analyticsPrice" :options="analyticsServices" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                       </div>
-                      <div class="text-900 font-medium mb-5">Доступно только для amoCRM и Bitrix24</div>
+                      <div class="text-900 font-medium mb-5">{{ $t('callAnalyticsAccess') }}</div>
                       <div class="flex flex-column gap-1 mb-4">
-                        <span>К оплате</span>
-                        <span class="font-bold text-2xl">{{ thousandSeparator(analyticsPriceSum * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
+                        <span>{{ $t('forPayment') }}</span>
+                        <span v-if="analyticsPriceSum" class="font-bold text-2xl">{{ thousandSeparator(analyticsPriceSum) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-                      <Button label="Оплатить" class="p-3 w-full mt-auto" @click="payAnalyticsService"></Button>
+                      <Button :label="t('pay')" class="p-3 w-full mt-auto" @click="payAnalyticsService"></Button>
                     </div>
                   </div>
                 </div>
@@ -731,7 +740,7 @@ const changeRecurrence = () => {
           <BlockViewer header="whatsApp" free>
             <div>
               <div class="flex align-items-center mb-4 mobile">
-                <h5 class="mb-0 mr-4">Оплатить канал WhatsApp</h5>
+                <h5 class="mb-0 mr-4">{{ $t('payForWhatsAppChannel') }}</h5>
                 <div class="flex align-items-center gap-2">
                   <SelectButton v-model="totalWhatsAppTariffTime" :options="tariffWhatsAppTimeList" aria-labelledby="basic" option-label="title" option-value="value" :allow-empty="false"/>
                   <span style="color: #ef4444; font-weight: 600">-20%</span>
@@ -741,13 +750,13 @@ const changeRecurrence = () => {
                 <div class="col-12 lg:col-3">
                   <div class="h-full">
                     <div class="shadow-2 p-3 h-full flex flex-column surface-card cursor-pointer" style="border-radius: 6px; background: #A8E6C1 !important;">
-                      <div class="text-900 font-medium text-xl mb-2">Количество каналов WhatsApp</div>
+                      <div class="text-900 font-medium text-xl mb-2">{{ $t('numberOfWhatsAppChannels') }}</div>
                       <InputText id="premium-channel-count" style="width: 50px" type="number" min="0" v-model="whatsAppChannelCount" />
                       <div class="flex flex-column gap-1 mt-4 mb-4">
-                        <span>К оплате</span>
-                        <span class="font-bold text-2xl">{{ thousandSeparator(whatsAppChannelPrice * currencyList?.find((item) => item.value === currencyValue)?.diff) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
+                        <span>{{ $t('forPayment') }}</span>
+                        <span v-if="whatsAppChannelPrice" class="font-bold text-2xl">{{ thousandSeparator(whatsAppChannelPrice) }} <span>{{ currencyList?.find((item) => item.value === currencyValue)?.title }}</span></span>
                       </div>
-                      <Button label="Оплатить" class="p-3 w-full mt-auto" @click="payWhatsappService"></Button>
+                      <Button :label="t('pay')" class="p-3 w-full mt-auto" @click="payWhatsappService"></Button>
                     </div>
                   </div>
                 </div>

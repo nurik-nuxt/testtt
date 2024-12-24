@@ -11,7 +11,7 @@ import {useBitrix24} from "~/src/shared/store/bitrix24";
 import {useLoaderStore} from "~/src/shared/store/loader";
 import {useBotReminder} from "~/src/shared/store/reminder";
 import {useUserStore} from "~/src/shared/store/user";
-import {convertToBrowserTimezone} from "~/src/shared/utils/helpers";
+import {convertTimeToTimezone, convertToBrowserTimezone, convertToTimeZone} from "~/src/shared/utils/helpers";
 import {BotGeneralSettings} from "~/src/features/bot-general-settings";
 import {BotGeneralChannels} from "~/src/features/bot-general-channels";
 import {BotGeneralKnowledge} from "~/src/features/bot-general-knowledge";
@@ -382,7 +382,6 @@ function ensureAllActionsExist(botFunction: any) {
         // Custom Fields
         if (contact_fields.custom_fields && Array.isArray(contact_fields.custom_fields)) {
           contact_fields.custom_fields.forEach((field: any) => {
-            console.log(field);
             fields.push({
               category: 'contact_fields',
               type: 'custom_fields',
@@ -437,22 +436,36 @@ onMounted(async () => {
           }
         })
       }
-      if (res?.reminders?.length) {
-        reminders.value = res?.reminders?.map(item => {
-          return {
-            ...item,
-            schedule: {
-              start: convertToBrowserTimezone(item.schedule.start),
-              end: convertToBrowserTimezone(item.schedule.end)
-            }
-          };
-        })
-      }
+
       Object.keys(currentBot.value).forEach(key => {
         if (key in res && res[key] !== null && res[key] !== undefined) {
           currentBot.value[key] = res[key];
         }
       });
+
+      if (res?.reminders?.length) {
+        reminders.value = res?.reminders?.map(item => {
+          return {
+            ...item,
+            schedule: {
+              start: item.schedule.start > 5 ? convertToTimeZone(item.schedule.start) : item.schedule.start,
+              end: item.schedule.end > 5 ? convertToTimeZone(item.schedule.end) : item.schedule.end,
+            }
+          };
+        })
+      }
+
+
+      if (res?.schedule?.workingHours?.length) {
+        currentBot.value.schedule.workingHours = res?.schedule?.workingHours?.map(item => {
+          return {
+            ...item,
+            start: item.start.length > 5 ? convertTimeToTimezone(item.start, res?.schedule?.timezone) : item.start,
+            end: item.end.length > 5 ? convertTimeToTimezone(item.end, res?.schedule?.timezone) : item.end
+          };
+        })
+      }
+
       if (!res?.schedule?.timezone) {
         currentBot.value.schedule.timezone = getUTCOffsetString();
       }
@@ -578,19 +591,48 @@ const confirmBotMainSettings = async () => {
     });
 
     // Create the new botFunction with transformed actions
-    const newBotFunction = {
+    return {
       ...botFunction,
       actions: transformedActions,
     };
-
-    console.log(newBotFunction, 'newBotFunction');
-    return newBotFunction;
   });
 
-  await botStore.editBot(<string>route.params.id, currentBot.value).then(async (res) => {
+  const botSetting = {
+    ...currentBot.value,
+    schedule: {
+      ...currentBot.value.schedule,
+      workingHours: currentBot.value.schedule.workingHours?.map((item) => ({
+        isWork: item.isWork,
+        title: item.title,
+        start: typeof item.start === 'object' ? convertToTimeZone(item.start, currentBot.value.schedule.timezone) : item.start,
+        end: typeof item.end === 'object' ? convertToTimeZone(item.end, currentBot.value.schedule.timezone) : item.end,
+      }))
+    }
+  }
+
+
+  await botStore.editBot(<string>route.params.id, botSetting).then(async (res) => {
     toast.add({ severity: 'success', summary: t('ready'), life: 5000 });
+    console.log(reminders.value, 'reminders value')
+    const botReminders = reminders.value?.map((reminder) => ({
+      ...reminder,
+      schedule: {
+        start: reminder.schedule?.start
+            ? typeof reminder.schedule.start === 'object'
+                ? convertToTimeZone(reminder.schedule.start, 'utc+5')
+                : reminder.schedule.start
+            : null,
+        end: reminder.schedule?.end
+            ? typeof reminder.schedule.end === 'object'
+                ? convertToTimeZone(reminder.schedule.end, 'utc+5')
+                : reminder.schedule.end
+            : null,
+      }
+    }));
+
+    console.log(botReminders, 'reminders')
     if (reminders.value) {
-      await botReminderStore.saveBotReminder(<string>route.params.id, reminders.value)
+      await botReminderStore.saveBotReminder(<string>route.params.id, botReminders)
     }
     if (countFunctionChanging.value > 1) {
       await botStore.saveFunctionById(<string>route.params.id, botFunctions.value)
@@ -606,6 +648,16 @@ const confirmBotMainSettings = async () => {
             currentBot.value[key] = res[key];
           }
         });
+        if (res?.schedule?.workingHours?.length) {
+          currentBot.value.schedule.workingHours = res?.schedule?.workingHours?.map(item => {
+            return {
+              ...item,
+              start: item.start.length > 5 ? convertTimeToTimezone(item.start, res?.schedule?.timezone) : item.start,
+              end: item.end.length > 5 ? convertTimeToTimezone(item.end, res?.schedule?.timezone) : item.end
+            };
+          })
+        }
+
       })
     }
   })
@@ -730,6 +782,10 @@ const reminders = ref<{
     end?: string
   }
 }[]>([]);
+
+const handleRemindersUpdate = (updatedReminders) => {
+  reminders.value = updatedReminders;
+};
 </script>
 
 <template>
@@ -786,7 +842,10 @@ const reminders = ref<{
             </TabPanel>
 
             <TabPanel :header="`3.${t('reminders')}`">
-              <BotGeneralReminders />
+              <BotGeneralReminders
+                  :reminders="reminders"
+                  @update-reminders="handleRemindersUpdate"
+              />
             </TabPanel>
 
             <TabPanel :header="`4.${t('channels')}`">

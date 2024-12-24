@@ -331,5 +331,20 @@
   "value": "Значение",
   "valueToPass": "Передаваемо значение",
   "contact": "Контакт",
-  "deal": "Сделка"
+  "deal": "Сделка",
+  "line": "Строка",
+  "number": "Число",
+  "functionParams": "Параметр из функции",
+  "userData": "Данные пользователя",
+  "works": "Работает",
+  "chooseOne": "Выберите один",
+  "copyWebhook": "Скопировать WEBHOOK",
+  "pay": "Оплатить",
+  "updateTariff": "Обновить тариф",
+  "forPayment": "К оплате",
+  "perYear": "в год",
+  "numberOfWhatsAppChannels": "Количество каналов WhatsApp",
+  "numberOfCallPerMonth": "Количество звонков в мес.",
+  "callAnalyticsAccess": "Доступно только для amoCRM и Bitrix24",
+  "payForWhatsAppChannel": "Оплатить канал WhatsApp"
 }
